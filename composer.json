@@ -1,0 +1,15 @@
+{
+    "autoload": {
+        "psr-0": {
+            "fkooman\\RemoteStorage\\": "src/"
+        }
+    },
+    "description": "PHP remoteStorage Server",
+    "license": "AGPL-3.0",
+    "name": "fkooman/rss",
+    "require": {
+        "fkooman/config": "0.3.*",
+        "fkooman/oauth-rs": "0.7.*",
+        "fkooman/rest": "0.4.*"
+    }
+}
