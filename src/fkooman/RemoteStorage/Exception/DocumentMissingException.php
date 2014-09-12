@@ -4,6 +4,6 @@ namespace fkooman\RemoteStorage\Exception;
 
 use Exception;
 
-class PathException extends Exception
+class DocumentMissingException extends Exception
 {
 }
