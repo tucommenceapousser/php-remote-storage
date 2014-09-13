@@ -39,18 +39,16 @@ class DocumentTest extends PHPUnit_Framework_TestCase
         $p = new Path("/foo/bar/baz");
         $d = 'Hello World!';
 
+        $this->assertNull($this->document->putDocument($p, $d));
+    }
+
+    public function testGetDocument()
+    {
+        $p = new Path("/foo/bar/baz");
+        $d = 'Hello World!';
+
         $this->document->putDocument($p, $d);
         $this->assertEquals($d, $this->document->getDocument($p));
-
-        // first time delete must work
-        $this->document->deleteDocument($p);
-
-        // second time delte must not work
-        try {
-            $this->document->deleteDocument($p);
-            $this->assertTrue(false);
-        } catch (DocumentMissingException $e) {
-        }
     }
 
     /**
@@ -69,5 +67,58 @@ class DocumentTest extends PHPUnit_Framework_TestCase
     {
         $p = new Path("/foo/bar/baz/foo");
         $this->document->deleteDocument($p);
+    }
+
+    public function testDeleteDocument()
+    {
+        $p = new Path("/foo/bar/baz");
+        $d = 'Hello World!';
+
+        $this->assertNull($this->document->putDocument($p, $d));
+        $this->assertNull($this->document->deleteDocument($p));
+    }
+
+    /**
+     * @expectedException fkooman\RemoteStorage\Exception\DocumentMissingException
+     */
+    public function testDoubleDeleteDocument()
+    {
+        $p = new Path("/foo/bar/baz");
+        $d = 'Hello World!';
+
+        $this->assertNull($this->document->putDocument($p, $d));
+        $this->assertNull($this->document->deleteDocument($p));
+        $this->document->deleteDocument($p);
+    }
+
+    public function testGetFolder()
+    {
+        $p = new Path("/foo/bar/baz/foo");
+        $d = 'Hello World!';
+
+        $this->assertNull($this->document->putDocument($p, $d));
+
+        $parentFolder = new Path($p->getParentFolder());
+        $this->assertEquals(array("foo" => array("Content-Length" => 12)), $this->document->getFolder($parentFolder));
+
+        $parentFolder = new Path($parentFolder->getParentFolder());
+        $this->assertEquals(array("baz/" => array()), $this->document->getFolder($parentFolder));
+    }
+
+    public function testGetEmptyFolder()
+    {
+        $p = new Path("/foo/bar/baz/");
+        $this->assertEquals(array(), $this->document->getFolder($p));
+    }
+
+    public function testRecursiveFolderDelete()
+    {
+        $p = new Path("/foo/bar/baz/foobar/foobaz");
+        $d = 'Hello World!';
+        $this->assertNull($this->document->putDocument($p, $d));
+
+        // now delete the document, the /foo/bar directory should be empty
+        $this->assertNull($this->document->deleteDocument($p));
+        $this->assertEquals(array(), $this->document->getFolder(new Path("/foo/bar/")));
     }
 }
