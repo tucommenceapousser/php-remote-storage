@@ -75,7 +75,12 @@ class DocumentTest extends PHPUnit_Framework_TestCase
         $d = 'Hello World!';
 
         $this->assertNull($this->document->putDocument($p, $d));
-        $this->assertNull($this->document->deleteDocument($p));
+        $this->assertEquals(
+            array(
+                '/foo/bar/baz'
+            ),
+            $this->document->deleteDocument($p)
+        );
     }
 
     /**
@@ -87,7 +92,12 @@ class DocumentTest extends PHPUnit_Framework_TestCase
         $d = 'Hello World!';
 
         $this->assertNull($this->document->putDocument($p, $d));
-        $this->assertNull($this->document->deleteDocument($p));
+        $this->assertEquals(
+            array(
+                '/foo/bar/baz'
+            ),
+            $this->document->deleteDocument($p)
+        );
         $this->document->deleteDocument($p);
     }
 
@@ -118,7 +128,14 @@ class DocumentTest extends PHPUnit_Framework_TestCase
         $this->assertNull($this->document->putDocument($p, $d));
 
         // now delete the document, the /foo/bar directory should be empty
-        $this->assertNull($this->document->deleteDocument($p));
+        $this->assertEquals(
+            array(
+                '/foo/bar/baz/foobar/foobaz',
+                '/foo/bar/baz/foobar/',
+                '/foo/bar/baz/'
+            ),
+            $this->document->deleteDocument($p)
+        );
         $this->assertEquals(array(), $this->document->getFolder(new Path("/foo/bar/")));
     }
 }

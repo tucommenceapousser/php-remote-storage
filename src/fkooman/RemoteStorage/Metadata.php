@@ -53,10 +53,11 @@ class Metadata
         return null !== $md ? $md['type'] : null;
     }
 
-    public function setMetadata(Path $p, $type, $newVersion)
+    public function updateMetadata(Path $p, $type)
     {
         $currentVersion = $this->getVersion($p);
         if (null === $currentVersion) {
+            $newVersion = 1;
             $stmt = $this->db->prepare(
                 sprintf(
                     "INSERT INTO %s (path, type, version) VALUES(:path, :type, :version)",
@@ -64,6 +65,7 @@ class Metadata
                 )
             );
         } else {
+            $newVersion = $currentVersion + 1;
             $stmt = $this->db->prepare(
                 sprintf(
                     "UPDATE %s SET version = :version, type = :type WHERE path = :path",
@@ -74,7 +76,21 @@ class Metadata
 
         $stmt->bindValue(":path", $p->getPath(), PDO::PARAM_STR);
         $stmt->bindValue(":type", $type, PDO::PARAM_STR);
-        $stmt->bindValue(":version", $newVersion, PDO::PARAM_STR);
+        $stmt->bindValue(":version", $newVersion, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return 1 === $stmt->rowCount();
+    }
+
+    public function deleteMetadata(Path $p)
+    {
+        $stmt = $this->db->prepare(
+            sprintf(
+                "DELETE FROM %s WHERE path = :path",
+                $this->prefix . "md"
+            )
+        );
+        $stmt->bindValue(":path", $p->getPath(), PDO::PARAM_STR);
         $stmt->execute();
 
         return 1 === $stmt->rowCount();
@@ -87,7 +103,7 @@ class Metadata
             "CREATE TABLE IF NOT EXISTS %s (
                 path VARCHAR(255) NOT NULL,
                 type VARCHAR(255) NOT NULL,
-                version VARCHAR(255) NOT NULL,
+                version INTEGER NOT NULL,
                 UNIQUE (path)
             )",
             $prefix . 'md'

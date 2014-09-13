@@ -36,26 +36,38 @@ class MetadataTest extends PHPUnit_Framework_TestCase
         $this->md->initDatabase();
     }
 
-    public function testSetVersion()
+    public function testNewDocument()
     {
         $p = new Path("/foo/bar/baz.txt");
-        $this->assertNull($this->md->getVersion($p));
-        $this->assertTrue($this->md->setMetadata($p, "text/plain", "abc123"));
-        $this->assertEquals("abc123", $this->md->getVersion($p));
+        $this->assertNull($this->md->getMetadata($p));
+        $this->assertTrue($this->md->updateMetadata($p, "text/plain"));
+        $this->assertEquals(1, $this->md->getVersion($p));
         $this->assertEquals("text/plain", $this->md->getType($p));
     }
 
-    public function testUpdateVersion()
+    public function testUpdateDocument()
     {
         $p = new Path("/foo/bar/baz.txt");
         $this->assertNull($this->md->getVersion($p));
-        $this->assertTrue($this->md->setMetadata($p, "text/plain", "abc123"));
-        $this->assertEquals("abc123", $this->md->getVersion($p));
+        $this->assertTrue($this->md->updateMetadata($p, "text/plain"));
+        $this->assertEquals(1, $this->md->getVersion($p));
         $this->assertEquals("text/plain", $this->md->getType($p));
 
         // the update
-        $this->assertTrue($this->md->setMetadata($p, "application/json", "foo123"));
-        $this->assertEquals("foo123", $this->md->getVersion($p));
+        $this->assertTrue($this->md->updateMetadata($p, "application/json"));
         $this->assertEquals("application/json", $this->md->getType($p));
+        $this->assertEquals(2, $this->md->getVersion($p));
+    }
+
+    public function testDeleteDocument()
+    {
+        $p = new Path("/foo/bar/baz.txt");
+        $this->assertNull($this->md->getVersion($p));
+        $this->assertTrue($this->md->updateMetadata($p, "text/plain"));
+        $this->assertEquals(1, $this->md->getVersion($p));
+        $this->assertEquals("text/plain", $this->md->getType($p));
+
+        $this->assertTrue($this->md->deleteMetadata($p));
+        $this->assertNull($this->md->getVersion($p));
     }
 }

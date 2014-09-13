@@ -51,6 +51,12 @@ class Document
         }
     }
 
+    /**
+     * Delete a document and all empty parent directories if there are any.
+     *
+     * @param $p the path of a document to delete
+     * @returns an array of all deleted objects
+     */
     public function deleteDocument(Path $p)
     {
         if ($p->getIsFolder()) {
@@ -67,6 +73,9 @@ class Document
             throw new DocumentException("unable to delete file");
         }
 
+        $deletedObjects = array();
+        $deletedObjects[] = $p->getPath();
+
         // delete all empty folders in the tree up to the module root if
         // they are empty
         $p = new Path($p->getParentFolder());
@@ -75,9 +84,12 @@ class Document
             if ($this->isEmptyFolder($p)) {
                 // and it is empty, delete it
                 $this->deleteFolder($p);
+                $deletedObjects[] = $p->getPath();
             }
             $p = new Path($p->getParentFolder());
         }
+
+        return $deletedObjects;
     }
 
     public function getFolder(Path $p)
