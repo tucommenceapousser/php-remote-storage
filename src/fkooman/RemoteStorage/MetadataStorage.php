@@ -4,7 +4,7 @@ namespace fkooman\RemoteStorage;
 
 use PDO;
 
-class Metadata
+class MetadataStorage
 {
     private $db;
     private $prefix;

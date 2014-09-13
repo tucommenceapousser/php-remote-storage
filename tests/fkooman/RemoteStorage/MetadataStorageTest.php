@@ -20,13 +20,13 @@ namespace fkooman\RemoteStorage;
 use PDO;
 use PHPUnit_Framework_TestCase;
 
-class MetadataTest extends PHPUnit_Framework_TestCase
+class MetadataStorageTest extends PHPUnit_Framework_TestCase
 {
     private $md;
 
     public function setUp()
     {
-        $this->md = new Metadata(
+        $this->md = new MetadataStorage(
             new PDO(
                 $GLOBALS['DB_DSN'],
                 $GLOBALS['DB_USER'],

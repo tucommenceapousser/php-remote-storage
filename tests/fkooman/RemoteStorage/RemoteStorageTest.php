@@ -26,7 +26,7 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        $md = new Metadata(
+        $md = new MetadataStorage(
             new PDO(
                 $GLOBALS['DB_DSN'],
                 $GLOBALS['DB_USER'],

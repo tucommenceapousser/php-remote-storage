@@ -7,7 +7,7 @@ use fkooman\OAuth\ResourceServer\TokenIntrospection;
 
 class RemoteStorage
 {
-    /** @var fkooman\RemoteStorage\Metadata */
+    /** @var fkooman\RemoteStorage\MetadataStorage */
     private $md;
 
     /** @var fkooman\RemoteStorage\Document */
@@ -16,7 +16,7 @@ class RemoteStorage
     /** @var fkooman\OAuth\ResourceServer\TokenIntrospection */
     private $i;
 
-    public function __construct(Metadata $md, Document $d, TokenIntrospection $i)
+    public function __construct(MetadataStorage $md, Document $d, TokenIntrospection $i)
     {
         $this->md = $md;
         $this->d = $d;
