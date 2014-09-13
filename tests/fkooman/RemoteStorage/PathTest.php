@@ -126,4 +126,48 @@ class PathTest extends \PHPUnit_Framework_TestCase
             }
         }
     }
+
+    public function testGetPathPartsTestFolder()
+    {
+        $p = new Path("/foo/bar/baz/");
+        $this->assertEquals(array("foo", "bar", "baz"), $p->getPathParts());
+        $this->assertEquals(3, count($p->getPathParts()));
+    }
+
+    public function testGetPathPartsTestDocument()
+    {
+        $p = new Path("/foo/bar/baz/foo.txt");
+        $this->assertEquals(array("foo", "bar", "baz", "foo.txt"), $p->getPathParts());
+        $this->assertEquals(4, count($p->getPathParts()));
+    }
+
+    public function testPathTreeDocument()
+    {
+        $path = new Path("/foo/bar/baz/foo.txt");
+        $this->assertEquals(
+            array(
+                "/",
+                "/foo/",
+                "/foo/bar/",
+                "/foo/bar/baz/"
+            ),
+            $path->getPathTree()
+        );
+        $this->assertEquals(4, count($path->getPathTree()));
+    }
+
+    public function testPathTreeFolder()
+    {
+        $path = new Path("/foo/bar/baz/");
+        $this->assertEquals(
+            array(
+                "/",
+                "/foo/",
+                "/foo/bar/",
+                "/foo/bar/baz/"
+            ),
+            $path->getPathTree()
+        );
+        $this->assertEquals(4, count($path->getPathTree()));
+    }
 }

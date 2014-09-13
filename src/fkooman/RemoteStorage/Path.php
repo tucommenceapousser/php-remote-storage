@@ -108,13 +108,39 @@ class Path
 
     public function getPathParts()
     {
-        $pathParts = explode("/", $this->path);
-        for ($i = 0; $i < count($pathParts); $i++) {
-            if (empty($pathParts[$i])) {
-                unset($pathParts[$i]);
+        $returnParts = array();
+        $e = explode("/", $this->path);
+        foreach ($e as $p) {
+            if (!empty($p)) {
+                $returnParts[] = $p;
             }
         }
 
-        return array_values($pathParts);
+        return array_values($returnParts);
+    }
+
+    /**
+     * Returns a tree of folders for this path.
+     */
+    public function getPathTree()
+    {
+        if ($this->getIsDocument()) {
+            $p = new Path($this->getParentFolder());
+        } else {
+            $p = $this;
+        }
+
+        $pathParts = $p->getPathParts();
+
+        $tree = array();
+        $path = "/";
+        $tree[] = $path;
+
+        foreach ($pathParts as $part) {
+            $path .= $part . "/";
+            $tree[] = $path;
+        }
+
+        return $tree;
     }
 }

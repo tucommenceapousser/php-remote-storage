@@ -39,7 +39,14 @@ class DocumentTest extends PHPUnit_Framework_TestCase
         $p = new Path("/foo/bar/baz");
         $d = 'Hello World!';
 
-        $this->assertNull($this->document->putDocument($p, $d));
+        $this->assertEquals(
+            array(
+                '/',
+                '/foo/',
+                '/foo/bar/'
+            ),
+            $this->document->putDocument($p, $d)
+        );
     }
 
     public function testGetDocument()
@@ -47,7 +54,14 @@ class DocumentTest extends PHPUnit_Framework_TestCase
         $p = new Path("/foo/bar/baz");
         $d = 'Hello World!';
 
-        $this->document->putDocument($p, $d);
+        $this->assertEquals(
+            array(
+                '/',
+                '/foo/',
+                '/foo/bar/'
+            ),
+            $this->document->putDocument($p, $d)
+        );
         $this->assertEquals($d, $this->document->getDocument($p));
     }
 
@@ -74,7 +88,14 @@ class DocumentTest extends PHPUnit_Framework_TestCase
         $p = new Path("/foo/bar/baz");
         $d = 'Hello World!';
 
-        $this->assertNull($this->document->putDocument($p, $d));
+        $this->assertEquals(
+            array(
+                '/',
+                '/foo/',
+                '/foo/bar/'
+            ),
+            $this->document->putDocument($p, $d)
+        );
         $this->assertEquals(
             array(
                 '/foo/bar/baz'
@@ -91,7 +112,14 @@ class DocumentTest extends PHPUnit_Framework_TestCase
         $p = new Path("/foo/bar/baz");
         $d = 'Hello World!';
 
-        $this->assertNull($this->document->putDocument($p, $d));
+        $this->assertEquals(
+            array(
+                '/',
+                '/foo/',
+                '/foo/bar/'
+            ),
+            $this->document->putDocument($p, $d)
+        );
         $this->assertEquals(
             array(
                 '/foo/bar/baz'
@@ -106,7 +134,15 @@ class DocumentTest extends PHPUnit_Framework_TestCase
         $p = new Path("/foo/bar/baz/foo");
         $d = 'Hello World!';
 
-        $this->assertNull($this->document->putDocument($p, $d));
+        $this->assertEquals(
+            array(
+                '/',
+                '/foo/',
+                '/foo/bar/',
+                '/foo/bar/baz/'
+            ),
+            $this->document->putDocument($p, $d)
+        );
 
         $parentFolder = new Path($p->getParentFolder());
         $this->assertEquals(array("foo" => array("Content-Length" => 12)), $this->document->getFolder($parentFolder));
@@ -125,7 +161,16 @@ class DocumentTest extends PHPUnit_Framework_TestCase
     {
         $p = new Path("/foo/bar/baz/foobar/foobaz");
         $d = 'Hello World!';
-        $this->assertNull($this->document->putDocument($p, $d));
+        $this->assertEquals(
+            array(
+                '/',
+                '/foo/',
+                '/foo/bar/',
+                '/foo/bar/baz/',
+                '/foo/bar/baz/foobar/'
+            ),
+            $this->document->putDocument($p, $d)
+        );
 
         // now delete the document, the /foo/bar directory should be empty
         $this->assertEquals(

@@ -39,23 +39,23 @@ class MetadataTest extends PHPUnit_Framework_TestCase
     public function testNewDocument()
     {
         $p = new Path("/foo/bar/baz.txt");
-        $this->assertNull($this->md->getMetadata($p));
-        $this->assertTrue($this->md->updateMetadata($p, "text/plain"));
+        $this->assertNull($this->md->getVersion($p));
+        $this->assertTrue($this->md->updateDocument($p, "text/plain"));
         $this->assertEquals(1, $this->md->getVersion($p));
-        $this->assertEquals("text/plain", $this->md->getType($p));
+        $this->assertEquals("text/plain", $this->md->getContentType($p));
     }
 
     public function testUpdateDocument()
     {
         $p = new Path("/foo/bar/baz.txt");
         $this->assertNull($this->md->getVersion($p));
-        $this->assertTrue($this->md->updateMetadata($p, "text/plain"));
+        $this->assertTrue($this->md->updateDocument($p, "text/plain"));
         $this->assertEquals(1, $this->md->getVersion($p));
-        $this->assertEquals("text/plain", $this->md->getType($p));
+        $this->assertEquals("text/plain", $this->md->getContentType($p));
 
         // the update
-        $this->assertTrue($this->md->updateMetadata($p, "application/json"));
-        $this->assertEquals("application/json", $this->md->getType($p));
+        $this->assertTrue($this->md->updateDocument($p, "application/json"));
+        $this->assertEquals("application/json", $this->md->getContentType($p));
         $this->assertEquals(2, $this->md->getVersion($p));
     }
 
@@ -63,11 +63,11 @@ class MetadataTest extends PHPUnit_Framework_TestCase
     {
         $p = new Path("/foo/bar/baz.txt");
         $this->assertNull($this->md->getVersion($p));
-        $this->assertTrue($this->md->updateMetadata($p, "text/plain"));
+        $this->assertTrue($this->md->updateDocument($p, "text/plain"));
         $this->assertEquals(1, $this->md->getVersion($p));
-        $this->assertEquals("text/plain", $this->md->getType($p));
+        $this->assertEquals("text/plain", $this->md->getContentType($p));
 
-        $this->assertTrue($this->md->deleteMetadata($p));
+        $this->assertTrue($this->md->deleteEntry($p));
         $this->assertNull($this->md->getVersion($p));
     }
 }

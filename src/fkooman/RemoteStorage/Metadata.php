@@ -7,6 +7,7 @@ use PDO;
 class Metadata
 {
     private $db;
+    private $prefix;
 
     public function __construct(PDO $db, $prefix = "")
     {
@@ -21,11 +22,11 @@ class Metadata
      * @param $path The full path to the folder or document
      * @returns the version of the path, or null if path does not exist
      */
-    public function getMetadata(Path $p)
+    private function getMetadata(Path $p)
     {
         $stmt = $this->db->prepare(
             sprintf(
-                "SELECT version, type FROM %s WHERE path = :path",
+                "SELECT version, content_type FROM %s WHERE path = :path",
                 $this->prefix . "md"
             )
         );
@@ -46,21 +47,26 @@ class Metadata
         return null !== $md ? $md['version'] : null;
     }
 
-    public function getType(Path $p)
+    public function getContentType(Path $p)
     {
         $md = $this->getMetadata($p);
 
-        return null !== $md ? $md['type'] : null;
+        return null !== $md ? $md['content_type'] : null;
     }
 
-    public function updateMetadata(Path $p, $type)
+    public function updateFolder(Path $p)
+    {
+        return $this->updateDocument($p, "folder");
+    }
+
+    public function updateDocument(Path $p, $contentType)
     {
         $currentVersion = $this->getVersion($p);
         if (null === $currentVersion) {
             $newVersion = 1;
             $stmt = $this->db->prepare(
                 sprintf(
-                    "INSERT INTO %s (path, type, version) VALUES(:path, :type, :version)",
+                    "INSERT INTO %s (path, content_type, version) VALUES(:path, :content_type, :version)",
                     $this->prefix . "md"
                 )
             );
@@ -68,21 +74,21 @@ class Metadata
             $newVersion = $currentVersion + 1;
             $stmt = $this->db->prepare(
                 sprintf(
-                    "UPDATE %s SET version = :version, type = :type WHERE path = :path",
+                    "UPDATE %s SET version = :version, content_type = :content_type WHERE path = :path",
                     $this->prefix . "md"
                 )
             );
         }
 
         $stmt->bindValue(":path", $p->getPath(), PDO::PARAM_STR);
-        $stmt->bindValue(":type", $type, PDO::PARAM_STR);
+        $stmt->bindValue(":content_type", $contentType, PDO::PARAM_STR);
         $stmt->bindValue(":version", $newVersion, PDO::PARAM_INT);
         $stmt->execute();
 
         return 1 === $stmt->rowCount();
     }
 
-    public function deleteMetadata(Path $p)
+    public function deleteEntry(Path $p)
     {
         $stmt = $this->db->prepare(
             sprintf(
@@ -102,7 +108,7 @@ class Metadata
         $query[] = sprintf(
             "CREATE TABLE IF NOT EXISTS %s (
                 path VARCHAR(255) NOT NULL,
-                type VARCHAR(255) NOT NULL,
+                content_type VARCHAR(255) NOT NULL,
                 version INTEGER NOT NULL,
                 UNIQUE (path)
             )",

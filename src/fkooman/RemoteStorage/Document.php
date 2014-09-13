@@ -21,6 +21,10 @@ class Document
 
     public function getDocument(Path $p)
     {
+        if ($p->getIsFolder()) {
+            throw new DocumentException("unable to get folder");
+        }
+
         $documentPath = $this->baseDir . $p->getPath();
         if (false === file_exists($documentPath)) {
             throw new DocumentMissingException();
@@ -34,14 +38,24 @@ class Document
         return $documentContent;
     }
 
+    /**
+     * Store a new document.
+     *
+     * @returns an array of all created objects
+     */
     public function putDocument(Path $p, $documentContent)
     {
-        $parentFolder = $this->baseDir . $p->getParentFolder();
+        if ($p->getIsFolder()) {
+            throw new DocumentException("unable to put folder");
+        }
 
-        // check if parent folder exists
-        if (!file_exists($parentFolder)) {
-            if (false === @mkdir($parentFolder, 0770, true)) {
-                throw new DocumentException("unable to create directory");
+        $pathTree = $p->getPathTree();
+        foreach ($pathTree as $pathItem) {
+            if (!file_exists($this->baseDir . $pathItem)) {
+                // create it
+                if (false === @mkdir($this->baseDir . $pathItem, 0770)) {
+                    throw new DocumentException("unable to create directory");
+                }
             }
         }
 
@@ -49,6 +63,8 @@ class Document
         if (false === @file_put_contents($documentPath, $documentContent)) {
             throw new DocumentException("unable to write document");
         }
+
+        return $pathTree;
     }
 
     /**
