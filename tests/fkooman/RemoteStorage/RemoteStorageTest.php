@@ -20,6 +20,7 @@ namespace fkooman\RemoteStorage;
 use PDO;
 use PHPUnit_Framework_TestCase;
 use fkooman\OAuth\ResourceServer\TokenIntrospection;
+use fkooman\RemoteStorage\Exception\DocumentMissingException;
 
 class RemoteStorageTest extends PHPUnit_Framework_TestCase
 {
@@ -55,15 +56,21 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
     {
         $p = new Path("/foo/bar/baz.txt");
         $this->r->putDocument($p, 'text/plain', 'Hello World!');
-        $d = $this->r->getDocumentData($p);
-        $v = $this->r->getDocumentVersion($p);
-
-        $this->assertEquals('Hello World!', $d);
-        $this->assertEquals(1, $v);
+        $this->assertEquals('Hello World!', $this->r->getDocumentData($p));
+        $this->assertEquals(1, $this->r->getDocumentVersion($p));
     }
 
     public function testDeleteDocument()
     {
-        $this->assertTrue(true);
+        $p = new Path("/foo/bar/baz.txt");
+        $this->r->putDocument($p, 'text/plain', 'Hello World!');
+        $this->r->deleteDocument($p);
+        $this->assertNull($this->r->getDocumentVersion($p));
+        try {
+            $this->r->getDocumentData($p);
+            $this->assertTrue(false);
+        } catch (DocumentMissingException $e) {
+            $this->assertTrue(true);
+        }
     }
 }

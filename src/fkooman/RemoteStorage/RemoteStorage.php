@@ -44,7 +44,7 @@ class RemoteStorage
 
     public function deleteDocument(Path $p, $ifMatch = null)
     {
-        if ($p->getUserId() !== $i->getSub()) {
+        if ($p->getUserId() !== $this->i->getSub()) {
             throw new RemoteStorageException("not allowed");
         }
 
