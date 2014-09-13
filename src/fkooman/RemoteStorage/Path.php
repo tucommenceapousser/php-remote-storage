@@ -97,50 +97,50 @@ class Path
         return $this->isModuleRoot;
     }
 
-    public function getParentFolder()
+    public function getParentFolderPath()
     {
         if ($this->getIsModuleRoot()) {
             return false;
         }
 
-        return dirname($this->getPath()) . "/";
+        return new Path(dirname($this->getPath()) . "/");
     }
 
-    public function getPathParts()
+    public function getFolderPath()
     {
-        $returnParts = array();
-        $e = explode("/", $this->path);
-        foreach ($e as $p) {
-            if (!empty($p)) {
-                $returnParts[] = $p;
-            }
+        if ($this->getIsFolder()) {
+            return $this;
         }
 
-        return array_values($returnParts);
+        return $this->getParentFolderPath();
     }
 
-    /**
-     * Returns a tree of folders for this path.
-     */
-    public function getPathTree()
+    public function getFolderTreeFromRoot()
     {
-        if ($this->getIsDocument()) {
-            $p = new Path($this->getParentFolder());
-        } else {
-            $p = $this;
-        }
+        $p = $this->getFolderPath()->getPath();
+        $folderTree = array($p);
 
-        $pathParts = $p->getPathParts();
+        do {
+            $rpos = strrpos($p, "/", -2);
+            $p = substr($p, 0, $rpos + 1);
+            $folderTree[] = $p;
+        } while (0 !== strrpos($p, "/", -2));
+        $folderTree[] = "/";
 
-        $tree = array();
-        $path = "/";
-        $tree[] = $path;
+        return array_reverse($folderTree);
+    }
 
-        foreach ($pathParts as $part) {
-            $path .= $part . "/";
-            $tree[] = $path;
-        }
+    public function getFolderTreeFromModuleRoot()
+    {
+        $folderTree = array();
 
-        return $tree;
+        $folderPath = $this->getFolderPath();
+
+        do {
+            $folderTree[] = $folderPath->getPath();
+            $folderPath = $folderPath->getParentFolderPath();
+        } while (false !== $folderPath);
+
+        return array_reverse($folderTree);
     }
 }

@@ -56,7 +56,7 @@ class Metadata
 
     public function updateFolder(Path $p)
     {
-        return $this->updateDocument($p, "folder");
+        return $this->updateDocument($p, "http://remotestorage.io/spec/folder-description");
     }
 
     public function updateDocument(Path $p, $contentType)

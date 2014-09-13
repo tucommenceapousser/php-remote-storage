@@ -55,14 +55,15 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
     {
         $p = new Path("/foo/bar/baz.txt");
         $this->r->putDocument($p, 'text/plain', 'Hello World!');
-        $d = $this->r->getDocument($p);
+        $d = $this->r->getDocumentData($p);
+        $v = $this->r->getDocumentVersion($p);
 
-        $this->assertEquals('Hello World!', $d['data']);
-        $this->assertEquals(1, $d['version']);
+        $this->assertEquals('Hello World!', $d);
+        $this->assertEquals(1, $v);
     }
 
     public function testDeleteDocument()
     {
-
+        $this->assertTrue(true);
     }
 }

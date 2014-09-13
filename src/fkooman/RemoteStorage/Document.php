@@ -49,8 +49,8 @@ class Document
             throw new DocumentException("unable to put folder");
         }
 
-        $pathTree = $p->getPathTree();
-        foreach ($pathTree as $pathItem) {
+        $folderTree = $p->getFolderTreeFromRoot();
+        foreach ($folderTree as $pathItem) {
             if (!file_exists($this->baseDir . $pathItem)) {
                 // create it
                 if (false === @mkdir($this->baseDir . $pathItem, 0770)) {
@@ -64,7 +64,7 @@ class Document
             throw new DocumentException("unable to write document");
         }
 
-        return $pathTree;
+        return $p->getFolderTreeFromModuleRoot();
     }
 
     /**
@@ -94,7 +94,7 @@ class Document
 
         // delete all empty folders in the tree up to the module root if
         // they are empty
-        $p = new Path($p->getParentFolder());
+        $p = $p->getParentFolderPath();
         while (!$p->getIsModuleRoot()) {
             // not the module root
             if ($this->isEmptyFolder($p)) {
@@ -102,7 +102,7 @@ class Document
                 $this->deleteFolder($p);
                 $deletedObjects[] = $p->getPath();
             }
-            $p = new Path($p->getParentFolder());
+            $p = $p->getParentFolderPath();
         }
 
         return $deletedObjects;

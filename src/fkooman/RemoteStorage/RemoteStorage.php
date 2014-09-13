@@ -23,7 +23,7 @@ class RemoteStorage
         $this->i = $i;
     }
 
-    public function putDocument(Path $p, $type, $data, $ifMatch = null)
+    public function putDocument(Path $p, $contentType, $documentData, $ifMatch = null)
     {
         if ($p->getUserId() !== $this->i->getSub()) {
             throw new RemoteStorageException("not allowed");
@@ -35,7 +35,8 @@ class RemoteStorage
             }
         }
 
-        $updatedEntities = $this->d->putDocument($p, $data);
+        $updatedEntities = $this->d->putDocument($p, $documentData);
+        $this->md->updateDocument($p, $contentType);
         foreach ($updatedEntities as $u) {
             $this->md->updateFolder(new Path($u));
         }
@@ -61,17 +62,27 @@ class RemoteStorage
         // deleted folder
     }
 
-    public function getDocument(Path $p)
+    public function getDocumentVersion(Path $p)
     {
+        // FIXME: deal with ifMatch, version!
         if (!$p->getIsPublic()) {
             if ($p->getUserId() !== $this->i->getSub()) {
                 throw new RemoteStorageException("not allowed");
             }
         }
+
+        return $this->md->getVersion($p);
+    }
+
+    public function getDocumentData(Path $p)
+    {
         // FIXME: deal with ifMatch, version!
-        return array(
-            "data" => $this->d->getDocument($p),
-            "version" => $this->md->getVersion($p)
-        );
+        if (!$p->getIsPublic()) {
+            if ($p->getUserId() !== $this->i->getSub()) {
+                throw new RemoteStorageException("not allowed");
+            }
+        }
+
+        return $this->d->getDocument($p);
     }
 }

@@ -41,8 +41,6 @@ class DocumentTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             array(
-                '/',
-                '/foo/',
                 '/foo/bar/'
             ),
             $this->document->putDocument($p, $d)
@@ -56,8 +54,6 @@ class DocumentTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             array(
-                '/',
-                '/foo/',
                 '/foo/bar/'
             ),
             $this->document->putDocument($p, $d)
@@ -90,8 +86,6 @@ class DocumentTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             array(
-                '/',
-                '/foo/',
                 '/foo/bar/'
             ),
             $this->document->putDocument($p, $d)
@@ -114,8 +108,6 @@ class DocumentTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             array(
-                '/',
-                '/foo/',
                 '/foo/bar/'
             ),
             $this->document->putDocument($p, $d)
@@ -136,18 +128,16 @@ class DocumentTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             array(
-                '/',
-                '/foo/',
                 '/foo/bar/',
                 '/foo/bar/baz/'
             ),
             $this->document->putDocument($p, $d)
         );
 
-        $parentFolder = new Path($p->getParentFolder());
+        $parentFolder = $p->getParentFolderPath();
         $this->assertEquals(array("foo" => array("Content-Length" => 12)), $this->document->getFolder($parentFolder));
 
-        $parentFolder = new Path($parentFolder->getParentFolder());
+        $parentFolder = $parentFolder->getParentFolderPath();
         $this->assertEquals(array("baz/" => array()), $this->document->getFolder($parentFolder));
     }
 
@@ -163,8 +153,6 @@ class DocumentTest extends PHPUnit_Framework_TestCase
         $d = 'Hello World!';
         $this->assertEquals(
             array(
-                '/',
-                '/foo/',
                 '/foo/bar/',
                 '/foo/bar/baz/',
                 '/foo/bar/baz/foobar/'
