@@ -1,5 +1,7 @@
 ; This is the Remote Storage Server configuration
 
+storageDir = "/var/lib/php-remote-storage/data"
+
 [MetadataStorage]
 dsn = "sqlite:/var/lib/php-remote-storage/metadata.sqlite"
 ;dsn = "mysql:host=localhost;dbname=rs"
