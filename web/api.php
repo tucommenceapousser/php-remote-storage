@@ -16,3 +16,52 @@
  */
 
 require_once dirname(__DIR__) . "/vendor/autoload.php";
+
+use fkooman\Config\Config;
+use fkooman\Http\Request;
+use fkooman\Http\JsonResponse;
+use fkooman\Http\IncomingRequest;
+
+use fkooman\RemoteStorage\RemoteStorage;
+use fkooman\RemoteStorage\MetadataStorage;
+use fkooman\RemoteStorage\DocumentStorage;
+
+try {
+    $config = Config::fromIniFile(
+        dirname(__DIR__) . "/config/rs.ini"
+    );
+
+    $md = new MetadataStorage(
+        new PDO(
+            $config->s('MetadataStorage')->l('dsn'),
+            $config->s('PdoStorage')->l('username', false),
+            $config->s('PdoStorage')->l('password', false)
+        )
+    );
+
+    $document = new DocumentStorage(
+        $config->l('storageDir', true)
+    );
+
+    // FIXME: use fkooman\OAuth\ResourceServer
+    $introspect = new TokenIntrospection(
+        array(
+            "active" => true,
+            "sub" => "admin"
+        )
+    );
+
+    $remoteStorage = new RemoteStorage($md, $document, $introspect);
+    $request = Request::fromIncomingRequest(new IncomingRequest());
+    $response = $remoteStorage->handleRequest($request);
+    $response->sendResponse();
+} catch (Exception $e) {
+    $response = new JsonResponse(500);
+    $response->setContent(
+        array(
+            "error" => "internal_server_error",
+            "error_description" => $e->getMessage()
+        )
+    );
+    $response->sendResponse();
+}

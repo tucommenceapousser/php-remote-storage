@@ -25,13 +25,13 @@ class RemoteStorage
     /** @var fkooman\RemoteStorage\MetadataStorage */
     private $md;
 
-    /** @var fkooman\RemoteStorage\Document */
+    /** @var fkooman\RemoteStorage\DocumentStorage */
     private $d;
 
     /** @var fkooman\OAuth\ResourceServer\TokenIntrospection */
     private $i;
 
-    public function __construct(MetadataStorage $md, Document $d, TokenIntrospection $i)
+    public function __construct(MetadataStorage $md, DocumentStorage $d, TokenIntrospection $i)
     {
         $this->md = $md;
         $this->d = $d;

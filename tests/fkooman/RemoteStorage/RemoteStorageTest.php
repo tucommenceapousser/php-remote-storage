@@ -40,7 +40,7 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
             @unlink($tempFile);
         }
         mkdir($tempFile);
-        $document = new Document($tempFile);
+        $document = new DocumentStorage($tempFile);
 
         $introspect = new TokenIntrospection(
             array(
@@ -131,6 +131,29 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
                 "baz.txt" => array(
                     "Content-Length" => 10,
                     "ETag" => "1"
+                )
+            ),
+            $this->r->getFolder($p3)
+        );
+        $this->assertEquals(3, $this->r->getVersion($p3));
+    }
+
+    public function testGetFolderWithFolder()
+    {
+        $p1 = new Path("/admin/messages/foo/baz.txt");
+        $p2 = new Path("/admin/messages/foo/foobar/bar.txt");
+        $p3 = new Path("/admin/messages/foo/");
+        $this->r->putDocument($p1, 'text/plain', 'Hello Baz!');
+        $this->r->putDocument($p2, 'text/plain', 'Hello Bar!');
+        $this->r->putDocument($p2, 'text/plain', 'Hello Updated Bar!');
+        $this->assertEquals(
+            array(
+                "foobar/" => array(
+                    "ETag" => "2"
+                ),
+                "baz.txt" => array(
+                    "ETag" => "1",
+                    "Content-Length" => 10
                 )
             ),
             $this->r->getFolder($p3)

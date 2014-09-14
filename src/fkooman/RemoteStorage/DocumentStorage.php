@@ -20,7 +20,7 @@ namespace fkooman\RemoteStorage;
 use fkooman\RemoteStorage\Exception\DocumentException;
 use fkooman\RemoteStorage\Exception\DocumentNotFoundException;
 
-class Document
+class DocumentStorage
 {
     private $baseDir;
 

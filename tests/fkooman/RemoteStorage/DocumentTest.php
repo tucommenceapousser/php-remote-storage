@@ -31,7 +31,7 @@ class DocumentTest extends PHPUnit_Framework_TestCase
             @unlink($tempFile);
         }
         mkdir($tempFile);
-        $this->document = new Document($tempFile);
+        $this->document = new DocumentStorage($tempFile);
     }
 
     public function testPutDocument()
