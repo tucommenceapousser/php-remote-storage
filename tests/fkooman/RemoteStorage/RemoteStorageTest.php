@@ -45,7 +45,7 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
         $introspect = new TokenIntrospection(
             array(
                 "active" => true,
-                "sub" => "foo"
+                "sub" => "admin"
             )
         );
 
@@ -54,23 +54,87 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
 
     public function testPutDocument()
     {
-        $p = new Path("/foo/bar/baz.txt");
+        $p = new Path("/admin/messages/foo/hello.txt");
         $this->r->putDocument($p, 'text/plain', 'Hello World!');
-        $this->assertEquals('Hello World!', $this->r->getDocumentData($p));
-        $this->assertEquals(1, $this->r->getDocumentVersion($p));
+        $this->assertEquals('Hello World!', $this->r->getDocument($p));
+        $this->assertEquals(1, $this->r->getVersion($p));
+    }
+
+    public function testPutMultipleDocuments()
+    {
+        $p1 = new Path("/admin/messages/foo/hello.txt");
+        $p2 = new Path("/admin/messages/foo/bar.txt");
+        $p3 = new Path("/admin/messages/foo/");
+        $p4 = new Path("/admin/messages/");
+        //$p5 = new Path("/admin/");
+        $this->r->putDocument($p1, 'text/plain', 'Hello World!');
+        $this->r->putDocument($p2, 'text/plain', 'Hello Foo!');
+        $this->assertEquals('Hello World!', $this->r->getDocument($p1));
+        $this->assertEquals(1, $this->r->getVersion($p1));
+        $this->assertEquals('Hello Foo!', $this->r->getDocument($p2));
+        $this->assertEquals(1, $this->r->getVersion($p2));
+        // all parent directories should have version 2 now
+        $this->assertEquals(2, $this->r->getVersion($p3));
+        $this->assertEquals(2, $this->r->getVersion($p4));
+        //$this->assertEquals(2, $this->r->getVersion($p5));
     }
 
     public function testDeleteDocument()
     {
-        $p = new Path("/foo/bar/baz.txt");
+        $p = new Path("/admin/messages/foo/baz.txt");
         $this->r->putDocument($p, 'text/plain', 'Hello World!');
         $this->r->deleteDocument($p);
-        $this->assertNull($this->r->getDocumentVersion($p));
+        $this->assertNull($this->r->getVersion($p));
         try {
-            $this->r->getDocumentData($p);
+            $this->r->getDocument($p);
             $this->assertTrue(false);
         } catch (DocumentMissingException $e) {
             $this->assertTrue(true);
         }
+        // directory should also not be there anymore
+        $p = new Path("/admin/messages/foo/");
+        $this->assertNull($this->r->getVersion($p));
+    }
+
+    public function testDeleteMultipleDocuments()
+    {
+        $p1 = new Path("/admin/messages/foo/baz.txt");
+        $p2 = new Path("/admin/messages/foo/bar.txt");
+        $p3 = new Path("/admin/messages/foo/");
+        $p4 = new Path("/admin/messages/");
+//        $p5 = new Path("/admin/");
+
+        $this->r->putDocument($p1, 'text/plain', 'Hello Baz!');
+        $this->r->putDocument($p2, 'text/plain', 'Hello Bar!');
+        $this->r->deleteDocument($p1);
+        $this->assertNull($this->r->getVersion($p1));
+        $this->assertEquals(1, $this->r->getVersion($p2));
+        $this->assertEquals(2, $this->r->getVersion($p3));
+        $this->assertEquals(2, $this->r->getVersion($p4));
+//        $this->assertEquals(2, $this->r->getVersion($p5));
+    }
+
+    public function testGetFolder()
+    {
+        $p1 = new Path("/admin/messages/foo/baz.txt");
+        $p2 = new Path("/admin/messages/foo/bar.txt");
+        $p3 = new Path("/admin/messages/foo/");
+        $this->r->putDocument($p1, 'text/plain', 'Hello Baz!');
+        $this->r->putDocument($p2, 'text/plain', 'Hello Bar!');
+        $this->r->putDocument($p2, 'text/plain', 'Hello Updated Bar!');
+        $this->assertEquals(
+            array(
+                "bar.txt" => array(
+                    "Content-Length" => 18,
+                    "ETag" => "2"
+                ),
+                "baz.txt" => array(
+                    "Content-Length" => 10,
+                    "ETag" => "1"
+                )
+            ),
+            $this->r->getFolder($p3)
+        );
+        $this->assertEquals(3, $this->r->getVersion($p3));
     }
 }

@@ -29,12 +29,6 @@ class RemoteStorage
             throw new RemoteStorageException("not allowed");
         }
 
-        if (null !== $ifMatch) {
-            if ($ifMatch !== $this->md->getVersion($p)) {
-                throw new RemoteStorageException("version mismatch");
-            }
-        }
-
         $updatedEntities = $this->d->putDocument($p, $documentData);
         $this->md->updateDocument($p, $contentType);
         foreach ($updatedEntities as $u) {
@@ -48,23 +42,16 @@ class RemoteStorage
             throw new RemoteStorageException("not allowed");
         }
 
-        if (null !== $ifMatch) {
-            if ($ifMatch !== $this->md->getVersion($p)) {
-                throw new RemoteStorageException("version mismatch");
-            }
-        }
-
         $deletedEntities = $this->d->deleteDocument($p);
         foreach ($deletedEntities as $d) {
             $this->md->deleteEntry(new Path($d));
         }
         // FIXME: increment the version of the folder containing the last
-        // deleted folder
+        // deleted folder and up to the user root
     }
 
-    public function getDocumentVersion(Path $p)
+    public function getVersion(Path $p)
     {
-        // FIXME: deal with ifMatch, version!
         if (!$p->getIsPublic()) {
             if ($p->getUserId() !== $this->i->getSub()) {
                 throw new RemoteStorageException("not allowed");
@@ -74,15 +61,28 @@ class RemoteStorage
         return $this->md->getVersion($p);
     }
 
-    public function getDocumentData(Path $p)
+    public function getDocument(Path $p, $ifMatch = null)
     {
-        // FIXME: deal with ifMatch, version!
         if (!$p->getIsPublic()) {
             if ($p->getUserId() !== $this->i->getSub()) {
                 throw new RemoteStorageException("not allowed");
             }
         }
 
-        return $this->d->getDocument($p);
+       return $this->d->getDocument($p);
+   }
+
+    public function getFolder(Path $p, $ifMatch = null)
+    {
+        if ($p->getUserId() !== $this->i->getSub()) {
+            throw new RemoteStorageException("not allowed");
+        }
+
+        $folder = $this->d->getFolder($p);
+        foreach ($folder as $name => $meta) {
+            $folder[$name]["ETag"] = $this->md->getVersion(new Path($p->getFolderPath()->getPath() . $name));
+        }
+
+        return $folder;
     }
 }
