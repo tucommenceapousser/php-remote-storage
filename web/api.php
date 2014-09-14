@@ -25,6 +25,7 @@ use fkooman\Http\IncomingRequest;
 use fkooman\OAuth\ResourceServer\TokenIntrospection;
 
 use fkooman\RemoteStorage\RemoteStorage;
+use fkooman\RemoteStorage\RemoteStorageRequestHandler;
 use fkooman\RemoteStorage\MetadataStorage;
 use fkooman\RemoteStorage\DocumentStorage;
 
@@ -63,6 +64,7 @@ try {
     $response->setContent(
         array(
             "error" => "internal_server_error",
+            "error_class" => get_class($e),
             "error_description" => $e->getMessage()
         )
     );

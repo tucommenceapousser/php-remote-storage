@@ -20,6 +20,7 @@ namespace fkooman\RemoteStorage;
 use fkooman\Http\Request;
 use fkooman\Http\JsonResponse;
 use fkooman\OAuth\ResourceServer\TokenIntrospection;
+use fkooman\Rest\Service;
 
 class RemoteStorageRequestHandler
 {
@@ -37,9 +38,84 @@ class RemoteStorageRequestHandler
 
     public function handleRequest(Request $request)
     {
-        $response = new JsonResponse();
-        $response->setContent(array("foo" => "bar"));
+        $remoteStorage = &$this->remoteStorage;
 
-        return $response;
+        $service = new Service($request);
+        $service->match(
+            "GET",
+            "/:pathInfo+/",
+            function ($pathInfo) use ($request, $remoteStorage) {
+                $jsonResponse = new JsonResponse();
+                $jsonRespone->setContent(
+                    $remoteStorage->getFolder(
+                        new Path($request->getPathInfo()),
+                        $request->getHeader("If-None-Match")
+                    )
+                );
+
+                return $jsonResponse;
+            }
+        );
+
+        $service->match(
+            "GET",
+            "/:pathInfo+",
+            function ($pathInfo) use ($request, $remoteStorage) {
+                $jsonResponse = new JsonResponse();
+                $jsonResponse->setContent(
+                    $remoteStorage->getDocument(
+                        new Path($request->getPathInfo()),
+                        $request->getHeader("If-None-Match")
+                    )
+                );
+
+                return $jsonResponse;
+            }
+        );
+
+        $service->match(
+            "PUT",
+            "/:pathInfo+",
+            function ($pathInfo) use ($request, $remoteStorage) {
+                $jsonResponse = new JsonResponse();
+                $jsonResponse->setContent(
+                    $remoteStorage->putDocument(
+                        new Path($request->getPathInfo()),
+                        $request->getContent(),
+                        $request->getHeader("Content-Type"),
+                        $request->getHeader("If-Match"),
+                        $request->getHeader("If-None-Match")
+                    )
+                );
+
+                return $jsonResponse;
+            }
+        );
+
+        $service->match(
+            "DELETE",
+            "/:pathInfo+",
+            function ($pathInfo) use ($request, $remoteStorage) {
+                $jsonResponse = new JsonResponse();
+                $jsonResponse->setContent(
+                    $remoteStorage->deleteDocument(
+                        new Path($request->getPathInfo()),
+                        $request->getHeader("If-Match")
+                    )
+                );
+
+                return $jsonResponse;
+            }
+        );
+
+        $service->match(
+            "OPTIONS",
+            "/:pathInfo+(/)",
+            function ($pathInfo) use ($request, $remoteStorage) {
+                return new OptionsResponse();
+            }
+        );
+
+        return $service->run();
     }
 }
