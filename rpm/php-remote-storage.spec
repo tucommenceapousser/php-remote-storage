@@ -97,5 +97,5 @@ fi
 %doc README.md agpl-3.0.txt composer.json docs/ config/
 
 %changelog
-* Mon Sep 01 2014 François Kooman <fkooman@tuxed.net> - 0.1.0-0.1
+* Sun Sep 14 2014 François Kooman <fkooman@tuxed.net> - 0.1.0-1
 - initial package
