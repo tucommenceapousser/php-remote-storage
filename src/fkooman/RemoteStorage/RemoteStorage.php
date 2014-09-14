@@ -62,11 +62,19 @@ class RemoteStorage
 
     public function getFolder(Path $p, $ifMatch = null)
     {
-        $folder = $this->d->getFolder($p);
-        foreach ($folder as $name => $meta) {
-            $folder[$name]["ETag"] = $this->md->getVersion(new Path($p->getFolderPath()->getPath() . $name));
+        $f = array(
+            "@context" => "http://remotestorage.io/spec/folder-description",
+            "items" => $this->d->getFolder($p)
+        );
+        foreach ($f["items"] as $name => $meta) {
+            $f["items"][$name]["ETag"] = $this->md->getVersion(new Path($p->getFolderPath()->getPath() . $name));
+
+            // if item is a folder we don't want Content-Type
+            if (strrpos($name, "/") !== strlen($name)-1) {
+                $f["items"][$name]["Content-Type"] = $this->md->getContentType(new Path($p->getFolderPath()->getPath() . $name));
+            }
         }
 
-        return $folder;
+        return $f;
     }
 }

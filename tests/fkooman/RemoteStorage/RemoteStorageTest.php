@@ -23,6 +23,9 @@ use fkooman\RemoteStorage\Exception\DocumentNotFoundException;
 
 class RemoteStorageTest extends PHPUnit_Framework_TestCase
 {
+    /** @var fkooman\RemoteStorage\RemoteStorage */
+    private $r;
+
     public function setUp()
     {
         $md = new MetadataStorage(
@@ -115,13 +118,18 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
         $this->r->putDocument($p2, 'text/plain', 'Hello Updated Bar!');
         $this->assertEquals(
             array(
-                "bar.txt" => array(
-                    "Content-Length" => 18,
-                    "ETag" => "2"
-                ),
-                "baz.txt" => array(
-                    "Content-Length" => 10,
-                    "ETag" => "1"
+                "@context" => "http://remotestorage.io/spec/folder-description",
+                "items" => array(
+                    "bar.txt" => array(
+                        "Content-Type" => "text/plain",
+                        "Content-Length" => 18,
+                        "ETag" => "2"
+                    ),
+                    "baz.txt" => array(
+                        "Content-Type" => "text/plain",
+                        "Content-Length" => 10,
+                        "ETag" => "1"
+                    )
                 )
             ),
             $this->r->getFolder($p3)
@@ -139,12 +147,16 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
         $this->r->putDocument($p2, 'text/plain', 'Hello Updated Bar!');
         $this->assertEquals(
             array(
-                "foobar/" => array(
-                    "ETag" => "2"
-                ),
-                "baz.txt" => array(
-                    "ETag" => "1",
-                    "Content-Length" => 10
+                "@context" => "http://remotestorage.io/spec/folder-description",
+                "items" => array(
+                    "foobar/" => array(
+                        "ETag" => "2"
+                    ),
+                    "baz.txt" => array(
+                        "ETag" => "1",
+                        "Content-Type" => "text/plain",
+                        "Content-Length" => 10
+                    )
                 )
             ),
             $this->r->getFolder($p3)

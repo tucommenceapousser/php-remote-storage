@@ -46,7 +46,8 @@ class RemoteStorageRequestHandler
             "/:pathInfo+/",
             function ($pathInfo) use ($request, $remoteStorage) {
                 $jsonResponse = new JsonResponse();
-                $jsonRespone->setContent(
+                $jsonResponse->setContentType('application/ld+json');
+                $jsonResponse->setContent(
                     $remoteStorage->getFolder(
                         new Path($request->getPathInfo()),
                         $request->getHeader("If-None-Match")
@@ -81,8 +82,8 @@ class RemoteStorageRequestHandler
                 $jsonResponse->setContent(
                     $remoteStorage->putDocument(
                         new Path($request->getPathInfo()),
+                        $request->getContentType(),
                         $request->getContent(),
-                        $request->getHeader("Content-Type"),
                         $request->getHeader("If-Match"),
                         $request->getHeader("If-None-Match")
                     )
