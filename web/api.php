@@ -22,6 +22,8 @@ use fkooman\Http\Request;
 use fkooman\Http\JsonResponse;
 use fkooman\Http\IncomingRequest;
 
+use fkooman\OAuth\ResourceServer\TokenIntrospection;
+
 use fkooman\RemoteStorage\RemoteStorage;
 use fkooman\RemoteStorage\MetadataStorage;
 use fkooman\RemoteStorage\DocumentStorage;

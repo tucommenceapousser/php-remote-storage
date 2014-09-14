@@ -19,6 +19,8 @@ namespace fkooman\RemoteStorage;
 
 use fkooman\RemoteStorage\Exception\RemoteStorageException;
 use fkooman\OAuth\ResourceServer\TokenIntrospection;
+use fkooman\Http\Request;
+use fkooman\Http\JsonResponse;
 
 class RemoteStorage
 {
@@ -99,5 +101,13 @@ class RemoteStorage
         }
 
         return $folder;
+    }
+
+    public function handleRequest(Request $request)
+    {
+        $response = new JsonResponse();
+        $response->setContent(array("foo" => "bar"));
+
+        return $response;
     }
 }
