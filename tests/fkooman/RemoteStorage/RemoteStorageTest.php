@@ -20,7 +20,7 @@ namespace fkooman\RemoteStorage;
 use PDO;
 use PHPUnit_Framework_TestCase;
 use fkooman\OAuth\ResourceServer\TokenIntrospection;
-use fkooman\RemoteStorage\Exception\DocumentMissingException;
+use fkooman\RemoteStorage\Exception\DocumentNotFoundException;
 
 class RemoteStorageTest extends PHPUnit_Framework_TestCase
 {
@@ -88,7 +88,7 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
         try {
             $this->r->getDocument($p);
             $this->assertTrue(false);
-        } catch (DocumentMissingException $e) {
+        } catch (DocumentNotFoundException $e) {
             $this->assertTrue(true);
         }
         // directory should also not be there anymore
