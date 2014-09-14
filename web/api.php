@@ -53,9 +53,10 @@ try {
         )
     );
 
-    $remoteStorage = new RemoteStorage($md, $document, $introspect);
+    $remoteStorage = new RemoteStorage($md, $document);
+    $remoteStorageRequestHandler = new RemoteStorageRequestHandler($remoteStorage, $introspect);
     $request = Request::fromIncomingRequest(new IncomingRequest());
-    $response = $remoteStorage->handleRequest($request);
+    $response = $remoteStorageRequestHandler->handleRequest($request);
     $response->sendResponse();
 } catch (Exception $e) {
     $response = new JsonResponse(500);

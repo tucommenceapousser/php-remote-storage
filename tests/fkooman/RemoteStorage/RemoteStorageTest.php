@@ -19,7 +19,6 @@ namespace fkooman\RemoteStorage;
 
 use PDO;
 use PHPUnit_Framework_TestCase;
-use fkooman\OAuth\ResourceServer\TokenIntrospection;
 use fkooman\RemoteStorage\Exception\DocumentNotFoundException;
 
 class RemoteStorageTest extends PHPUnit_Framework_TestCase
@@ -41,15 +40,7 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
         }
         mkdir($tempFile);
         $document = new DocumentStorage($tempFile);
-
-        $introspect = new TokenIntrospection(
-            array(
-                "active" => true,
-                "sub" => "admin"
-            )
-        );
-
-        $this->r = new RemoteStorage($md, $document, $introspect);
+        $this->r = new RemoteStorage($md, $document);
     }
 
     public function testPutDocument()
