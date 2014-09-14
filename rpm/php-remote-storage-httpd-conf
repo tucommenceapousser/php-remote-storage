@@ -1,6 +1,9 @@
 Alias /php-remote-storage /usr/share/php-remote-storage/web
 
 <Directory /usr/share/php-remote-storage/web>
+    AllowOverride None
+    Options FollowSymLinks
+
     <IfModule mod_authz_core.c>
       # Apache 2.4
       Require local
@@ -16,19 +19,11 @@ Alias /php-remote-storage /usr/share/php-remote-storage/web
     # CORS
     Header set Access-Control-Allow-Origin "*"
     Header set Access-Control-Allow-Headers "Authorization, Content-Type"
-    Header set Access-Control-Allow-Methods "POST, PUT, GET, DELETE, OPTIONS"
+    Header set Access-Control-Allow-Methods "PUT, GET, DELETE, OPTIONS"
 
     RewriteEngine On
     RewriteCond %{HTTP:Authorization} ^(.+)$
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
-    AllowOverride None
-    Options FollowSymLinks
-
-    # CSP: https://developer.mozilla.org/en-US/docs/Security/CSP
-    Header set Content-Security-Policy "default-src 'self'"
-
-    # X-Frame-Options: https://developer.mozilla.org/en-US/docs/HTTP/X-Frame-Options
-    Header set X-Frame-Options DENY
 
     # HSTS: https://developer.mozilla.org/en-US/docs/Security/HTTP_Strict_Transport_Security
     #Header set Strict-Transport-Security max-age=604800
