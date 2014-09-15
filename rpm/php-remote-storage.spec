@@ -16,6 +16,7 @@ Source2:    php-remote-storage-autoload.php
 BuildArch:  noarch
 
 Requires:   php >= 5.3.3
+Requires:   php-openssl
 Requires:   php-pdo
 Requires:   httpd
 
