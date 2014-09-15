@@ -40,32 +40,30 @@ class RemoteStorageRequestHandler
     public function handleRequest(Request $request)
     {
         try {
-            $remoteStorage = &$this->remoteStorage;
-
             $service = new Service($request);
             $service->match(
                 "GET",
                 null,
-                function ($pathInfo) use ($request, $remoteStorage) {
+                function ($pathInfo) use ($request) {
                     $path = new Path($pathInfo);
                     if ($path->getIsFolder()) {
                         // folder
-                        $folderVersion = $remoteStorage->getVersion($path);
+                        $folderVersion = $this->remoteStorage->getVersion($path);
                         if (null === $folderVersion) {
                             $folderVersion = 'e:' . Utils::randomHex();
                         }
                         $rsr = new RemoteStorageResponse(200, $folderVersion);
-                        $rsr->setContent($remoteStorage->getFolder($path));
+                        $rsr->setContent($this->remoteStorage->getFolder($path));
 
                         return $rsr;
                     } else {
                         // document
-                        $documentVersion = $remoteStorage->getVersion($path);
-                        $documentContentType = $remoteStorage->getContentType($path);
-                        $documentContent = $remoteStorage->getDocument($path);
+                        $documentVersion = $this->remoteStorage->getVersion($path);
+                        $documentContentType = $this->remoteStorage->getContentType($path);
+                        $documentContent = $this->remoteStorage->getDocument($path);
 
                         $rsr = new RemoteStorageResponse(200, $documentVersion, $documentContentType);
-                        $rsr->setContent($remoteStorage->getDocument($path));
+                        $rsr->setContent($this->remoteStorage->getDocument($path));
 
                         return $rsr;
                     }
@@ -75,15 +73,15 @@ class RemoteStorageRequestHandler
             $service->match(
                 "PUT",
                 null,
-                function ($pathInfo) use ($request, $remoteStorage) {
+                function ($pathInfo) use ($request) {
                     $path = new Path($pathInfo);
                     if ($path->getIsFolder()) {
                         // FIXME: use more generic exceptions?
                         throw new RemoteStorageRequestHandlerException("can not PUT a folder");
                     }
 
-                    $x = $remoteStorage->putDocument($path, $request->getContentType(), $request->getContent());
-                    $documentVersion = $remoteStorage->getVersion($path);
+                    $x = $this->remoteStorage->putDocument($path, $request->getContentType(), $request->getContent());
+                    $documentVersion = $this->remoteStorage->getVersion($path);
                     $rsr = new RemoteStorageResponse(200, $documentVersion, 'application/json');
                     $rsr->setContent($x);
 
@@ -94,15 +92,15 @@ class RemoteStorageRequestHandler
             $service->match(
                 "DELETE",
                 null,
-                function ($pathInfo) use ($request, $remoteStorage) {
+                function ($pathInfo) use ($request) {
                     $path = new Path($pathInfo);
                     if ($path->getIsFolder()) {
                         // FIXME: use more generic exceptions?
                         throw new RemoteStorageRequestHandlerException("can not DELETE a folder");
                     }
                     // need to get the version before the delete
-                    $documentVersion = $remoteStorage->getVersion($path);
-                    $x = $remoteStorage->deleteDocument($path);
+                    $documentVersion = $this->remoteStorage->getVersion($path);
+                    $x = $this->remoteStorage->deleteDocument($path);
                     $rsr = new RemoteStorageResponse(200, $documentVersion, 'application/json');
                     $rsr->setContent($x);
 
@@ -113,7 +111,7 @@ class RemoteStorageRequestHandler
             $service->match(
                 "OPTIONS",
                 null,
-                function ($pathInfo) use ($request, $remoteStorage) {
+                function ($pathInfo) use ($request) {
                     return new OptionsResponse();
                 }
             );
