@@ -45,84 +45,74 @@ class RemoteStorageRequestHandler
             $service = new Service($request);
             $service->match(
                 "GET",
-                "/:pathInfo+/",
+                null,
                 function ($pathInfo) use ($request, $remoteStorage) {
-                    $jsonResponse = new JsonResponse();
-                    $jsonResponse->setContent(
-                        $remoteStorage->getFolder(
-                            new Path($request->getPathInfo()),
-                            $request->getHeader("If-None-Match")
-                        )
-                    );
-                    $jsonResponse->setContentType('application/ld+json');
-                    $version = $remoteStorage->getVersion(new Path($request->getPathInfo()));
-                    if (null === $version) {
-                        $version = 'e:' . Utils::randomHex();
+                    $path = new Path($pathInfo);
+                    if ($path->getIsFolder()) {
+                        // folder
+                        $folderVersion = $remoteStorage->getVersion($path);
+                        if (null === $folderVersion) {
+                            $folderVersion = 'e:' . Utils::randomHex();
+                        }
+                        $rsr = new RemoteStorageResponse(200, $folderVersion);
+                        $rsr->setContent($remoteStorage->getFolder($path));
+
+                        return $rsr;
+                    } else {
+                        // document
+                        $documentVersion = $remoteStorage->getVersion($path);
+                        $documentContentType = $remoteStorage->getContentType($path);
+                        $documentContent = $remoteStorage->getDocument($path);
+
+                        $rsr = new RemoteStorageResponse(200, $documentVersion, $documentContentType);
+                        $rsr->setContent($remoteStorage->getDocument($path));
+
+                        return $rsr;
                     }
-                    $jsonResponse->setHeader('ETag', $version);
-
-                    return $jsonResponse;
-                }
-            );
-
-            $service->match(
-                "GET",
-                "/:pathInfo+",
-                function ($pathInfo) use ($request, $remoteStorage) {
-                    $jsonResponse = new JsonResponse();
-                    $jsonResponse->setContent(
-                        $remoteStorage->getDocument(
-                            new Path($request->getPathInfo()),
-                            $request->getHeader("If-None-Match")
-                        )
-                    );
-                    $jsonResponse->setContentType($remoteStorage->getContentType(new Path($request->getPathInfo())));
-                    $jsonResponse->setHeader('ETag', $remoteStorage->getVersion(new Path($request->getPathInfo())));
-
-                    return $jsonResponse;
                 }
             );
 
             $service->match(
                 "PUT",
-                "/:pathInfo+",
+                null,
                 function ($pathInfo) use ($request, $remoteStorage) {
-                    $jsonResponse = new JsonResponse();
-                    $jsonResponse->setContent(
-                        $remoteStorage->putDocument(
-                            new Path($request->getPathInfo()),
-                            $request->getContentType(),
-                            $request->getContent(),
-                            $request->getHeader("If-Match"),
-                            $request->getHeader("If-None-Match")
-                        )
-                    );
-                    $jsonResponse->setHeader('ETag', $remoteStorage->getVersion(new Path($request->getPathInfo())));
+                    $path = new Path($pathInfo);
+                    if ($path->getIsFolder()) {
+                        // FIXME: use more generic exceptions?
+                        throw new RemoteStorageRequestHandlerException("can not PUT a folder");
+                    }
 
-                    return $jsonResponse;
+                    $x = $remoteStorage->putDocument($path, $request->getContentType(), $request->getContent());
+                    $documentVersion = $remoteStorage->getVersion($path);
+                    $rsr = new RemoteStorageResponse(200, $documentVersion, 'application/json');
+                    $rsr->setContent($x);
+
+                    return $rsr;
                 }
             );
 
             $service->match(
                 "DELETE",
-                "/:pathInfo+",
+                null,
                 function ($pathInfo) use ($request, $remoteStorage) {
-                    $jsonResponse = new JsonResponse();
-                    $jsonResponse->setHeader('ETag', $remoteStorage->getVersion(new Path($request->getPathInfo())));
-                    $jsonResponse->setContent(
-                        $remoteStorage->deleteDocument(
-                            new Path($request->getPathInfo()),
-                            $request->getHeader("If-Match")
-                        )
-                    );
+                    $path = new Path($pathInfo);
+                    if ($path->getIsFolder()) {
+                        // FIXME: use more generic exceptions?
+                        throw new RemoteStorageRequestHandlerException("can not DELETE a folder");
+                    }
+                    // need to get the version before the delete
+                    $documentVersion = $remoteStorage->getVersion($path);
+                    $x = $remoteStorage->deleteDocument($path);
+                    $rsr = new RemoteStorageResponse(200, $documentVersion, 'application/json');
+                    $rsr->setContent($x);
 
-                    return $jsonResponse;
+                    return $rsr;
                 }
             );
 
             $service->match(
                 "OPTIONS",
-                "/:pathInfo+(/)",
+                null,
                 function ($pathInfo) use ($request, $remoteStorage) {
                     return new OptionsResponse();
                 }

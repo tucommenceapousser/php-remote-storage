@@ -9,8 +9,8 @@
     "name": "fkooman/remote-storage",
     "require": {
         "ext-openssl": "*",
-        "fkooman/config": "0.3.*",
-        "fkooman/oauth-rs": "0.7.*",
-        "fkooman/rest": "0.4.*"
+        "fkooman/config": "~0.3.1",
+        "fkooman/oauth-rs": "~0.7.0",
+        "fkooman/rest": "~0.4.1"
     }
 }
