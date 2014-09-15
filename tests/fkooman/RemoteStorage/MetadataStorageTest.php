@@ -36,12 +36,12 @@ class MetadataStorageTest extends PHPUnit_Framework_TestCase
         $this->md->initDatabase();
     }
 
-    public function testNewDocument()
+    public function testCreateDocument()
     {
         $p = new Path("/foo/bar/baz.txt");
         $this->assertNull($this->md->getVersion($p));
         $this->assertTrue($this->md->updateDocument($p, "text/plain"));
-        $this->assertEquals(1, $this->md->getVersion($p));
+        $this->assertStringMatchesFormat('%s', $this->md->getVersion($p));
         $this->assertEquals("text/plain", $this->md->getContentType($p));
     }
 
@@ -50,13 +50,16 @@ class MetadataStorageTest extends PHPUnit_Framework_TestCase
         $p = new Path("/foo/bar/baz.txt");
         $this->assertNull($this->md->getVersion($p));
         $this->assertTrue($this->md->updateDocument($p, "text/plain"));
-        $this->assertEquals(1, $this->md->getVersion($p));
+        $beforeUpdateVersion = $this->md->getVersion($p);
+        $this->assertStringMatchesFormat('%s', $beforeUpdateVersion);
         $this->assertEquals("text/plain", $this->md->getContentType($p));
 
         // the update
         $this->assertTrue($this->md->updateDocument($p, "application/json"));
         $this->assertEquals("application/json", $this->md->getContentType($p));
-        $this->assertEquals(2, $this->md->getVersion($p));
+        $afterUpdateVersion = $this->md->getVersion($p);
+        $this->assertStringMatchesFormat('%s', $afterUpdateVersion);
+        $this->assertNotEquals($beforeUpdateVersion, $afterUpdateVersion);
     }
 
     public function testDeleteDocument()
@@ -64,10 +67,22 @@ class MetadataStorageTest extends PHPUnit_Framework_TestCase
         $p = new Path("/foo/bar/baz.txt");
         $this->assertNull($this->md->getVersion($p));
         $this->assertTrue($this->md->updateDocument($p, "text/plain"));
-        $this->assertEquals(1, $this->md->getVersion($p));
+        $this->assertStringMatchesFormat('%s', $this->md->getVersion($p));
         $this->assertEquals("text/plain", $this->md->getContentType($p));
 
         $this->assertTrue($this->md->deleteEntry($p));
         $this->assertNull($this->md->getVersion($p));
+    }
+
+    public function testUpdateDeleteUpdate()
+    {
+        // version MUST NOT be reused
+        $p = new Path("/foo/bar/baz.txt");
+        $this->assertNull($this->md->getVersion($p));
+        $this->assertTrue($this->md->updateDocument($p, "text/plain"));
+        $beforeDeleteVersion = $this->md->getVersion($p);
+        $this->assertTrue($this->md->deleteEntry($p));
+        $this->assertTrue($this->md->updateDocument($p, "application/json"));
+        $this->assertNotEquals($beforeDeleteVersion, $this->md->getVersion($p));
     }
 }

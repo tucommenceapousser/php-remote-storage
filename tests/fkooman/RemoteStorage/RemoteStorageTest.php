@@ -51,7 +51,7 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
         $p = new Path("/admin/messages/foo/hello.txt");
         $this->r->putDocument($p, 'text/plain', 'Hello World!');
         $this->assertEquals('Hello World!', $this->r->getDocument($p));
-        $this->assertEquals(1, $this->r->getVersion($p));
+        $this->assertRegexp('/1:[a-z0-9]+/i', $this->r->getVersion($p));
     }
 
     public function testPutMultipleDocuments()
@@ -64,12 +64,12 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
         $this->r->putDocument($p1, 'text/plain', 'Hello World!');
         $this->r->putDocument($p2, 'text/plain', 'Hello Foo!');
         $this->assertEquals('Hello World!', $this->r->getDocument($p1));
-        $this->assertEquals(1, $this->r->getVersion($p1));
+        $this->assertRegexp('/1:[a-z0-9]+/i', $this->r->getVersion($p1));
         $this->assertEquals('Hello Foo!', $this->r->getDocument($p2));
-        $this->assertEquals(1, $this->r->getVersion($p2));
+        $this->assertRegexp('/1:[a-z0-9]+/i', $this->r->getVersion($p2));
         // all parent directories should have version 2 now
-        $this->assertEquals(2, $this->r->getVersion($p3));
-        $this->assertEquals(2, $this->r->getVersion($p4));
+        $this->assertRegexp('/2:[a-z0-9]+/i', $this->r->getVersion($p3));
+        $this->assertRegexp('/2:[a-z0-9]+/i', $this->r->getVersion($p4));
         //$this->assertEquals(2, $this->r->getVersion($p5));
     }
 
@@ -102,9 +102,9 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
         $this->r->putDocument($p2, 'text/plain', 'Hello Bar!');
         $this->r->deleteDocument($p1);
         $this->assertNull($this->r->getVersion($p1));
-        $this->assertEquals(1, $this->r->getVersion($p2));
-        $this->assertEquals(2, $this->r->getVersion($p3));
-        $this->assertEquals(2, $this->r->getVersion($p4));
+        $this->assertRegexp('/1:[a-z0-9]+/i', $this->r->getVersion($p2));
+        $this->assertRegexp('/2:[a-z0-9]+/i', $this->r->getVersion($p3));
+        $this->assertRegexp('/2:[a-z0-9]+/i', $this->r->getVersion($p4));
 //        $this->assertEquals(2, $this->r->getVersion($p5));
     }
 
@@ -116,25 +116,18 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
         $this->r->putDocument($p1, 'text/plain', 'Hello Baz!');
         $this->r->putDocument($p2, 'text/plain', 'Hello Bar!');
         $this->r->putDocument($p2, 'text/plain', 'Hello Updated Bar!');
-        $this->assertEquals(
-            array(
-                "@context" => "http://remotestorage.io/spec/folder-description",
-                "items" => array(
-                    "bar.txt" => array(
-                        "Content-Type" => "text/plain",
-                        "Content-Length" => 18,
-                        "ETag" => "2"
-                    ),
-                    "baz.txt" => array(
-                        "Content-Type" => "text/plain",
-                        "Content-Length" => 10,
-                        "ETag" => "1"
-                    )
-                )
-            ),
-            $this->r->getFolder($p3)
-        );
-        $this->assertEquals(3, $this->r->getVersion($p3));
+
+        $folderData = $this->r->getFolder($p3);
+        $this->assertEquals(2, count($folderData));
+        $this->assertEquals(2, count($folderData['items']));
+        $this->assertEquals('http://remotestorage.io/spec/folder-description', $folderData['@context']);
+        $this->assertRegexp('/2:[a-z0-9]+/i', $folderData['items']['bar.txt']['ETag']);
+        $this->assertEquals('text/plain', $folderData['items']['bar.txt']['Content-Type']);
+        $this->assertEquals(18, $folderData['items']['bar.txt']['Content-Length']);
+        $this->assertRegexp('/1:[a-z0-9]+/i', $folderData['items']['baz.txt']['ETag']);
+        $this->assertEquals('text/plain', $folderData['items']['baz.txt']['Content-Type']);
+        $this->assertEquals(10, $folderData['items']['baz.txt']['Content-Length']);
+        $this->assertRegexp('/3:[a-z0-9]+/i', $this->r->getVersion($p3));
     }
 
     public function testGetFolderWithFolder()
@@ -145,22 +138,16 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
         $this->r->putDocument($p1, 'text/plain', 'Hello Baz!');
         $this->r->putDocument($p2, 'text/plain', 'Hello Bar!');
         $this->r->putDocument($p2, 'text/plain', 'Hello Updated Bar!');
-        $this->assertEquals(
-            array(
-                "@context" => "http://remotestorage.io/spec/folder-description",
-                "items" => array(
-                    "foobar/" => array(
-                        "ETag" => "2"
-                    ),
-                    "baz.txt" => array(
-                        "ETag" => "1",
-                        "Content-Type" => "text/plain",
-                        "Content-Length" => 10
-                    )
-                )
-            ),
-            $this->r->getFolder($p3)
-        );
-        $this->assertEquals(3, $this->r->getVersion($p3));
+
+        $folderData = $this->r->getFolder($p3);
+        $this->assertEquals(2, count($folderData));
+        $this->assertEquals(2, count($folderData['items']));
+        $this->assertEquals('http://remotestorage.io/spec/folder-description', $folderData['@context']);
+        $this->assertRegexp('/2:[a-z0-9]+/i', $folderData['items']['foobar/']['ETag']);
+        $this->assertRegexp('/1:[a-z0-9]+/i', $folderData['items']['baz.txt']['ETag']);
+        $this->assertEquals('text/plain', $folderData['items']['baz.txt']['Content-Type']);
+        $this->assertEquals(10, $folderData['items']['baz.txt']['Content-Length']);
+
+        $this->assertRegexp('/3:[a-z0-9]+/i', $this->r->getVersion($p3));
     }
 }

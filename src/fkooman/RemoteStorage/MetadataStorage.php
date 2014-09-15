@@ -74,11 +74,19 @@ class MetadataStorage
         return $this->updateDocument($p, "http://remotestorage.io/spec/folder-description");
     }
 
+    /**
+     * We have a very weird version update method by including a sequence number
+     * that makes it easy for tests to see if there is correct behavior, a sequence
+     * number is not enough though as deleting a file would reset the sequence number and
+     * thus make it possible to have files with different content to have the same
+     * sequence number in the same location, but in order to check if all versions
+     * are updated up to the root we have to do this this way...
+     */
     public function updateDocument(Path $p, $contentType)
     {
         $currentVersion = $this->getVersion($p);
         if (null === $currentVersion) {
-            $newVersion = 1;
+            $newVersion = '1:' . Utils::randomHex();
             $stmt = $this->db->prepare(
                 sprintf(
                     "INSERT INTO %s (path, content_type, version) VALUES(:path, :content_type, :version)",
@@ -86,7 +94,8 @@ class MetadataStorage
                 )
             );
         } else {
-            $newVersion = $currentVersion + 1;
+            $explodedData = explode(":", $currentVersion);
+            $newVersion = $explodedData[0] + 1 . ':' . Utils::randomHex();
             $stmt = $this->db->prepare(
                 sprintf(
                     "UPDATE %s SET version = :version, content_type = :content_type WHERE path = :path",
@@ -97,7 +106,7 @@ class MetadataStorage
 
         $stmt->bindValue(":path", $p->getPath(), PDO::PARAM_STR);
         $stmt->bindValue(":content_type", $contentType, PDO::PARAM_STR);
-        $stmt->bindValue(":version", $newVersion, PDO::PARAM_INT);
+        $stmt->bindValue(":version", $newVersion, PDO::PARAM_STR);
         $stmt->execute();
 
         return 1 === $stmt->rowCount();
@@ -124,7 +133,7 @@ class MetadataStorage
             "CREATE TABLE IF NOT EXISTS %s (
                 path VARCHAR(255) NOT NULL,
                 content_type VARCHAR(255) NOT NULL,
-                version INTEGER NOT NULL,
+                version VARCHAR(255) NOT NULL,
                 UNIQUE (path)
             )",
             $prefix . 'md'

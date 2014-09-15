@@ -143,19 +143,12 @@ class RemoteStorageRequestHandlerTest extends PHPUnit_Framework_TestCase
         $response = $this->r->handleRequest($request);
         $this->assertEquals("application/ld+json", $response->getContentType());
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals(
-            array(
-                "@context" => "http://remotestorage.io/spec/folder-description",
-                "items" => array(
-                    "baz.txt" => array(
-                        "Content-Type" => "text/plain",
-                        "Content-Length" => 12,
-                        "ETag" => "1"
-                    )
-                )
-            ),
-            $response->getContent()
-        );
-
+        $folderData = $response->getContent();
+        $this->assertEquals(2, count($folderData));
+        $this->assertEquals(1, count($folderData['items']));
+        $this->assertEquals('http://remotestorage.io/spec/folder-description', $folderData['@context']);
+        $this->assertRegexp('/1:[a-z0-9]+/i', $folderData['items']['baz.txt']['ETag']);
+        $this->assertEquals('text/plain', $folderData['items']['baz.txt']['Content-Type']);
+        $this->assertEquals(12, $folderData['items']['baz.txt']['Content-Length']);
     }
 }
