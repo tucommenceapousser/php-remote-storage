@@ -55,10 +55,15 @@ class RemoteStorage
         return $this->md->getVersion($p);
     }
 
+    public function getContentType(Path $p)
+    {
+        return $this->md->getContentType($p);
+    }
+
     public function getDocument(Path $p, $ifMatch = null)
     {
        return $this->d->getDocument($p);
-   }
+    }
 
     public function getFolder(Path $p, $ifMatch = null)
     {

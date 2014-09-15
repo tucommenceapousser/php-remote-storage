@@ -21,6 +21,7 @@ use fkooman\Http\Request;
 use fkooman\Http\JsonResponse;
 use fkooman\OAuth\ResourceServer\TokenIntrospection;
 use fkooman\Rest\Service;
+use fkooman\RemoteStorage\Exception\DocumentNotFoundException;
 
 class RemoteStorageRequestHandler
 {
@@ -38,85 +39,90 @@ class RemoteStorageRequestHandler
 
     public function handleRequest(Request $request)
     {
-        $remoteStorage = &$this->remoteStorage;
+        try {
+            $remoteStorage = &$this->remoteStorage;
 
-        $service = new Service($request);
-        $service->match(
-            "GET",
-            "/:pathInfo+/",
-            function ($pathInfo) use ($request, $remoteStorage) {
-                $jsonResponse = new JsonResponse();
-                $jsonResponse->setContentType('application/ld+json');
-                $jsonResponse->setContent(
-                    $remoteStorage->getFolder(
-                        new Path($request->getPathInfo()),
-                        $request->getHeader("If-None-Match")
-                    )
-                );
+            $service = new Service($request);
+            $service->match(
+                "GET",
+                "/:pathInfo+/",
+                function ($pathInfo) use ($request, $remoteStorage) {
+                    $jsonResponse = new JsonResponse();
+                    $jsonResponse->setContentType('application/ld+json');
+                    $jsonResponse->setContent(
+                        $remoteStorage->getFolder(
+                            new Path($request->getPathInfo()),
+                            $request->getHeader("If-None-Match")
+                        )
+                    );
 
-                return $jsonResponse;
-            }
-        );
+                    return $jsonResponse;
+                }
+            );
 
-        $service->match(
-            "GET",
-            "/:pathInfo+",
-            function ($pathInfo) use ($request, $remoteStorage) {
-                $jsonResponse = new JsonResponse();
-                $jsonResponse->setContent(
-                    $remoteStorage->getDocument(
-                        new Path($request->getPathInfo()),
-                        $request->getHeader("If-None-Match")
-                    )
-                );
+            $service->match(
+                "GET",
+                "/:pathInfo+",
+                function ($pathInfo) use ($request, $remoteStorage) {
+                    $jsonResponse = new JsonResponse();
+                    $jsonResponse->setContent(
+                        $remoteStorage->getDocument(
+                            new Path($request->getPathInfo()),
+                            $request->getHeader("If-None-Match")
+                        )
+                    );
+                    $jsonResponse->setContentType($remoteStorage->getContentType(new Path($request->getPathInfo())));
 
-                return $jsonResponse;
-            }
-        );
+                    return $jsonResponse;
+                }
+            );
 
-        $service->match(
-            "PUT",
-            "/:pathInfo+",
-            function ($pathInfo) use ($request, $remoteStorage) {
-                $jsonResponse = new JsonResponse();
-                $jsonResponse->setContent(
-                    $remoteStorage->putDocument(
-                        new Path($request->getPathInfo()),
-                        $request->getContentType(),
-                        $request->getContent(),
-                        $request->getHeader("If-Match"),
-                        $request->getHeader("If-None-Match")
-                    )
-                );
+            $service->match(
+                "PUT",
+                "/:pathInfo+",
+                function ($pathInfo) use ($request, $remoteStorage) {
+                    $jsonResponse = new JsonResponse();
+                    $jsonResponse->setContent(
+                        $remoteStorage->putDocument(
+                            new Path($request->getPathInfo()),
+                            $request->getContentType(),
+                            $request->getContent(),
+                            $request->getHeader("If-Match"),
+                            $request->getHeader("If-None-Match")
+                        )
+                    );
 
-                return $jsonResponse;
-            }
-        );
+                    return $jsonResponse;
+                }
+            );
 
-        $service->match(
-            "DELETE",
-            "/:pathInfo+",
-            function ($pathInfo) use ($request, $remoteStorage) {
-                $jsonResponse = new JsonResponse();
-                $jsonResponse->setContent(
-                    $remoteStorage->deleteDocument(
-                        new Path($request->getPathInfo()),
-                        $request->getHeader("If-Match")
-                    )
-                );
+            $service->match(
+                "DELETE",
+                "/:pathInfo+",
+                function ($pathInfo) use ($request, $remoteStorage) {
+                    $jsonResponse = new JsonResponse();
+                    $jsonResponse->setContent(
+                        $remoteStorage->deleteDocument(
+                            new Path($request->getPathInfo()),
+                            $request->getHeader("If-Match")
+                        )
+                    );
 
-                return $jsonResponse;
-            }
-        );
+                    return $jsonResponse;
+                }
+            );
 
-        $service->match(
-            "OPTIONS",
-            "/:pathInfo+(/)",
-            function ($pathInfo) use ($request, $remoteStorage) {
-                return new OptionsResponse();
-            }
-        );
+            $service->match(
+                "OPTIONS",
+                "/:pathInfo+(/)",
+                function ($pathInfo) use ($request, $remoteStorage) {
+                    return new OptionsResponse();
+                }
+            );
 
-        return $service->run();
+            return $service->run();
+        } catch (DocumentNotFoundException $e) {
+            return new JsonResponse(404);
+        }
     }
 }

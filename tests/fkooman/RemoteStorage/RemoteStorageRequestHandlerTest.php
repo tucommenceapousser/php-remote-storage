@@ -67,6 +67,53 @@ class RemoteStorageRequestHandlerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(200, $response->getStatusCode());
     }
 
+    public function testGetDocument()
+    {
+        $request = new Request("https://www.example.org", "PUT");
+        $request->setPathInfo("/admin/foo/bar/baz.txt");
+        $request->setContentType("text/plain");
+        $request->setContent("Hello World!");
+        $response = $this->r->handleRequest($request);
+
+        $request = new Request("https://www.example.org");
+        $request->setPathInfo("/admin/foo/bar/baz.txt");
+        $response = $this->r->handleRequest($request);
+        $this->assertEquals("text/plain", $response->getContentType());
+        $this->assertEquals("Hello World!", $response->getContent());
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
+    public function testGetNonExistingDocument()
+    {
+        $request = new Request("https://www.example.org");
+        $request->setPathInfo("/admin/foo/bar/baz.txt");
+        $response = $this->r->handleRequest($request);
+        $this->assertEquals(404, $response->getStatusCode());
+    }
+
+    public function testDeleteDocument()
+    {
+        $request = new Request("https://www.example.org", "PUT");
+        $request->setPathInfo("/admin/foo/bar/baz.txt");
+        $request->setContentType("text/plain");
+        $request->setContent("Hello World!");
+        $response = $this->r->handleRequest($request);
+
+        $request = new Request("https://www.example.org", "DELETE");
+        $request->setPathInfo("/admin/foo/bar/baz.txt");
+        $response = $this->r->handleRequest($request);
+        $this->assertEquals(200, $response->getStatusCode());
+
+    }
+
+    public function testDeleteNonExistingDocument()
+    {
+        $request = new Request("https://www.example.org", "DELETE");
+        $request->setPathInfo("/admin/foo/bar/baz.txt");
+        $response = $this->r->handleRequest($request);
+        $this->assertEquals(404, $response->getStatusCode());
+    }
+
     public function testGetNonExistingFolder()
     {
         $request = new Request("https://www.example.org", "GET");
