@@ -48,13 +48,18 @@ class RemoteStorageRequestHandler
                 "/:pathInfo+/",
                 function ($pathInfo) use ($request, $remoteStorage) {
                     $jsonResponse = new JsonResponse();
-                    $jsonResponse->setContentType('application/ld+json');
                     $jsonResponse->setContent(
                         $remoteStorage->getFolder(
                             new Path($request->getPathInfo()),
                             $request->getHeader("If-None-Match")
                         )
                     );
+                    $jsonResponse->setContentType('application/ld+json');
+                    $version = $remoteStorage->getVersion(new Path($request->getPathInfo()));
+                    if (null === $version) {
+                        $version = 'e:' . Utils::randomHex();
+                    }
+                    $jsonResponse->setHeader('ETag', $version);
 
                     return $jsonResponse;
                 }
@@ -72,6 +77,7 @@ class RemoteStorageRequestHandler
                         )
                     );
                     $jsonResponse->setContentType($remoteStorage->getContentType(new Path($request->getPathInfo())));
+                    $jsonResponse->setHeader('ETag', $remoteStorage->getVersion(new Path($request->getPathInfo())));
 
                     return $jsonResponse;
                 }
@@ -91,6 +97,7 @@ class RemoteStorageRequestHandler
                             $request->getHeader("If-None-Match")
                         )
                     );
+                    $jsonResponse->setHeader('ETag', $remoteStorage->getVersion(new Path($request->getPathInfo())));
 
                     return $jsonResponse;
                 }
@@ -101,6 +108,7 @@ class RemoteStorageRequestHandler
                 "/:pathInfo+",
                 function ($pathInfo) use ($request, $remoteStorage) {
                     $jsonResponse = new JsonResponse();
+                    $jsonResponse->setHeader('ETag', $remoteStorage->getVersion(new Path($request->getPathInfo())));
                     $jsonResponse->setContent(
                         $remoteStorage->deleteDocument(
                             new Path($request->getPathInfo()),

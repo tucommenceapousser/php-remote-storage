@@ -65,6 +65,7 @@ class RemoteStorageRequestHandlerTest extends PHPUnit_Framework_TestCase
         $response = $this->r->handleRequest($request);
         $this->assertEquals("application/json", $response->getContentType());
         $this->assertEquals(200, $response->getStatusCode());
+        $this->assertRegexp('/1:[a-z0-9]+/i', $response->getHeader('ETag'));
     }
 
     public function testGetDocument()
@@ -81,6 +82,7 @@ class RemoteStorageRequestHandlerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals("text/plain", $response->getContentType());
         $this->assertEquals("Hello World!", $response->getContent());
         $this->assertEquals(200, $response->getStatusCode());
+        $this->assertRegexp('/1:[a-z0-9]+/i', $response->getHeader('ETag'));
     }
 
     public function testGetNonExistingDocument()
@@ -103,7 +105,7 @@ class RemoteStorageRequestHandlerTest extends PHPUnit_Framework_TestCase
         $request->setPathInfo("/admin/foo/bar/baz.txt");
         $response = $this->r->handleRequest($request);
         $this->assertEquals(200, $response->getStatusCode());
-
+        $this->assertRegexp('/1:[a-z0-9]+/i', $response->getHeader('ETag'));
     }
 
     public function testDeleteNonExistingDocument()
@@ -121,6 +123,7 @@ class RemoteStorageRequestHandlerTest extends PHPUnit_Framework_TestCase
         $response = $this->r->handleRequest($request);
         $this->assertEquals("application/ld+json", $response->getContentType());
         $this->assertEquals(200, $response->getStatusCode());
+        $this->assertRegexp('/e:[a-z0-9]+/i', $response->getHeader('ETag'));
         $this->assertEquals(
             array(
                 "@context" => "http://remotestorage.io/spec/folder-description",
@@ -143,6 +146,7 @@ class RemoteStorageRequestHandlerTest extends PHPUnit_Framework_TestCase
         $response = $this->r->handleRequest($request);
         $this->assertEquals("application/ld+json", $response->getContentType());
         $this->assertEquals(200, $response->getStatusCode());
+        $this->assertRegexp('/1:[a-z0-9]+/i', $response->getHeader('ETag'));
         $folderData = $response->getContent();
         $this->assertEquals(2, count($folderData));
         $this->assertEquals(1, count($folderData['items']));
