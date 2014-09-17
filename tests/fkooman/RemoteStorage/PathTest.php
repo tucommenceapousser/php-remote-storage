@@ -41,6 +41,30 @@ class PathTest extends PHPUnit_Framework_TestCase
         $this->assertEquals("path", $p->getModuleName());
     }
 
+    public function testModuleName()
+    {
+        $p = new Path("/admin/public/foo/bar/baz.txt");
+        $this->assertEquals("foo", $p->getModuleName());
+        $p = new Path("/admin/public/foo/");
+        $this->assertEquals("foo", $p->getModuleName());
+        $p = new Path("/admin/foo/bar/baz.txt");
+        $this->assertEquals("foo", $p->getModuleName());
+        $p = new Path("/admin/foo/");
+        $this->assertEquals("foo", $p->getModuleName());
+    }
+
+    public function testNoModuleName()
+    {
+        $p = new Path("/admin/public/foo");
+        $this->assertFalse($p->getModuleName());
+        $p = new Path("/admin/public/");
+        $this->assertFalse($p->getModuleName());
+        $p = new Path("/admin/foo");
+        $this->assertFalse($p->getModuleName());
+        $p = new Path("/admin/");
+        $this->assertFalse($p->getModuleName());
+    }
+
     public function testPublicDocument()
     {
         $p = new Path("/admin/public/path/to/Document.txt");

@@ -71,7 +71,7 @@ class Path
     public function getModuleName()
     {
         $moduleNamePosition = $this->getIsPublic() ? 3 : 2;
-        if (count($this->pathParts) > $moduleNamePosition) {
+        if (count($this->pathParts) > $moduleNamePosition + 1) {
             return $this->pathParts[$moduleNamePosition];
         }
 
