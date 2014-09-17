@@ -50,7 +50,9 @@ class RemoteStorageRequestHandler
                         // folder
                         $folderVersion = $this->remoteStorage->getVersion($path);
                         if (null === $folderVersion) {
-                            $folderVersion = 'e:' . Utils::randomHex();
+                            // folder does not exist, so we just invent this
+                            // ETag that will be the same for all empty folders
+                            $folderVersion = 'e:7398243bf0d8b3c6c7e7ec618b3ee703';
                         }
                         $rsr = new RemoteStorageResponse(200, $folderVersion);
                         $rsr->setContent($this->remoteStorage->getFolder($path));

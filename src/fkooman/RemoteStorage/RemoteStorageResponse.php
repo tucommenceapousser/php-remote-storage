@@ -17,12 +17,19 @@
 
 namespace fkooman\RemoteStorage;
 
-use fkooman\Http\JsonResponse;
+use fkooman\Http\Response;
+use fkooman\Json\Json;
 
-class RemoteStorageResponse extends JsonResponse
+class RemoteStorageResponse extends Response
 {
+    /** @var fkooman\Json\Json */
+    private $j;
+
     public function __construct($statusCode, $entityVersion, $contentType = null)
     {
+        $this->j = new Json();
+        $this->j->setForceObject(true);
+
         parent::__construct($statusCode);
         $this->setHeader("Expires", 0);
         $this->setHeader("ETag", $entityVersion);
@@ -31,5 +38,14 @@ class RemoteStorageResponse extends JsonResponse
             $contentType = "application/ld+json";
         }
         $this->setContentType($contentType);
+    }
+
+    public function setContent($content)
+    {
+       parent::setContent($this->j->encode($content));
+    }
+    public function getContent()
+    {
+        return $this->j->decode(parent::getContent());
     }
 }
