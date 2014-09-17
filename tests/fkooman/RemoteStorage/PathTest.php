@@ -18,8 +18,9 @@
 namespace fkooman\RemoteStorage;
 
 use fkooman\RemoteStorage\Exception\PathException;
+use PHPUnit_Framework_TestCase;
 
-class PathTest extends \PHPUnit_Framework_TestCase
+class PathTest extends PHPUnit_Framework_TestCase
 {
     public function testPrivateDocument()
     {
@@ -28,7 +29,6 @@ class PathTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($p->getIsPublic());
         $this->assertFalse($p->getIsFolder());
         $this->assertEquals("/admin/path/to/Document.txt", $p->getPath());
-        $this->assertEquals("/admin/path/to/", $p->getParentFolderPath()->getPath());
     }
 
     public function testPrivateFolder()
@@ -38,7 +38,6 @@ class PathTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($p->getIsPublic());
         $this->assertTrue($p->getIsFolder());
         $this->assertEquals("/admin/path/to/Folder/", $p->getPath());
-        $this->assertEquals("/admin/path/to/", $p->getParentFolderPath()->getPath());
         $this->assertEquals("path", $p->getModuleName());
     }
 
@@ -60,36 +59,6 @@ class PathTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals("path", $p->getModuleName());
     }
 
-    public function testParentFolderOnPrivateModuleRoot()
-    {
-        $p = new Path("/admin/module/");
-        $this->assertFalse($p->getParentFolderPath());
-    }
-
-    public function testParentFolderOnPublicModuleRoot()
-    {
-        $p = new Path("/admin/public/module/");
-        $this->assertFalse($p->getParentFolderPath());
-    }
-
-    public function testParentFolderForDocument()
-    {
-        $p = new Path("/admin/module/foo.txt");
-        $this->assertEquals("/admin/module/", $p->getParentFolderPath()->getPath());
-    }
-
-    public function testParentFolderForPublicDocument()
-    {
-        $p = new Path("/admin/public/module/foo.txt");
-        $this->assertEquals("/admin/public/module/", $p->getParentFolderPath()->getPath());
-    }
-
-    public function testParentFolderForFolder()
-    {
-        $p = new Path("/admin/module/bar/");
-        $this->assertEquals("/admin/module/", $p->getParentFolderPath()->getPath());
-    }
-
     public function testValidPaths()
     {
         $testPath = array(
@@ -109,8 +78,8 @@ class PathTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \fkooman\RemoteStorage\Exception\PathException
-     * @expectedExceptionMessage path must be a string
+     * @expectedException fkooman\RemoteStorage\Exception\PathException
+     * @expectedExceptionMessage invalid path
      */
     public function testNonStringPath()
     {
@@ -122,75 +91,44 @@ class PathTest extends \PHPUnit_Framework_TestCase
         $testPath = array(
             "/",
             "/admin",
-            "/admin/",
-            "/admin/public",
-            "/admin/public/",
-            "/admin/foo",
-            "/admin/public/foo",
             "///",
             "/admin/foo//bar/",
-            "admin/public/foo.txt"
+            "admin/public/foo.txt",
+            "/admin/foo/../../",
         );
         foreach ($testPath as $t) {
             try {
                 $p = new Path($t);
-                echo $t . PHP_EOL;
-                $this->assertTrue(false);
+                $this->assertTrue(false, $t);
             } catch (PathException $e) {
                 $this->assertTrue(true);
             }
         }
     }
 
-    public function testPathTreeDocument()
+    public function testDocumentPathTreeFolderFromUserRoot()
     {
         $path = new Path("/admin/contacts/work/colleagues.vcf");
         $this->assertEquals(
             array(
-                "/",
                 "/admin/",
                 "/admin/contacts/",
                 "/admin/contacts/work/"
             ),
-            $path->getFolderTreeFromRoot()
+            $path->getFolderTreeFromUserRoot()
         );
     }
 
-    public function testPathTreeFolderFromRoot()
+    public function testFolderPathTreeFolderFromUserRoot()
     {
         $path = new Path("/admin/contacts/work/");
         $this->assertEquals(
             array(
-                "/",
                 "/admin/",
                 "/admin/contacts/",
                 "/admin/contacts/work/"
             ),
-            $path->getFolderTreeFromRoot()
-        );
-    }
-
-    public function testPathTreeDocumentFromModuleRoot()
-    {
-        $path = new Path("/admin/contacts/work/colleagues.vcf");
-        $this->assertEquals(
-            array(
-                "/admin/contacts/",
-                "/admin/contacts/work/"
-            ),
-            $path->getFolderTreeFromModuleRoot()
-        );
-    }
-
-    public function testPathTreeFolderFromModuleRoot()
-    {
-        $path = new Path("/admin/contacts/work/");
-        $this->assertEquals(
-            array(
-                "/admin/contacts/",
-                "/admin/contacts/work/"
-            ),
-            $path->getFolderTreeFromModuleRoot()
+            $path->getFolderTreeFromUserRoot()
         );
     }
 }

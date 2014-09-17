@@ -72,11 +72,11 @@ class RemoteStorage
             "items" => $this->d->getFolder($p)
         );
         foreach ($f["items"] as $name => $meta) {
-            $f["items"][$name]["ETag"] = $this->md->getVersion(new Path($p->getFolderPath()->getPath() . $name));
+            $f["items"][$name]["ETag"] = $this->md->getVersion(new Path($p->getFolderPath() . $name));
 
             // if item is a folder we don't want Content-Type
             if (strrpos($name, "/") !== strlen($name)-1) {
-                $f["items"][$name]["Content-Type"] = $this->md->getContentType(new Path($p->getFolderPath()->getPath() . $name));
+                $f["items"][$name]["Content-Type"] = $this->md->getContentType(new Path($p->getFolderPath() . $name));
             }
         }
 

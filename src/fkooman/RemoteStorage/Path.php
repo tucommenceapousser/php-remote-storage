@@ -1,20 +1,5 @@
 <?php
 
-/**
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU Lesser General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU Lesser General Public License for more details.
- *
- *  You should have received a copy of the GNU Lesser General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 namespace fkooman\RemoteStorage;
 
 use fkooman\RemoteStorage\Exception\PathException;
@@ -22,140 +7,101 @@ use fkooman\RemoteStorage\Exception\PathException;
 class Path
 {
     /** @var string */
-    private $userId;
+    private $p;
 
-    /** @var boolean */
-    private $isPublic;
+    /** @var array */
+    private $pathParts;
 
-    /** @var string */
-    private $moduleName;
-
-    /** @var boolean */
-    private $isFolder;
-
-    /** @var boolean */
-    private $isModuleRoot;
-
-    /** @var string */
-    private $path;
-
-    public function __construct($path)
+    public function __construct($p)
     {
-        if (!is_string($path)) {
-            throw new PathException("path must be a string");
-        }
-        if (0 !== strpos($path, "/")) {
-            throw new PathException("path must start with a '/'");
+        if (!is_string($p)) {
+            throw new PathException("invalid path: not a string");
         }
 
-        $entityParts = explode("/", $path);
-        $partCount = count($entityParts);
-        if (4 > $partCount) {
-            throw new PathException("path must include user and module folder");
-        }
-        $this->isModuleRoot = (4 === $partCount && 0 === strlen($entityParts[3]));
-
-        if ("public" === $entityParts[2]) {
-            // if public, the entityParts need to contain an extra as "public" does not count then
-            if (5 > $partCount) {
-                throw new PathException("public path must include user and module folder");
-            }
-            $this->isModuleRoot = (5 === $partCount && 0 === strlen($entityParts[4]));
+        // must contain at least one slash and start with it
+        if (0 !== strpos($p, "/")) {
+            throw new PathException("invalid path: does not start with /");
         }
 
-        // path parts cannot be empty, except the last one
-        for ($i = 1; $i < $partCount-1; $i++) {
-            if (0 >= strlen($entityParts[$i])) {
-                throw new PathException("path part cannot be empty");
-            }
+        // must not contain ".."
+        if (false !== strpos($p, "..")) {
+            throw new PathException("invalid path: contains ..");
         }
 
-        $this->userId = $entityParts[1];
-        $this->isPublic = "public" === $entityParts[2];
-        $this->moduleName = ($this->isPublic) ? $entityParts[3] : $entityParts[2];
-        $this->isFolder = empty($entityParts[count($entityParts)-1]);
-        $this->path = $path;
-    }
+        // must not contain "//"
+        if (false !== strpos($p, "//")) {
+            throw new PathException("invalid path: contains //");
+        }
 
-    public function getUserId()
-    {
-        return $this->userId;
-    }
+        // must at least contain a user
+        $pathParts = explode("/", $p);
+        if (count($pathParts) < 3) {
+            throw new PathException("invalid path: no user specified");
+        }
 
-    public function getIsPublic()
-    {
-        return $this->isPublic;
-    }
-
-    public function getModuleName()
-    {
-        return $this->moduleName;
-    }
-
-    public function getIsFolder()
-    {
-        return $this->isFolder;
-    }
-
-    public function getIsDocument()
-    {
-        return !$this->isFolder;
+        $this->p = $p;
+        $this->pathParts = $pathParts;
     }
 
     public function getPath()
     {
-        return $this->path;
+        return $this->p;
     }
 
-    public function getIsModuleRoot()
+    public function getIsPublic()
     {
-        return $this->isModuleRoot;
+        return count($this->pathParts) > 3 && "public" === $this->pathParts[2];
     }
 
-    public function getParentFolderPath()
+    public function getUserId()
     {
-        if ($this->getIsModuleRoot()) {
-            return false;
+        return $this->pathParts[1];
+    }
+
+    public function getIsFolder()
+    {
+        return empty($this->pathParts[count($this->pathParts)-1]);
+    }
+
+    public function getIsDocument()
+    {
+        return !$this->getIsFolder();
+    }
+
+    public function getModuleName()
+    {
+        $moduleNamePosition = $this->getIsPublic() ? 3 : 2;
+        if (count($this->pathParts) > $moduleNamePosition) {
+            return $this->pathParts[$moduleNamePosition];
         }
 
-        return new Path(dirname($this->getPath()) . "/");
+        return false;
     }
 
     public function getFolderPath()
     {
         if ($this->getIsFolder()) {
-            return $this;
+            return $this->p;
         }
 
-        return $this->getParentFolderPath();
+        return substr($this->p, 0, strrpos($this->p, "/") + 1);
     }
 
-    public function getFolderTreeFromRoot()
+    public function getFolderTreeToUserRoot()
     {
-        $p = $this->getFolderPath()->getPath();
+        $p = $this->getFolderPath();
         $folderTree = array($p);
-
         do {
             $rpos = strrpos($p, "/", -2);
             $p = substr($p, 0, $rpos + 1);
             $folderTree[] = $p;
         } while (0 !== strrpos($p, "/", -2));
-        $folderTree[] = "/";
 
-        return array_reverse($folderTree);
+        return $folderTree;
     }
 
-    public function getFolderTreeFromModuleRoot()
+    public function getFolderTreeFromUserRoot()
     {
-        $folderTree = array();
-
-        $folderPath = $this->getFolderPath();
-
-        do {
-            $folderTree[] = $folderPath->getPath();
-            $folderPath = $folderPath->getParentFolderPath();
-        } while (false !== $folderPath);
-
-        return array_reverse($folderTree);
+        return array_reverse($this->getFolderTreeToUserRoot());
     }
 }

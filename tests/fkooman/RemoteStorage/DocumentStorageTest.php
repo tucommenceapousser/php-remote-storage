@@ -20,7 +20,7 @@ namespace fkooman\RemoteStorage;
 use PHPUnit_Framework_TestCase;
 use fkooman\RemoteStorage\Exception\DocumentNotFoundException;
 
-class DocumentTest extends PHPUnit_Framework_TestCase
+class DocumentStorageTest extends PHPUnit_Framework_TestCase
 {
     private $document;
 
@@ -41,6 +41,7 @@ class DocumentTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             array(
+                '/foo/',
                 '/foo/bar/'
             ),
             $this->document->putDocument($p, $d)
@@ -54,6 +55,7 @@ class DocumentTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             array(
+                '/foo/',
                 '/foo/bar/'
             ),
             $this->document->putDocument($p, $d)
@@ -86,13 +88,16 @@ class DocumentTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             array(
+                '/foo/',
                 '/foo/bar/'
             ),
             $this->document->putDocument($p, $d)
         );
         $this->assertEquals(
             array(
-                '/foo/bar/baz'
+                '/foo/bar/baz',
+                '/foo/bar/',
+                '/foo/'
             ),
             $this->document->deleteDocument($p)
         );
@@ -108,13 +113,16 @@ class DocumentTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             array(
+                '/foo/',
                 '/foo/bar/'
             ),
             $this->document->putDocument($p, $d)
         );
         $this->assertEquals(
             array(
-                '/foo/bar/baz'
+                '/foo/bar/baz',
+                '/foo/bar/',
+                '/foo/'
             ),
             $this->document->deleteDocument($p)
         );
@@ -128,17 +136,21 @@ class DocumentTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             array(
+                '/foo/',
                 '/foo/bar/',
                 '/foo/bar/baz/'
             ),
             $this->document->putDocument($p, $d)
         );
 
-        $parentFolder = $p->getParentFolderPath();
+        $parentFolder = new Path("/foo/bar/baz/");
         $this->assertEquals(array("foo" => array("Content-Length" => 12)), $this->document->getFolder($parentFolder));
 
-        $parentFolder = $parentFolder->getParentFolderPath();
+        $parentFolder = new Path("/foo/bar/");
         $this->assertEquals(array("baz/" => array()), $this->document->getFolder($parentFolder));
+
+        $parentFolder = new Path("/foo/");
+        $this->assertEquals(array("bar/" => array()), $this->document->getFolder($parentFolder));
     }
 
     public function testGetEmptyFolder()
@@ -153,6 +165,7 @@ class DocumentTest extends PHPUnit_Framework_TestCase
         $d = 'Hello World!';
         $this->assertEquals(
             array(
+                '/foo/',
                 '/foo/bar/',
                 '/foo/bar/baz/',
                 '/foo/bar/baz/foobar/'
@@ -165,7 +178,9 @@ class DocumentTest extends PHPUnit_Framework_TestCase
             array(
                 '/foo/bar/baz/foobar/foobaz',
                 '/foo/bar/baz/foobar/',
-                '/foo/bar/baz/'
+                '/foo/bar/baz/',
+                '/foo/bar/',
+                '/foo/'
             ),
             $this->document->deleteDocument($p)
         );

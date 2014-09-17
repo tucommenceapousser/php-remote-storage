@@ -60,7 +60,7 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
         $p2 = new Path("/admin/messages/foo/bar.txt");
         $p3 = new Path("/admin/messages/foo/");
         $p4 = new Path("/admin/messages/");
-        //$p5 = new Path("/admin/");
+        $p5 = new Path("/admin/");
         $this->r->putDocument($p1, 'text/plain', 'Hello World!');
         $this->r->putDocument($p2, 'text/plain', 'Hello Foo!');
         $this->assertEquals('Hello World!', $this->r->getDocument($p1));
@@ -70,7 +70,7 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
         // all parent directories should have version 2 now
         $this->assertRegexp('/2:[a-z0-9]+/i', $this->r->getVersion($p3));
         $this->assertRegexp('/2:[a-z0-9]+/i', $this->r->getVersion($p4));
-        //$this->assertEquals(2, $this->r->getVersion($p5));
+        $this->assertRegexp('/2:[a-z0-9]+/i', $this->r->getVersion($p5));
     }
 
     public function testDeleteDocument()
@@ -96,7 +96,7 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
         $p2 = new Path("/admin/messages/foo/bar.txt");
         $p3 = new Path("/admin/messages/foo/");
         $p4 = new Path("/admin/messages/");
-//        $p5 = new Path("/admin/");
+        $p5 = new Path("/admin/");
 
         $this->r->putDocument($p1, 'text/plain', 'Hello Baz!');
         $this->r->putDocument($p2, 'text/plain', 'Hello Bar!');
@@ -105,7 +105,7 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
         $this->assertRegexp('/1:[a-z0-9]+/i', $this->r->getVersion($p2));
         $this->assertRegexp('/2:[a-z0-9]+/i', $this->r->getVersion($p3));
         $this->assertRegexp('/2:[a-z0-9]+/i', $this->r->getVersion($p4));
-//        $this->assertEquals(2, $this->r->getVersion($p5));
+        $this->assertRegexp('/2:[a-z0-9]+/i', $this->r->getVersion($p5));
     }
 
     public function testGetFolder()

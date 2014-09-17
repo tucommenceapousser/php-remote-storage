@@ -64,7 +64,7 @@ class DocumentStorage
             throw new DocumentException("unable to put folder");
         }
 
-        $folderTree = $p->getFolderTreeFromRoot();
+        $folderTree = $p->getFolderTreeFromUserRoot();
         foreach ($folderTree as $pathItem) {
             if (!file_exists($this->baseDir . $pathItem)) {
                 // create it
@@ -79,7 +79,7 @@ class DocumentStorage
             throw new DocumentException("unable to write document");
         }
 
-        return $p->getFolderTreeFromModuleRoot();
+        return $p->getFolderTreeFromUserRoot();
     }
 
     /**
@@ -107,17 +107,13 @@ class DocumentStorage
         $deletedObjects = array();
         $deletedObjects[] = $p->getPath();
 
-        // delete all empty folders in the tree up to the module root if
+        // delete all empty folders in the tree up to the user root if
         // they are empty
-        $p = $p->getParentFolderPath();
-        while (!$p->getIsModuleRoot()) {
-            // not the module root
-            if ($this->isEmptyFolder($p)) {
-                // and it is empty, delete it
-                $this->deleteFolder($p);
-                $deletedObjects[] = $p->getPath();
+        foreach ($p->getFolderTreeToUserRoot() as $pathItem) {
+            if ($this->isEmptyFolder(new Path($pathItem))) {
+                $this->deleteFolder(new Path($pathItem));
+                $deletedObjects[] = $pathItem;
             }
-            $p = $p->getParentFolderPath();
         }
 
         return $deletedObjects;
