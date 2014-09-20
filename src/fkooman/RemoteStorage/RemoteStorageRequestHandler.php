@@ -45,7 +45,7 @@ class RemoteStorageRequestHandler
             $service = new Service($request);
             $service->match(
                 "GET",
-                null,
+                "*",
                 function ($pathInfo) use ($request) {
                     $path = new Path($pathInfo);
                     if ($path->getIsFolder()) {
@@ -76,7 +76,7 @@ class RemoteStorageRequestHandler
 
             $service->match(
                 "PUT",
-                null,
+                "*",
                 function ($pathInfo) use ($request) {
                     $path = new Path($pathInfo);
                     if ($path->getIsFolder()) {
@@ -95,7 +95,7 @@ class RemoteStorageRequestHandler
 
             $service->match(
                 "DELETE",
-                null,
+                "*",
                 function ($pathInfo) use ($request) {
                     $path = new Path($pathInfo);
                     if ($path->getIsFolder()) {
@@ -114,7 +114,7 @@ class RemoteStorageRequestHandler
 
             $service->match(
                 "OPTIONS",
-                null,
+                "*",
                 function ($pathInfo) use ($request) {
                     return new OptionsResponse();
                 }
