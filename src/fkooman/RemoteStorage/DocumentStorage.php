@@ -18,7 +18,7 @@
 namespace fkooman\RemoteStorage;
 
 use fkooman\RemoteStorage\Exception\DocumentException;
-use fkooman\RemoteStorage\Exception\DocumentNotFoundException;
+use fkooman\RemoteStorage\Exception\NotFoundException;
 
 class DocumentStorage
 {
@@ -42,7 +42,7 @@ class DocumentStorage
 
         $documentPath = $this->baseDir . $p->getPath();
         if (false === file_exists($documentPath)) {
-            throw new DocumentNotFoundException();
+            throw new NotFoundException();
         }
 
         $documentContent = @file_get_contents($documentPath);
@@ -97,7 +97,7 @@ class DocumentStorage
         $documentPath = $this->baseDir . $p->getPath();
 
         if (false === file_exists($documentPath)) {
-            throw new DocumentNotFoundException();
+            throw new NotFoundException();
         }
 
         if (false === @unlink($documentPath)) {

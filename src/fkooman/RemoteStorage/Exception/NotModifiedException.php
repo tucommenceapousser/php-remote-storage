@@ -19,6 +19,6 @@ namespace fkooman\RemoteStorage\Exception;
 
 use Exception;
 
-class DocumentNotFoundException extends Exception
+class NotModifiedException extends Exception
 {
 }

@@ -21,7 +21,7 @@ use fkooman\Http\Request;
 use fkooman\Http\JsonResponse;
 use fkooman\OAuth\ResourceServer\TokenIntrospection;
 use fkooman\Rest\Service;
-use fkooman\RemoteStorage\Exception\DocumentNotFoundException;
+use fkooman\RemoteStorage\Exception\NotFoundException;
 
 class RemoteStorageRequestHandler
 {
@@ -119,8 +119,12 @@ class RemoteStorageRequestHandler
             );
 
             return $service->run();
-        } catch (DocumentNotFoundException $e) {
+        } catch (NotFoundException $e) {
             return new JsonResponse(404);
+        } catch (PreconditionFailedException $e) {
+            return new JsonResponse(412);
+        } catch (NotModifiedException $e) {
+            return new JsonResponse(304);
         }
     }
 }

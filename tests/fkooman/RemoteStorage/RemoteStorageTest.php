@@ -19,7 +19,7 @@ namespace fkooman\RemoteStorage;
 
 use PDO;
 use PHPUnit_Framework_TestCase;
-use fkooman\RemoteStorage\Exception\DocumentNotFoundException;
+use fkooman\RemoteStorage\Exception\NotFoundException;
 
 class RemoteStorageTest extends PHPUnit_Framework_TestCase
 {
@@ -77,12 +77,13 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
     {
         $p = new Path("/admin/messages/foo/baz.txt");
         $this->r->putDocument($p, 'text/plain', 'Hello World!');
-        $this->r->deleteDocument($p);
+        $documentVersion = $this->r->getVersion($p);
+        $this->r->deleteDocument($p, $documentVersion);
         $this->assertNull($this->r->getVersion($p));
         try {
             $this->r->getDocument($p);
             $this->assertTrue(false);
-        } catch (DocumentNotFoundException $e) {
+        } catch (NotFoundException $e) {
             $this->assertTrue(true);
         }
         // directory should also not be there anymore
@@ -149,5 +150,37 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(10, $folderData['items']['baz.txt']['Content-Length']);
 
         $this->assertRegexp('/3:[a-z0-9]+/i', $this->r->getVersion($p3));
+    }
+
+    /**
+     * @expectedException fkooman\RemoteStorage\Exception\PreconditionFailedException
+     */
+    public function testPutIfMatchPrecondition()
+    {
+        $p1 = new Path("/admin/messages/foo/hello.txt");
+        $this->r->putDocument($p1, 'text/plain', 'Hello World');
+        $this->r->putDocument($p1, 'text/plain', 'Hello World', 'incorrect version');
+    }
+
+    /**
+     * @expectedException fkooman\RemoteStorage\Exception\PreconditionFailedException
+     */
+    public function testDeleteIfMatchPrecondition()
+    {
+        $p1 = new Path("/admin/messages/foo/hello.txt");
+        $this->r->putDocument($p1, 'text/plain', 'Hello World');
+        $this->r->deleteDocument($p1, 'text/plain', 'Hello World', 'incorrect version');
+    }
+
+    /**
+     * @expectedException fkooman\RemoteStorage\Exception\NotModifiedException
+     */
+    public function testGetFolderIfNonMatch()
+    {
+        $p1 = new Path("/admin/messages/foo/hello.txt");
+        $p2 = new Path("/admin/messages/foo/");
+        $this->r->putDocument($p1, 'text/plain', 'Hello World');
+        $folderVersion = $this->r->getVersion($p2);
+        $this->r->getFolder($p2, $folderVersion);
     }
 }

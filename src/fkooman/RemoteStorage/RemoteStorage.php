@@ -17,6 +17,9 @@
 
 namespace fkooman\RemoteStorage;
 
+use fkooman\RemoteStorage\Exception\PreconditionFailedException;
+use fkooman\RemoteStorage\Exception\NotModifiedException;
+
 class RemoteStorage
 {
     /** @var fkooman\RemoteStorage\MetadataStorage */
@@ -31,8 +34,16 @@ class RemoteStorage
         $this->d = $d;
     }
 
-    public function putDocument(Path $p, $contentType, $documentData, $ifMatch = null)
+    public function putDocument(Path $p, $contentType, $documentData, $ifMatch = null, $ifNonMatch = null)
     {
+        if (null !== $ifMatch && $ifMatch !== $this->md->getVersion($p)) {
+            throw new PreconditionFailedException();
+        }
+// FIXME: https://github.com/remotestorage/spec/issues/73
+//        if ("*" === $ifNonMatch && null !== $this->md->getVersion($p)) {
+//            throw new PreconditionFailedException();
+//        }
+
         $updatedEntities = $this->d->putDocument($p, $documentData);
         $this->md->updateDocument($p, $contentType);
         foreach ($updatedEntities as $u) {
@@ -42,11 +53,14 @@ class RemoteStorage
 
     public function deleteDocument(Path $p, $ifMatch = null)
     {
+        if (null !== $ifMatch && $ifMatch !== $this->md->getVersion($p)) {
+            throw new PreconditionFailedException();
+        }
         $deletedEntities = $this->d->deleteDocument($p);
         foreach ($deletedEntities as $d) {
             $this->md->deleteEntry(new Path($d));
         }
-        // FIXME: increment the version of the folder containing the last
+        // FIXME: increment the version from the folder containing the last
         // deleted folder and up to the user root
     }
 
@@ -60,13 +74,28 @@ class RemoteStorage
         return $this->md->getContentType($p);
     }
 
-    public function getDocument(Path $p, $ifMatch = null)
+    public function getDocument(Path $p, $ifNonMatch = null)
     {
-       return $this->d->getDocument($p);
+        if (null !== $ifNonMatch) {
+            // may be comma separated
+            $nodeVersions = explode(",", $ifNonMatch);
+            if (in_array($this->md->getVersion($p), $nodeVersions)) {
+                throw new NotModifiedException();
+            }
+        }
+
+        return $this->d->getDocument($p);
     }
 
-    public function getFolder(Path $p, $ifMatch = null)
+    public function getFolder(Path $p, $ifNonMatch = null)
     {
+        if (null !== $ifNonMatch) {
+            // may be comma separated
+            $nodeVersions = explode(",", $ifNonMatch);
+            if (in_array($this->md->getVersion($p), $nodeVersions)) {
+                throw new NotModifiedException();
+            }
+        }
         $f = array(
             "@context" => "http://remotestorage.io/spec/folder-description",
             "items" => $this->d->getFolder($p)
