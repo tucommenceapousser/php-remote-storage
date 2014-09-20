@@ -22,6 +22,8 @@ use fkooman\Http\JsonResponse;
 use fkooman\OAuth\ResourceServer\TokenIntrospection;
 use fkooman\Rest\Service;
 use fkooman\RemoteStorage\Exception\NotFoundException;
+use fkooman\RemoteStorage\Exception\PreconditionFailedException;
+use fkooman\RemoteStorage\Exception\NotModifiedException;
 
 class RemoteStorageRequestHandler
 {
@@ -55,7 +57,7 @@ class RemoteStorageRequestHandler
                             $folderVersion = 'e:7398243bf0d8b3c6c7e7ec618b3ee703';
                         }
                         $rsr = new RemoteStorageResponse(200, $folderVersion);
-                        $rsr->setContent($this->remoteStorage->getFolder($path));
+                        $rsr->setContent($this->remoteStorage->getFolder($path, $request->getHeader("If-Non-Match")));
 
                         return $rsr;
                     } else {
@@ -65,7 +67,7 @@ class RemoteStorageRequestHandler
                         $documentContent = $this->remoteStorage->getDocument($path);
 
                         $rsr = new RemoteStorageResponse(200, $documentVersion, $documentContentType);
-                        $rsr->setContent($this->remoteStorage->getDocument($path));
+                        $rsr->setContent($this->remoteStorage->getDocument($path, $request->getHeader("If-Non-Match")));
 
                         return $rsr;
                     }
@@ -79,10 +81,10 @@ class RemoteStorageRequestHandler
                     $path = new Path($pathInfo);
                     if ($path->getIsFolder()) {
                         // FIXME: use more generic exceptions?
-                        throw new RemoteStorageRequestHandlerException("can not PUT a folder");
+                        throw new RemoteStorageRequestHandlerException("can not put a folder");
                     }
 
-                    $x = $this->remoteStorage->putDocument($path, $request->getContentType(), $request->getContent());
+                    $x = $this->remoteStorage->putDocument($path, $request->getContentType(), $request->getContent(), $request->getHeader("If-Match"), $request->getHeader("If-Non-Match"));
                     $documentVersion = $this->remoteStorage->getVersion($path);
                     $rsr = new RemoteStorageResponse(200, $documentVersion, 'application/json');
                     $rsr->setContent($x);
@@ -98,11 +100,11 @@ class RemoteStorageRequestHandler
                     $path = new Path($pathInfo);
                     if ($path->getIsFolder()) {
                         // FIXME: use more generic exceptions?
-                        throw new RemoteStorageRequestHandlerException("can not DELETE a folder");
+                        throw new RemoteStorageRequestHandlerException("can not delete a folder");
                     }
                     // need to get the version before the delete
                     $documentVersion = $this->remoteStorage->getVersion($path);
-                    $x = $this->remoteStorage->deleteDocument($path);
+                    $x = $this->remoteStorage->deleteDocument($path, $request->getHeader("If-Non-Match"));
                     $rsr = new RemoteStorageResponse(200, $documentVersion, 'application/json');
                     $rsr->setContent($x);
 
