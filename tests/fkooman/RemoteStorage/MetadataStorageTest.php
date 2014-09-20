@@ -40,7 +40,7 @@ class MetadataStorageTest extends PHPUnit_Framework_TestCase
     {
         $p = new Path("/foo/bar/baz.txt");
         $this->assertNull($this->md->getVersion($p));
-        $this->assertTrue($this->md->updateDocument($p, "text/plain"));
+        $this->md->updateDocument($p, "text/plain");
         $this->assertStringMatchesFormat('%s', $this->md->getVersion($p));
         $this->assertEquals("text/plain", $this->md->getContentType($p));
     }
@@ -49,13 +49,13 @@ class MetadataStorageTest extends PHPUnit_Framework_TestCase
     {
         $p = new Path("/foo/bar/baz.txt");
         $this->assertNull($this->md->getVersion($p));
-        $this->assertTrue($this->md->updateDocument($p, "text/plain"));
+        $this->md->updateDocument($p, "text/plain");
         $beforeUpdateVersion = $this->md->getVersion($p);
         $this->assertStringMatchesFormat('%s', $beforeUpdateVersion);
         $this->assertEquals("text/plain", $this->md->getContentType($p));
 
         // the update
-        $this->assertTrue($this->md->updateDocument($p, "application/json"));
+        $this->md->updateDocument($p, "application/json");
         $this->assertEquals("application/json", $this->md->getContentType($p));
         $afterUpdateVersion = $this->md->getVersion($p);
         $this->assertStringMatchesFormat('%s', $afterUpdateVersion);
@@ -66,11 +66,11 @@ class MetadataStorageTest extends PHPUnit_Framework_TestCase
     {
         $p = new Path("/foo/bar/baz.txt");
         $this->assertNull($this->md->getVersion($p));
-        $this->assertTrue($this->md->updateDocument($p, "text/plain"));
+        $this->md->updateDocument($p, "text/plain");
         $this->assertStringMatchesFormat('%s', $this->md->getVersion($p));
         $this->assertEquals("text/plain", $this->md->getContentType($p));
 
-        $this->assertTrue($this->md->deleteEntry($p));
+        $this->md->deleteNode($p);
         $this->assertNull($this->md->getVersion($p));
     }
 
@@ -79,10 +79,36 @@ class MetadataStorageTest extends PHPUnit_Framework_TestCase
         // version MUST NOT be reused
         $p = new Path("/foo/bar/baz.txt");
         $this->assertNull($this->md->getVersion($p));
-        $this->assertTrue($this->md->updateDocument($p, "text/plain"));
+        $this->md->updateDocument($p, "text/plain");
         $beforeDeleteVersion = $this->md->getVersion($p);
-        $this->assertTrue($this->md->deleteEntry($p));
-        $this->assertTrue($this->md->updateDocument($p, "application/json"));
+        $this->md->deleteNode($p);
+        $this->md->updateDocument($p, "application/json");
         $this->assertNotEquals($beforeDeleteVersion, $this->md->getVersion($p));
+    }
+
+    public function testUpdateFolder()
+    {
+        $p = new Path("/foo/bar/baz/");
+        $this->assertNull($this->md->getVersion($p));
+        $this->md->updateFolder($p);
+        $this->assertNotNull($this->md->getVersion($p));
+    }
+
+    /**
+     * @expectedException fkooman\RemoteStorage\Exception\MetadataStorageException
+     */
+    public function testDeleteNonExistingNode()
+    {
+        $p = new Path("/foo/bar/baz.txt");
+        $this->md->deleteNode($p);
+    }
+
+    /**
+     * @expectedException fkooman\RemoteStorage\Exception\MetadataStorageException
+     */
+    public function testFolderUpdateOnNonFolder()
+    {
+        $p = new Path("/foo/bar/baz.txt");
+        $this->md->updateFolder($p);
     }
 }

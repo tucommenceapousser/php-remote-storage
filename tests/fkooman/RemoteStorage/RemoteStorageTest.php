@@ -183,4 +183,15 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
         $folderVersion = $this->r->getVersion($p2);
         $this->r->getFolder($p2, $folderVersion);
     }
+
+    /**
+     * @expectedException fkooman\RemoteStorage\Exception\NotModifiedException
+     */
+    public function testGetDocumentIfNonMatch()
+    {
+        $p1 = new Path("/admin/messages/foo/hello.txt");
+        $this->r->putDocument($p1, 'text/plain', 'Hello World');
+        $documentVersion = $this->r->getVersion($p1);
+        $this->r->getDocument($p1, $documentVersion);
+    }
 }

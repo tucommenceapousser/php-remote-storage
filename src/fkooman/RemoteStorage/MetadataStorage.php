@@ -18,6 +18,7 @@
 namespace fkooman\RemoteStorage;
 
 use PDO;
+use fkooman\RemoteStorage\Exception\MetadataStorageException;
 
 class MetadataStorage
 {
@@ -71,7 +72,11 @@ class MetadataStorage
 
     public function updateFolder(Path $p)
     {
-        return $this->updateDocument($p, "http://remotestorage.io/spec/folder-description");
+        if (!$p->getIsFolder()) {
+            throw new MetadataStorageException("not a folder");
+        }
+
+        return $this->updateDocument($p, null);
     }
 
     /**
@@ -109,10 +114,12 @@ class MetadataStorage
         $stmt->bindValue(":version", $newVersion, PDO::PARAM_STR);
         $stmt->execute();
 
-        return 1 === $stmt->rowCount();
+        if (1 !== $stmt->rowCount()) {
+            throw new MetadataStorageException("unable to update node");
+        }
     }
 
-    public function deleteEntry(Path $p)
+    public function deleteNode(Path $p)
     {
         $stmt = $this->db->prepare(
             sprintf(
@@ -123,7 +130,9 @@ class MetadataStorage
         $stmt->bindValue(":path", $p->getPath(), PDO::PARAM_STR);
         $stmt->execute();
 
-        return 1 === $stmt->rowCount();
+        if (1 !== $stmt->rowCount()) {
+            throw new MetadataStorageException("unable to delete node");
+        }
     }
 
     public static function createTableQueries($prefix)
@@ -132,7 +141,7 @@ class MetadataStorage
         $query[] = sprintf(
             "CREATE TABLE IF NOT EXISTS %s (
                 path VARCHAR(255) NOT NULL,
-                content_type VARCHAR(255) NOT NULL,
+                content_type VARCHAR(255) DEFAULT NULL,
                 version VARCHAR(255) NOT NULL,
                 UNIQUE (path)
             )",

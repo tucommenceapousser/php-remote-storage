@@ -58,7 +58,7 @@ class RemoteStorage
         }
         $deletedEntities = $this->d->deleteDocument($p);
         foreach ($deletedEntities as $d) {
-            $this->md->deleteEntry(new Path($d));
+            $this->md->deleteNode(new Path($d));
         }
         // FIXME: increment the version from the folder containing the last
         // deleted folder and up to the user root
