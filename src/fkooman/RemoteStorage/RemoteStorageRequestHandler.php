@@ -43,8 +43,7 @@ class RemoteStorageRequestHandler
     {
         try {
             $service = new Service($request);
-            $service->match(
-                "GET",
+            $service->get(
                 "*",
                 function ($pathInfo) use ($request) {
                     $path = new Path($pathInfo);
@@ -74,8 +73,7 @@ class RemoteStorageRequestHandler
                 }
             );
 
-            $service->match(
-                "PUT",
+            $service->put(
                 "*",
                 function ($pathInfo) use ($request) {
                     $path = new Path($pathInfo);
@@ -93,8 +91,7 @@ class RemoteStorageRequestHandler
                 }
             );
 
-            $service->match(
-                "DELETE",
+            $service->delete(
                 "*",
                 function ($pathInfo) use ($request) {
                     $path = new Path($pathInfo);
@@ -112,8 +109,7 @@ class RemoteStorageRequestHandler
                 }
             );
 
-            $service->match(
-                "OPTIONS",
+            $service->options(
                 "*",
                 function ($pathInfo) use ($request) {
                     return new OptionsResponse();
