@@ -18,7 +18,6 @@
 namespace fkooman\RemoteStorage;
 
 use fkooman\RemoteStorage\Exception\PreconditionFailedException;
-use fkooman\RemoteStorage\Exception\NotModifiedException;
 use fkooman\Json\Json;
 
 class RemoteStorage
@@ -86,26 +85,26 @@ class RemoteStorage
         return $this->md->getContentType($p);
     }
 
-    public function getDocument(Path $p, $ifNoneMatch = null)
+    public function getDocument(Path $p, $ifMatch = null)
     {
-        if (null !== $ifNoneMatch) {
+        if (null !== $ifMatch) {
             // may be comma separated
-            $nodeVersions = explode(",", $ifNoneMatch);
+            $nodeVersions = explode(",", $ifMatch);
             if (in_array($this->md->getVersion($p), $nodeVersions)) {
-                throw new NotModifiedException();
+                throw new PreconditionFailedException();
             }
         }
 
         return $this->d->getDocument($p);
     }
 
-    public function getFolder(Path $p, $ifNoneMatch = null)
+    public function getFolder(Path $p, $ifMatch = null)
     {
-        if (null !== $ifNoneMatch) {
+        if (null !== $ifMatch) {
             // may be comma separated
-            $nodeVersions = explode(",", $ifNoneMatch);
+            $nodeVersions = explode(",", $ifMatch);
             if (in_array($this->md->getVersion($p), $nodeVersions)) {
-                throw new NotModifiedException();
+                throw new PreconditionFailedException();
             }
         }
         $f = array(

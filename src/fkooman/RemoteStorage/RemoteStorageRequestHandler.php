@@ -54,14 +54,14 @@ class RemoteStorageRequestHandler
                         if (null === $folderVersion) {
                             // folder does not exist, so we just invent this
                             // ETag that will be the same for all empty folders
-                            $folderVersion = 'e:7398243bf0d8b3c6c7e7ec618b3ee703';
+                            $folderVersion = '"e:7398243bf0d8b3c6c7e7ec618b3ee703"';
                         }
                         $rsr = new RemoteStorageResponse(200, $folderVersion);
                         $rsr->setContent(
                             $this->remoteStorage->getFolder(
                                 $path,
                                 $this->stripQuotes(
-                                    $request->getHeader("If-None-Match")
+                                    $request->getHeader("If-Match")
                                 )
                             )
                         );
@@ -78,7 +78,7 @@ class RemoteStorageRequestHandler
                             $this->remoteStorage->getDocument(
                                 $path,
                                 $this->stripQuotes(
-                                    $request->getHeader("If-None-Match")
+                                    $request->getHeader("If-Match")
                                 )
                             )
                         );

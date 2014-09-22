@@ -176,7 +176,7 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException fkooman\RemoteStorage\Exception\NotModifiedException
+     * @expectedException fkooman\RemoteStorage\Exception\PreconditionFailedException
      */
     public function testGetFolderIfMatch()
     {
@@ -188,9 +188,9 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException fkooman\RemoteStorage\Exception\NotModifiedException
+     * @expectedException fkooman\RemoteStorage\Exception\PreconditionFailedException
      */
-    public function testGetDocumentIfNoneMatch()
+    public function testGetDocumentIfMatch()
     {
         $p1 = new Path("/admin/messages/foo/hello.txt");
         $this->r->putDocument($p1, 'text/plain', 'Hello World');

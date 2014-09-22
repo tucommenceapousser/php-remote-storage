@@ -177,9 +177,30 @@ class RemoteStorageRequestHandlerTest extends PHPUnit_Framework_TestCase
 
         $request = new Request("https://www.example.org", "GET");
         $request->setPathInfo("/admin/foo/bar/baz.txt");
-        $request->setHeader("If-None-Match", $documentVersion);
+        $request->setHeader("If-Match", $documentVersion);
         $response = $this->r->handleRequest($request);
-        $this->assertEquals(304, $response->getStatusCode());
+        $this->assertEquals(412, $response->getStatusCode());
+        $this->assertEquals("", $response->getContent());
+    }
+
+    public function testGetSameVersionFolder()
+    {
+        $request = new Request("https://www.example.org", "PUT");
+        $request->setPathInfo("/admin/foo/bar/baz.txt");
+        $request->setContentType("text/plain");
+        $request->setContent("Hello World!");
+        $response = $this->r->handleRequest($request);
+
+        $request = new Request("https://www.example.org", "GET");
+        $request->setPathInfo("/admin/foo/bar/");
+        $response = $this->r->handleRequest($request);
+        $folderVersion = $response->getHeader('ETag');
+
+        $request = new Request("https://www.example.org", "GET");
+        $request->setPathInfo("/admin/foo/bar/");
+        $request->setHeader("If-Match", $folderVersion);
+        $response = $this->r->handleRequest($request);
+        $this->assertEquals(412, $response->getStatusCode());
         $this->assertEquals("", $response->getContent());
     }
 
