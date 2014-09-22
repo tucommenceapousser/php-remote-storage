@@ -104,9 +104,9 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
         $this->r->deleteDocument($p1);
         $this->assertNull($this->r->getVersion($p1));
         $this->assertRegexp('/1:[a-z0-9]+/i', $this->r->getVersion($p2));
-        $this->assertRegexp('/2:[a-z0-9]+/i', $this->r->getVersion($p3));
-        $this->assertRegexp('/2:[a-z0-9]+/i', $this->r->getVersion($p4));
-        $this->assertRegexp('/2:[a-z0-9]+/i', $this->r->getVersion($p5));
+        $this->assertRegexp('/3:[a-z0-9]+/i', $this->r->getVersion($p3));
+        $this->assertRegexp('/3:[a-z0-9]+/i', $this->r->getVersion($p4));
+        $this->assertRegexp('/3:[a-z0-9]+/i', $this->r->getVersion($p5));
     }
 
     public function testGetFolder()

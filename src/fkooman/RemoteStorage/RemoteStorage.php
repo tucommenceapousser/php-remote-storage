@@ -60,8 +60,14 @@ class RemoteStorage
         foreach ($deletedEntities as $d) {
             $this->md->deleteNode(new Path($d));
         }
-        // FIXME: increment the version from the folder containing the last
-        // deleted folder and up to the user root
+
+        // increment the version from increment the version from the folder
+        // containing the last deleted folder and up to the user root
+        foreach ($p->getFolderTreeToUserRoot() as $i) {
+            if (null !== $this->md->getVersion(new Path($i))) {
+                $this->md->updateFolder(new Path($i));
+            }
+        }
     }
 
     public function getVersion(Path $p)
