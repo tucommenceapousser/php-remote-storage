@@ -39,13 +39,4 @@ class RemoteStorageResponse extends Response
         }
         $this->setContentType($contentType);
     }
-
-    public function setContent($content)
-    {
-        parent::setContent($this->j->encode($content));
-    }
-    public function getContent()
-    {
-        return $this->j->decode(parent::getContent());
-    }
 }
