@@ -39,13 +39,13 @@ class RemoteStorage
         $this->j->setForceObject(true);
     }
 
-    public function putDocument(Path $p, $contentType, $documentData, $ifMatch = null, $ifNoneMatch = null)
+    public function putDocument(Path $p, $contentType, $documentData, array $ifMatch = null, array $ifNoneMatch = null)
     {
-        if (null !== $ifMatch && $ifMatch !== $this->md->getVersion($p)) {
+        if (null !== $ifMatch && !in_array($this->md->getVersion($p), $ifMatch)) {
             throw new PreconditionFailedException();
         }
 
-        if ("*" === $ifNoneMatch && null !== $this->md->getVersion($p)) {
+        if (null !== $ifNoneMatch && in_array("*", $ifNoneMatch) && null !== $this->md->getVersion($p)) {
             throw new PreconditionFailedException();
         }
 
@@ -56,9 +56,9 @@ class RemoteStorage
         }
     }
 
-    public function deleteDocument(Path $p, $ifMatch = null)
+    public function deleteDocument(Path $p, array $ifMatch = null)
     {
-        if (null !== $ifMatch && $ifMatch !== $this->md->getVersion($p)) {
+        if (null !== $ifMatch && !in_array($this->md->getVersion($p), $ifMatch)) {
             throw new PreconditionFailedException();
         }
         $deletedEntities = $this->d->deleteDocument($p);
@@ -85,28 +85,21 @@ class RemoteStorage
         return $this->md->getContentType($p);
     }
 
-    public function getDocument(Path $p, $ifMatch = null)
+    public function getDocument(Path $p, array $ifNoneMatch = null)
     {
-        if (null !== $ifMatch) {
-            // may be comma separated
-            $nodeVersions = explode(",", $ifMatch);
-            if (in_array($this->md->getVersion($p), $nodeVersions)) {
-                throw new PreconditionFailedException();
-            }
+        if (null !== $ifNoneMatch && in_array($this->md->getVersion($p), $ifNoneMatch)) {
+            throw new PreconditionFailedException();
         }
 
         return $this->d->getDocument($p);
     }
 
-    public function getFolder(Path $p, $ifMatch = null)
+    public function getFolder(Path $p, array $ifNoneMatch = null)
     {
-        if (null !== $ifMatch) {
-            // may be comma separated
-            $nodeVersions = explode(",", $ifMatch);
-            if (in_array($this->md->getVersion($p), $nodeVersions)) {
-                throw new PreconditionFailedException();
-            }
+        if (null !== $ifNoneMatch && in_array($this->md->getVersion($p), $ifNoneMatch)) {
+            throw new PreconditionFailedException();
         }
+
         $f = array(
             "@context" => "http://remotestorage.io/spec/folder-description",
             "items" => $this->d->getFolder($p)

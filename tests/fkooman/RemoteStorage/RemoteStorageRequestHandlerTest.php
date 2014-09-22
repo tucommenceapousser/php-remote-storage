@@ -61,8 +61,10 @@ class RemoteStorageRequestHandlerTest extends PHPUnit_Framework_TestCase
 
     public function testStripQuotes()
     {
-        $this->assertEquals("foo", $this->r->stripQuotes('"foo"'));
-        $this->assertEquals("foo,bar,baz", $this->r->stripQuotes('"foo,bar,baz"'));
+        $this->assertEquals(array("foo"), $this->r->stripQuotes('"foo"'));
+        $this->assertEquals(array("foo", "bar", "baz"), $this->r->stripQuotes('"foo","bar","baz"'));
+        $this->assertEquals(array("foo", "bar", "baz"), $this->r->stripQuotes('"foo", "bar",  "baz"'));
+        $this->assertEquals(array("*"), $this->r->stripQuotes('*'));
     }
 
     public function testPutDocument()
@@ -177,7 +179,7 @@ class RemoteStorageRequestHandlerTest extends PHPUnit_Framework_TestCase
 
         $request = new Request("https://www.example.org", "GET");
         $request->setPathInfo("/admin/foo/bar/baz.txt");
-        $request->setHeader("If-Match", $documentVersion);
+        $request->setHeader("If-None-Match", $documentVersion);
         $response = $this->r->handleRequest($request);
         $this->assertEquals(412, $response->getStatusCode());
         $this->assertEquals("", $response->getContent());
@@ -198,7 +200,7 @@ class RemoteStorageRequestHandlerTest extends PHPUnit_Framework_TestCase
 
         $request = new Request("https://www.example.org", "GET");
         $request->setPathInfo("/admin/foo/bar/");
-        $request->setHeader("If-Match", $folderVersion);
+        $request->setHeader("If-None-Match", $folderVersion);
         $response = $this->r->handleRequest($request);
         $this->assertEquals(412, $response->getStatusCode());
         $this->assertEquals("", $response->getContent());

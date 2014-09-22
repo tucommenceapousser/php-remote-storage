@@ -61,7 +61,7 @@ class RemoteStorageRequestHandler
                             $this->remoteStorage->getFolder(
                                 $path,
                                 $this->stripQuotes(
-                                    $request->getHeader("If-Match")
+                                    $request->getHeader("If-None-Match")
                                 )
                             )
                         );
@@ -78,7 +78,7 @@ class RemoteStorageRequestHandler
                             $this->remoteStorage->getDocument(
                                 $path,
                                 $this->stripQuotes(
-                                    $request->getHeader("If-Match")
+                                    $request->getHeader("If-None-Match")
                                 )
                             )
                         );
@@ -170,14 +170,25 @@ class RemoteStorageRequestHandler
         if (null === $versionHeader) {
             return null;
         }
-        $startQuote = strpos($versionHeader, '"');
-        $endQuote = strrpos($versionHeader, '"');
-        $length = strlen($versionHeader);
 
-        if (0 !== $startQuote || $length-1 !== $endQuote) {
-            throw new BadRequestException("version header must start and end with a double quote");
+        $versions = array();
+
+        if ("*" === $versionHeader) {
+            return array("*");
         }
 
-        return substr($versionHeader, 1, $length-2);
+        foreach (explode(",", $versionHeader) as $v) {
+            $v = trim($v);
+            $startQuote = strpos($v, '"');
+            $endQuote = strrpos($v, '"');
+            $length = strlen($v);
+
+            if (0 !== $startQuote || $length-1 !== $endQuote) {
+                throw new BadRequestException("version header must start and end with a double quote");
+            }
+            $versions[] = substr($v, 1, $length-2);
+        }
+
+        return $versions;
     }
 }
