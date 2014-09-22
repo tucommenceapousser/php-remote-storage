@@ -175,7 +175,7 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
     /**
      * @expectedException fkooman\RemoteStorage\Exception\NotModifiedException
      */
-    public function testGetFolderIfNonMatch()
+    public function testGetFolderIfMatch()
     {
         $p1 = new Path("/admin/messages/foo/hello.txt");
         $p2 = new Path("/admin/messages/foo/");
@@ -193,5 +193,23 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
         $this->r->putDocument($p1, 'text/plain', 'Hello World');
         $documentVersion = $this->r->getVersion($p1);
         $this->r->getDocument($p1, $documentVersion);
+    }
+
+    public function testPutDocumentIfNonMatchStarOkay()
+    {
+        $p1 = new Path("/admin/messages/foo/hello.txt");
+        $this->r->putDocument($p1, 'text/plain', 'Hello World', null, '*');
+        $this->assertNotNull($this->r->getVersion($p1));
+    }
+
+    /**
+     * @expectedException fkooman\RemoteStorage\Exception\PreconditionFailedException
+     */
+    public function testPutDocumentIfNonMatchStarFail()
+    {
+        $p1 = new Path("/admin/messages/foo/hello.txt");
+        $this->r->putDocument($p1, 'text/plain', 'Hello World', null, '*');
+        // document already exists now, so we fail
+        $this->r->putDocument($p1, 'text/plain', 'Hello World', null, '*');
     }
 }
