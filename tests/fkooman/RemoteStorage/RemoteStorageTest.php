@@ -20,6 +20,7 @@ namespace fkooman\RemoteStorage;
 use PDO;
 use PHPUnit_Framework_TestCase;
 use fkooman\RemoteStorage\Exception\NotFoundException;
+use fkooman\Json\Json;
 
 class RemoteStorageTest extends PHPUnit_Framework_TestCase
 {
@@ -118,7 +119,8 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
         $this->r->putDocument($p2, 'text/plain', 'Hello Bar!');
         $this->r->putDocument($p2, 'text/plain', 'Hello Updated Bar!');
 
-        $folderData = $this->r->getFolder($p3);
+        $j = new Json();
+        $folderData = $j->decode($this->r->getFolder($p3));
         $this->assertEquals(2, count($folderData));
         $this->assertEquals(2, count($folderData['items']));
         $this->assertEquals('http://remotestorage.io/spec/folder-description', $folderData['@context']);
@@ -140,7 +142,8 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
         $this->r->putDocument($p2, 'text/plain', 'Hello Bar!');
         $this->r->putDocument($p2, 'text/plain', 'Hello Updated Bar!');
 
-        $folderData = $this->r->getFolder($p3);
+        $j = new Json();
+        $folderData =  $j->decode($this->r->getFolder($p3));
         $this->assertEquals(2, count($folderData));
         $this->assertEquals(2, count($folderData['items']));
         $this->assertEquals('http://remotestorage.io/spec/folder-description', $folderData['@context']);

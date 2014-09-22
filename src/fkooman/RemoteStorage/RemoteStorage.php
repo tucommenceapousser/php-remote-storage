@@ -19,6 +19,7 @@ namespace fkooman\RemoteStorage;
 
 use fkooman\RemoteStorage\Exception\PreconditionFailedException;
 use fkooman\RemoteStorage\Exception\NotModifiedException;
+use fkooman\Json\Json;
 
 class RemoteStorage
 {
@@ -28,10 +29,15 @@ class RemoteStorage
     /** @var fkooman\RemoteStorage\DocumentStorage */
     private $d;
 
+    /** @var fkooman\Json\Json */
+    private $j;
+
     public function __construct(MetadataStorage $md, DocumentStorage $d)
     {
         $this->md = $md;
         $this->d = $d;
+        $this->j = new Json();
+        $this->j->setForceObject(true);
     }
 
     public function putDocument(Path $p, $contentType, $documentData, $ifMatch = null, $ifNonMatch = null)
@@ -115,6 +121,6 @@ class RemoteStorage
             }
         }
 
-        return $f;
+        return $this->j->encode($f);
     }
 }

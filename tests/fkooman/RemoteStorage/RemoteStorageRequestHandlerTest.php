@@ -20,12 +20,14 @@ namespace fkooman\RemoteStorage;
 use PDO;
 use fkooman\OAuth\ResourceServer\TokenIntrospection;
 use fkooman\Http\Request;
+use fkooman\Json\Json;
 
 use PHPUnit_Framework_TestCase;
 
 class RemoteStorageRequestHandlerTest extends PHPUnit_Framework_TestCase
 {
     private $r;
+    private $j;
 
     public function setUp()
     {
@@ -54,6 +56,7 @@ class RemoteStorageRequestHandlerTest extends PHPUnit_Framework_TestCase
         );
 
         $this->r = new RemoteStorageRequestHandler($remoteStorage, $introspect);
+        $this->j = new Json();
     }
 
     public function testStripQuotes()
@@ -135,7 +138,7 @@ class RemoteStorageRequestHandlerTest extends PHPUnit_Framework_TestCase
                 "@context" => "http://remotestorage.io/spec/folder-description",
                 "items" => array()
             ),
-            $response->getContent()
+            $this->j->decode($response->getContent())
         );
     }
 
@@ -153,7 +156,7 @@ class RemoteStorageRequestHandlerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals("application/ld+json", $response->getContentType());
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertRegexp('/1:[a-z0-9]+/i', $response->getHeader('ETag'));
-        $folderData = $response->getContent();
+        $folderData = $this->j->decode($response->getContent());
         $this->assertEquals(2, count($folderData));
         $this->assertEquals(1, count($folderData['items']));
         $this->assertEquals('http://remotestorage.io/spec/folder-description', $folderData['@context']);
