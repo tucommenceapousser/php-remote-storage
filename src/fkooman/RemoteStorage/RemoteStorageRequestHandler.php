@@ -61,7 +61,7 @@ class RemoteStorageRequestHandler
                             $this->remoteStorage->getFolder(
                                 $path,
                                 $this->stripQuotes(
-                                    $request->getHeader("If-Non-Match")
+                                    $request->getHeader("If-None-Match")
                                 )
                             )
                         );
@@ -78,7 +78,7 @@ class RemoteStorageRequestHandler
                             $this->remoteStorage->getDocument(
                                 $path,
                                 $this->stripQuotes(
-                                    $request->getHeader("If-Non-Match")
+                                    $request->getHeader("If-None-Match")
                                 )
                             )
                         );
@@ -94,7 +94,10 @@ class RemoteStorageRequestHandler
                     $path = new Path($pathInfo);
                     if ($path->getIsFolder()) {
                         // FIXME: use more generic exceptions?
-                        throw new RemoteStorageRequestHandlerException("can not put a folder");
+                        throw new BadRequestException("can not put a folder");
+                    }
+                    if (null === $request->getContentType()) {
+                        throw new BadRequestException("Content-Type not specified");
                     }
 
                     $x = $this->remoteStorage->putDocument(
@@ -105,7 +108,7 @@ class RemoteStorageRequestHandler
                             $request->getHeader("If-Match")
                         ),
                         $this->stripQuotes(
-                            $request->getHeader("If-Non-Match")
+                            $request->getHeader("If-None-Match")
                         )
                     );
                     $documentVersion = $this->remoteStorage->getVersion($path);
@@ -122,7 +125,7 @@ class RemoteStorageRequestHandler
                     $path = new Path($pathInfo);
                     if ($path->getIsFolder()) {
                         // FIXME: use more generic exceptions?
-                        throw new RemoteStorageRequestHandlerException("can not delete a folder");
+                        throw new BadRequestException("can not delete a folder");
                     }
                     // need to get the version before the delete
                     $documentVersion = $this->remoteStorage->getVersion($path);
@@ -159,7 +162,7 @@ class RemoteStorageRequestHandler
     }
 
     /**
-     * ETag/If-Match/If-Non-Match are always quoted, this method removes
+     * ETag/If-Match/If-None-Match are always quoted, this method removes
      * the quotes
      */
     public function stripQuotes($versionHeader)

@@ -174,7 +174,7 @@ class RemoteStorageRequestHandlerTest extends PHPUnit_Framework_TestCase
 
         $request = new Request("https://www.example.org", "GET");
         $request->setPathInfo("/admin/foo/bar/baz.txt");
-        $request->setHeader("If-Non-Match", $documentVersion);
+        $request->setHeader("If-None-Match", $documentVersion);
         $response = $this->r->handleRequest($request);
         $this->assertEquals(304, $response->getStatusCode());
         $this->assertEquals("", $response->getContent());
