@@ -18,7 +18,6 @@
 namespace fkooman\RemoteStorage;
 
 use fkooman\Http\Request;
-use fkooman\Http\JsonResponse;
 use fkooman\OAuth\ResourceServer\TokenIntrospection;
 use fkooman\Rest\Service;
 use fkooman\RemoteStorage\Exception\NotFoundException;
@@ -56,7 +55,7 @@ class RemoteStorageRequestHandler
                             // ETag that will be the same for all empty folders
                             $folderVersion = '"e:7398243bf0d8b3c6c7e7ec618b3ee703"';
                         }
-                        $rsr = new RemoteStorageResponse(200, $folderVersion);
+                        $rsr = new RemoteStorageResponse($request, 200, $folderVersion);
                         $rsr->setContent(
                             $this->remoteStorage->getFolder(
                                 $path,
@@ -73,7 +72,7 @@ class RemoteStorageRequestHandler
                         $documentContentType = $this->remoteStorage->getContentType($path);
                         $documentContent = $this->remoteStorage->getDocument($path);
 
-                        $rsr = new RemoteStorageResponse(200, $documentVersion, $documentContentType);
+                        $rsr = new RemoteStorageResponse($request, 200, $documentVersion, $documentContentType);
                         $rsr->setContent(
                             $this->remoteStorage->getDocument(
                                 $path,
@@ -112,7 +111,7 @@ class RemoteStorageRequestHandler
                         )
                     );
                     $documentVersion = $this->remoteStorage->getVersion($path);
-                    $rsr = new RemoteStorageResponse(200, $documentVersion, 'application/json');
+                    $rsr = new RemoteStorageResponse($request, 200, $documentVersion, 'application/json');
                     $rsr->setContent($x);
 
                     return $rsr;
@@ -135,7 +134,7 @@ class RemoteStorageRequestHandler
                             $request->getHeader("If-Match")
                         )
                     );
-                    $rsr = new RemoteStorageResponse(200, $documentVersion, 'application/json');
+                    $rsr = new RemoteStorageResponse($request, 200, $documentVersion, 'application/json');
                     $rsr->setContent($x);
 
                     return $rsr;
@@ -151,13 +150,13 @@ class RemoteStorageRequestHandler
 
             return $service->run();
         } catch (BadRequestException $e) {
-            return new JsonResponse(400);
+            return new RemoteStorageErrorResponse($request, 400);
         } catch (NotFoundException $e) {
-            return new JsonResponse(404);
+            return new RemoteStorageErrorResponse($request, 404);
         } catch (PreconditionFailedException $e) {
-            return new JsonResponse(412);
+            return new RemoteStorageErrorResponse($request, 412);
         } catch (NotModifiedException $e) {
-            return new JsonResponse(304);
+            return new RemoteStorageErrorResponse($request, 304);
         }
     }
 

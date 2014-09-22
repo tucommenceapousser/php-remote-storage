@@ -70,11 +70,13 @@ class RemoteStorageRequestHandlerTest extends PHPUnit_Framework_TestCase
     public function testPutDocument()
     {
         $request = new Request("https://www.example.org", "PUT");
+        $request->setHeader("Origin", "http://www.example.org");
         $request->setPathInfo("/admin/foo/bar/baz.txt");
         $request->setContentType("text/plain");
         $request->setContent("Hello World!");
         $response = $this->r->handleRequest($request);
         $this->assertEquals("application/json", $response->getContentType());
+        $this->assertEquals("http://www.example.org", $response->getHeader("Access-Control-Allow-Origin"));
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertRegexp('/1:[a-z0-9]+/i', $response->getHeader('ETag'));
     }
@@ -82,10 +84,12 @@ class RemoteStorageRequestHandlerTest extends PHPUnit_Framework_TestCase
     public function testGetDocument()
     {
         $request = new Request("https://www.example.org", "PUT");
+        $request->setHeader("Origin", "http://www.example.org");
         $request->setPathInfo("/admin/foo/bar/baz.txt");
         $request->setContentType("text/plain");
         $request->setContent("Hello World!");
         $response = $this->r->handleRequest($request);
+        $this->assertEquals(200, $response->getStatusCode());
 
         $request = new Request("https://www.example.org");
         $request->setPathInfo("/admin/foo/bar/baz.txt");
@@ -107,21 +111,27 @@ class RemoteStorageRequestHandlerTest extends PHPUnit_Framework_TestCase
     public function testDeleteDocument()
     {
         $request = new Request("https://www.example.org", "PUT");
+        $request->setHeader("Origin", "http://www.example.org");
         $request->setPathInfo("/admin/foo/bar/baz.txt");
         $request->setContentType("text/plain");
         $request->setContent("Hello World!");
         $response = $this->r->handleRequest($request);
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals("http://www.example.org", $response->getHeader("Access-Control-Allow-Origin"));
 
         $request = new Request("https://www.example.org", "DELETE");
+        $request->setHeader("Origin", "http://www.example.org");
         $request->setPathInfo("/admin/foo/bar/baz.txt");
         $response = $this->r->handleRequest($request);
         $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals("http://www.example.org", $response->getHeader("Access-Control-Allow-Origin"));
         $this->assertRegexp('/1:[a-z0-9]+/i', $response->getHeader('ETag'));
     }
 
     public function testDeleteNonExistingDocument()
     {
         $request = new Request("https://www.example.org", "DELETE");
+        $request->setHeader("Origin", "http://www.example.org");
         $request->setPathInfo("/admin/foo/bar/baz.txt");
         $response = $this->r->handleRequest($request);
         $this->assertEquals(404, $response->getStatusCode());
@@ -147,10 +157,12 @@ class RemoteStorageRequestHandlerTest extends PHPUnit_Framework_TestCase
     public function testGetFolder()
     {
         $request = new Request("https://www.example.org", "PUT");
+        $request->setHeader("Origin", "http://www.example.org");
         $request->setPathInfo("/admin/foo/bar/baz.txt");
         $request->setContentType("text/plain");
         $request->setContent("Hello World!");
-        $this->r->handleRequest($request);
+        $response = $this->r->handleRequest($request);
+        $this->assertEquals(200, $response->getStatusCode());
 
         $request = new Request("https://www.example.org", "GET");
         $request->setPathInfo("/admin/foo/bar/");
@@ -170,14 +182,17 @@ class RemoteStorageRequestHandlerTest extends PHPUnit_Framework_TestCase
     public function testGetSameVersionDocument()
     {
         $request = new Request("https://www.example.org", "PUT");
+        $request->setHeader("Origin", "http://www.example.org");
         $request->setPathInfo("/admin/foo/bar/baz.txt");
         $request->setContentType("text/plain");
         $request->setContent("Hello World!");
         $response = $this->r->handleRequest($request);
+        $this->assertEquals(200, $response->getStatusCode());
         $documentVersion = $response->getHeader('ETag');
         $this->assertNotNull($documentVersion);
 
         $request = new Request("https://www.example.org", "GET");
+        $request->setHeader("Origin", "http://www.example.org");
         $request->setPathInfo("/admin/foo/bar/baz.txt");
         $request->setHeader("If-None-Match", $documentVersion);
         $response = $this->r->handleRequest($request);
@@ -188,6 +203,7 @@ class RemoteStorageRequestHandlerTest extends PHPUnit_Framework_TestCase
     public function testGetSameVersionFolder()
     {
         $request = new Request("https://www.example.org", "PUT");
+        $request->setHeader("Origin", "http://www.example.org");
         $request->setPathInfo("/admin/foo/bar/baz.txt");
         $request->setContentType("text/plain");
         $request->setContent("Hello World!");
@@ -209,12 +225,14 @@ class RemoteStorageRequestHandlerTest extends PHPUnit_Framework_TestCase
     public function testPutNonMatchingVersion()
     {
         $request = new Request("https://www.example.org", "PUT");
+        $request->setHeader("Origin", "http://www.example.org");
         $request->setPathInfo("/admin/foo/bar/baz.txt");
         $request->setContentType("text/plain");
         $request->setContent("Hello World!");
         $response = $this->r->handleRequest($request);
 
         $request = new Request("https://www.example.org", "PUT");
+        $request->setHeader("Origin", "http://www.example.org");
         $request->setPathInfo("/admin/foo/bar/baz.txt");
         $request->setHeader("If-Match", '"non-matching-version"');
         $request->setContentType("text/plain");
@@ -227,12 +245,14 @@ class RemoteStorageRequestHandlerTest extends PHPUnit_Framework_TestCase
     public function testDeleteNonMatchingVersion()
     {
         $request = new Request("https://www.example.org", "PUT");
+        $request->setHeader("Origin", "http://www.example.org");
         $request->setPathInfo("/admin/foo/bar/baz.txt");
         $request->setContentType("text/plain");
         $request->setContent("Hello World!");
         $response = $this->r->handleRequest($request);
 
         $request = new Request("https://www.example.org", "DELETE");
+        $request->setHeader("Origin", "http://www.example.org");
         $request->setPathInfo("/admin/foo/bar/baz.txt");
         $request->setHeader("If-Match", '"non-matching-version"');
         $response = $this->r->handleRequest($request);

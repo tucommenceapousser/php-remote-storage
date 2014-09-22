@@ -20,22 +20,13 @@ namespace fkooman\RemoteStorage;
 use fkooman\Http\Request;
 use fkooman\Http\Response;
 
-class RemoteStorageResponse extends Response
+class RemoteStorageErrorResponse extends Response
 {
-    public function __construct(Request $request, $statusCode, $entityVersion, $contentType = null)
+    public function __construct(Request $request, $statusCode)
     {
         parent::__construct($statusCode);
-        if ("GET" === $request->getRequestMethod()) {
-            $this->setHeader("Expires", 0);
-        }
         if (null !== $request->getHeader("Origin")) {
             $this->setHeader("Access-Control-Allow-Origin", $request->getHeader("Origin"));
         }
-        $this->setHeader("ETag", sprintf('"%s"', $entityVersion));
-        if (null === $contentType) {
-            // folder
-            $contentType = "application/ld+json";
-        }
-        $this->setContentType($contentType);
     }
 }
