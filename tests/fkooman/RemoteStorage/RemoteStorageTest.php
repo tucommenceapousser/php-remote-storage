@@ -190,7 +190,7 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
     /**
      * @expectedException fkooman\RemoteStorage\Exception\NotModifiedException
      */
-    public function testGetDocumentIfNonMatch()
+    public function testGetDocumentIfNoneMatch()
     {
         $p1 = new Path("/admin/messages/foo/hello.txt");
         $this->r->putDocument($p1, 'text/plain', 'Hello World');
@@ -198,7 +198,7 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
         $this->r->getDocument($p1, $documentVersion);
     }
 
-    public function testPutDocumentIfNonMatchStarOkay()
+    public function testPutDocumentIfNoneMatchStarOkay()
     {
         $p1 = new Path("/admin/messages/foo/hello.txt");
         $this->r->putDocument($p1, 'text/plain', 'Hello World', null, '*');
@@ -208,7 +208,7 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
     /**
      * @expectedException fkooman\RemoteStorage\Exception\PreconditionFailedException
      */
-    public function testPutDocumentIfNonMatchStarFail()
+    public function testPutDocumentIfNoneMatchStarFail()
     {
         $p1 = new Path("/admin/messages/foo/hello.txt");
         $this->r->putDocument($p1, 'text/plain', 'Hello World', null, '*');

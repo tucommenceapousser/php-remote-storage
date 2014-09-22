@@ -40,13 +40,13 @@ class RemoteStorage
         $this->j->setForceObject(true);
     }
 
-    public function putDocument(Path $p, $contentType, $documentData, $ifMatch = null, $ifNonMatch = null)
+    public function putDocument(Path $p, $contentType, $documentData, $ifMatch = null, $ifNoneMatch = null)
     {
         if (null !== $ifMatch && $ifMatch !== $this->md->getVersion($p)) {
             throw new PreconditionFailedException();
         }
 
-        if ("*" === $ifNonMatch && null !== $this->md->getVersion($p)) {
+        if ("*" === $ifNoneMatch && null !== $this->md->getVersion($p)) {
             throw new PreconditionFailedException();
         }
 
@@ -86,11 +86,11 @@ class RemoteStorage
         return $this->md->getContentType($p);
     }
 
-    public function getDocument(Path $p, $ifNonMatch = null)
+    public function getDocument(Path $p, $ifNoneMatch = null)
     {
-        if (null !== $ifNonMatch) {
+        if (null !== $ifNoneMatch) {
             // may be comma separated
-            $nodeVersions = explode(",", $ifNonMatch);
+            $nodeVersions = explode(",", $ifNoneMatch);
             if (in_array($this->md->getVersion($p), $nodeVersions)) {
                 throw new NotModifiedException();
             }
@@ -99,11 +99,11 @@ class RemoteStorage
         return $this->d->getDocument($p);
     }
 
-    public function getFolder(Path $p, $ifNonMatch = null)
+    public function getFolder(Path $p, $ifNoneMatch = null)
     {
-        if (null !== $ifNonMatch) {
+        if (null !== $ifNoneMatch) {
             // may be comma separated
-            $nodeVersions = explode(",", $ifNonMatch);
+            $nodeVersions = explode(",", $ifNoneMatch);
             if (in_array($this->md->getVersion($p), $nodeVersions)) {
                 throw new NotModifiedException();
             }
