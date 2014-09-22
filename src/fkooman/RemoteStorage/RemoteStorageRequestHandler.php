@@ -24,6 +24,7 @@ use fkooman\Rest\Service;
 use fkooman\RemoteStorage\Exception\NotFoundException;
 use fkooman\RemoteStorage\Exception\PreconditionFailedException;
 use fkooman\RemoteStorage\Exception\NotModifiedException;
+use fkooman\RemoteStorage\Exception\BadRequestException;
 
 class RemoteStorageRequestHandler
 {
@@ -56,7 +57,14 @@ class RemoteStorageRequestHandler
                             $folderVersion = 'e:7398243bf0d8b3c6c7e7ec618b3ee703';
                         }
                         $rsr = new RemoteStorageResponse(200, $folderVersion);
-                        $rsr->setContent($this->remoteStorage->getFolder($path, $request->getHeader("If-Non-Match")));
+                        $rsr->setContent(
+                            $this->remoteStorage->getFolder(
+                                $path,
+                                $this->stripQuotes(
+                                    $request->getHeader("If-Non-Match")
+                                )
+                            )
+                        );
 
                         return $rsr;
                     } else {
@@ -66,7 +74,14 @@ class RemoteStorageRequestHandler
                         $documentContent = $this->remoteStorage->getDocument($path);
 
                         $rsr = new RemoteStorageResponse(200, $documentVersion, $documentContentType);
-                        $rsr->setContent($this->remoteStorage->getDocument($path, $request->getHeader("If-Non-Match")));
+                        $rsr->setContent(
+                            $this->remoteStorage->getDocument(
+                                $path,
+                                $this->stripQuotes(
+                                    $request->getHeader("If-Non-Match")
+                                )
+                            )
+                        );
 
                         return $rsr;
                     }
@@ -82,7 +97,17 @@ class RemoteStorageRequestHandler
                         throw new RemoteStorageRequestHandlerException("can not put a folder");
                     }
 
-                    $x = $this->remoteStorage->putDocument($path, $request->getContentType(), $request->getContent(), $request->getHeader("If-Match"), $request->getHeader("If-Non-Match"));
+                    $x = $this->remoteStorage->putDocument(
+                        $path,
+                        $request->getContentType(),
+                        $request->getContent(),
+                        $this->stripQuotes(
+                            $request->getHeader("If-Match")
+                        ),
+                        $this->stripQuotes(
+                            $request->getHeader("If-Non-Match")
+                        )
+                    );
                     $documentVersion = $this->remoteStorage->getVersion($path);
                     $rsr = new RemoteStorageResponse(200, $documentVersion, 'application/json');
                     $rsr->setContent($x);
@@ -101,7 +126,12 @@ class RemoteStorageRequestHandler
                     }
                     // need to get the version before the delete
                     $documentVersion = $this->remoteStorage->getVersion($path);
-                    $x = $this->remoteStorage->deleteDocument($path, $request->getHeader("If-Non-Match"));
+                    $x = $this->remoteStorage->deleteDocument(
+                        $path,
+                        $this->stripQuotes(
+                            $request->getHeader("If-Match")
+                        )
+                    );
                     $rsr = new RemoteStorageResponse(200, $documentVersion, 'application/json');
                     $rsr->setContent($x);
 
@@ -117,6 +147,8 @@ class RemoteStorageRequestHandler
             );
 
             return $service->run();
+        } catch (BadRequestException $e) {
+            return new JsonResponse(400);
         } catch (NotFoundException $e) {
             return new JsonResponse(404);
         } catch (PreconditionFailedException $e) {
@@ -124,5 +156,25 @@ class RemoteStorageRequestHandler
         } catch (NotModifiedException $e) {
             return new JsonResponse(304);
         }
+    }
+
+    /**
+     * ETag/If-Match/If-Non-Match are always quoted, this method removes
+     * the quotes
+     */
+    public function stripQuotes($versionHeader)
+    {
+        if (null === $versionHeader) {
+            return null;
+        }
+        $startQuote = strpos($versionHeader, '"');
+        $endQuote = strrpos($versionHeader, '"');
+        $length = strlen($versionHeader);
+
+        if (0 !== $startQuote || $length-1 !== $endQuote) {
+            throw new BadRequestException("version header must start and end with a double quote");
+        }
+
+        return substr($versionHeader, 1, $length-2);
     }
 }

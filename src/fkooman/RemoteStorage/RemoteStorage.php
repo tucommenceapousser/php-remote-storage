@@ -39,10 +39,10 @@ class RemoteStorage
         if (null !== $ifMatch && $ifMatch !== $this->md->getVersion($p)) {
             throw new PreconditionFailedException();
         }
-// FIXME: https://github.com/remotestorage/spec/issues/73
-//        if ("*" === $ifNonMatch && null !== $this->md->getVersion($p)) {
-//            throw new PreconditionFailedException();
-//        }
+        // FIXME: https://github.com/remotestorage/spec/issues/73
+        //        if ("*" === $ifNonMatch && null !== $this->md->getVersion($p)) {
+        //            throw new PreconditionFailedException();
+        //        }
 
         $updatedEntities = $this->d->putDocument($p, $documentData);
         $this->md->updateDocument($p, $contentType);

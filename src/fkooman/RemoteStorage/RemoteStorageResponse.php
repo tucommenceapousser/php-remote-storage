@@ -32,7 +32,7 @@ class RemoteStorageResponse extends Response
 
         parent::__construct($statusCode);
         $this->setHeader("Expires", 0);
-        $this->setHeader("ETag", $entityVersion);
+        $this->setHeader("ETag", sprintf('"%s"', $entityVersion));
         if (null === $contentType) {
             // folder
             $contentType = "application/ld+json";
@@ -42,7 +42,7 @@ class RemoteStorageResponse extends Response
 
     public function setContent($content)
     {
-       parent::setContent($this->j->encode($content));
+        parent::setContent($this->j->encode($content));
     }
     public function getContent()
     {

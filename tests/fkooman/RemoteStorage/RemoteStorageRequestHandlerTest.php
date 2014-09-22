@@ -56,6 +56,12 @@ class RemoteStorageRequestHandlerTest extends PHPUnit_Framework_TestCase
         $this->r = new RemoteStorageRequestHandler($remoteStorage, $introspect);
     }
 
+    public function testStripQuotes()
+    {
+        $this->assertEquals("foo", $this->r->stripQuotes('"foo"'));
+        $this->assertEquals("foo,bar,baz", $this->r->stripQuotes('"foo,bar,baz"'));
+    }
+
     public function testPutDocument()
     {
         $request = new Request("https://www.example.org", "PUT");
@@ -154,5 +160,57 @@ class RemoteStorageRequestHandlerTest extends PHPUnit_Framework_TestCase
         $this->assertRegexp('/1:[a-z0-9]+/i', $folderData['items']['baz.txt']['ETag']);
         $this->assertEquals('text/plain', $folderData['items']['baz.txt']['Content-Type']);
         $this->assertEquals(12, $folderData['items']['baz.txt']['Content-Length']);
+    }
+
+    public function testGetSameVersionDocument()
+    {
+        $request = new Request("https://www.example.org", "PUT");
+        $request->setPathInfo("/admin/foo/bar/baz.txt");
+        $request->setContentType("text/plain");
+        $request->setContent("Hello World!");
+        $response = $this->r->handleRequest($request);
+        $documentVersion = $response->getHeader('ETag');
+        $this->assertNotNull($documentVersion);
+
+        $request = new Request("https://www.example.org", "GET");
+        $request->setPathInfo("/admin/foo/bar/baz.txt");
+        $request->setHeader("If-Non-Match", $documentVersion);
+        $response = $this->r->handleRequest($request);
+        $this->assertEquals(304, $response->getStatusCode());
+        $this->assertEquals("", $response->getContent());
+    }
+
+    public function testPutNonMatchingVersion()
+    {
+        $request = new Request("https://www.example.org", "PUT");
+        $request->setPathInfo("/admin/foo/bar/baz.txt");
+        $request->setContentType("text/plain");
+        $request->setContent("Hello World!");
+        $response = $this->r->handleRequest($request);
+
+        $request = new Request("https://www.example.org", "PUT");
+        $request->setPathInfo("/admin/foo/bar/baz.txt");
+        $request->setHeader("If-Match", '"non-matching-version"');
+        $request->setContentType("text/plain");
+        $request->setContent("Hello New World!");
+        $response = $this->r->handleRequest($request);
+        $this->assertEquals(412, $response->getStatusCode());
+        $this->assertEquals("", $response->getContent());
+    }
+
+    public function testDeleteNonMatchingVersion()
+    {
+        $request = new Request("https://www.example.org", "PUT");
+        $request->setPathInfo("/admin/foo/bar/baz.txt");
+        $request->setContentType("text/plain");
+        $request->setContent("Hello World!");
+        $response = $this->r->handleRequest($request);
+
+        $request = new Request("https://www.example.org", "DELETE");
+        $request->setPathInfo("/admin/foo/bar/baz.txt");
+        $request->setHeader("If-Match", '"non-matching-version"');
+        $response = $this->r->handleRequest($request);
+        $this->assertEquals(412, $response->getStatusCode());
+        $this->assertEquals("", $response->getContent());
     }
 }
