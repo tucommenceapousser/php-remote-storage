@@ -10,7 +10,7 @@
     "require": {
         "ext-openssl": "*",
         "fkooman/config": "~0.3.3",
-        "fkooman/oauth-rs": "~0.7.0",
+        "fkooman/oauth-rs": "~0.7.1",
         "fkooman/rest": "~0.4.4",
         "php": "~5.4"
     }

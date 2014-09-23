@@ -18,7 +18,6 @@
 namespace fkooman\RemoteStorage;
 
 use PDO;
-use fkooman\OAuth\ResourceServer\TokenIntrospection;
 use fkooman\Http\Request;
 use fkooman\Json\Json;
 
@@ -48,10 +47,11 @@ class RemoteStorageRequestHandlerTest extends PHPUnit_Framework_TestCase
         $document = new DocumentStorage($tempFile);
         $remoteStorage = new RemoteStorage($md, $document);
 
-        $introspect = new TokenIntrospection(
+        $introspect = new RemoteStorageTokenIntrospection(
             array(
                 "active" => true,
-                "sub" => "admin"
+                "sub" => "admin",
+                "scope" => "foo:rw"
             )
         );
 

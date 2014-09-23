@@ -22,12 +22,11 @@ use fkooman\Http\Request;
 use fkooman\Http\JsonResponse;
 use fkooman\Http\IncomingRequest;
 
-use fkooman\OAuth\ResourceServer\TokenIntrospection;
-
 use fkooman\RemoteStorage\RemoteStorage;
 use fkooman\RemoteStorage\RemoteStorageRequestHandler;
 use fkooman\RemoteStorage\MetadataStorage;
 use fkooman\RemoteStorage\DocumentStorage;
+use fkooman\RemoteStorage\RemoteStorageTokenIntrospection;
 
 try {
     $config = Config::fromIniFile(
@@ -47,10 +46,11 @@ try {
     );
 
     // FIXME: use fkooman\OAuth\ResourceServer
-    $introspect = new TokenIntrospection(
+    $introspect = new RemoteStorageTokenIntrospection(
         array(
             "active" => true,
-            "sub" => "admin"
+            "sub" => "admin",
+            "scope" => "foo:rw"
         )
     );
 

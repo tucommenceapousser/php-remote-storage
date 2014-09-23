@@ -18,25 +18,25 @@
 namespace fkooman\RemoteStorage;
 
 use fkooman\Http\Request;
-use fkooman\OAuth\ResourceServer\TokenIntrospection;
 use fkooman\Rest\Service;
 use fkooman\RemoteStorage\Exception\NotFoundException;
 use fkooman\RemoteStorage\Exception\PreconditionFailedException;
 use fkooman\RemoteStorage\Exception\NotModifiedException;
 use fkooman\RemoteStorage\Exception\BadRequestException;
+use fkooman\RemoteStorage\Exception\UnauthorizedException;
 
 class RemoteStorageRequestHandler
 {
     /** @var fkooman\RemoteStorage\RemoteStorage */
     private $remoteStorage;
 
-    /** @var fkooman\OAuth\ResourceServer\TokenIntrospection */
-    private $tokenIntrospection;
+    /** @var fkooman\RemoteStorage\RemoteStorageTokenIntrospection */
+    private $remoteStorageTokenIntrospection;
 
-    public function __construct(RemoteStorage $remoteStorage, TokenIntrospection $tokenIntrospection)
+    public function __construct(RemoteStorage $remoteStorage, RemoteStorageTokenIntrospection $t)
     {
         $this->remoteStorage = $remoteStorage;
-        $this->tokenIntrospection = $tokenIntrospection;
+        $this->remoteStorageTokenIntrospection = $t;
     }
 
     public function handleRequest(Request $request)
@@ -49,6 +49,12 @@ class RemoteStorageRequestHandler
                     $path = new Path($pathInfo);
                     if ($path->getIsFolder()) {
                         // folder
+                        if ($path->getUserId() !== $this->remoteStorageTokenIntrospection->getSub()) {
+                            throw new UnauthorizedException("path does not match authorized subject");
+                        }
+                        if (!$this->remoteStorageTokenIntrospection->hasReadScope($path->getModuleName())) {
+                            throw new UnauthorizedException("path does not match authorized scope");
+                        }
                         $folderVersion = $this->remoteStorage->getVersion($path);
                         if (null === $folderVersion) {
                             // folder does not exist, so we just invent this
@@ -68,6 +74,14 @@ class RemoteStorageRequestHandler
                         return $rsr;
                     } else {
                         // document
+                        if (!$path->getIsPublic()) {
+                            if ($path->getUserId() !== $this->remoteStorageTokenIntrospection->getSub()) {
+                                throw new UnauthorizedException("path does not match authorized subject");
+                            }
+                            if (!$this->remoteStorageTokenIntrospection->hasReadScope($path->getModuleName())) {
+                                throw new UnauthorizedException("path does not match authorized scope");
+                            }
+                        }
                         $documentVersion = $this->remoteStorage->getVersion($path);
                         $documentContentType = $this->remoteStorage->getContentType($path);
                         $documentContent = $this->remoteStorage->getDocument($path);
@@ -91,6 +105,14 @@ class RemoteStorageRequestHandler
                 "*",
                 function ($pathInfo) use ($request) {
                     $path = new Path($pathInfo);
+
+                    if ($path->getUserId() !== $this->remoteStorageTokenIntrospection->getSub()) {
+                        throw new UnauthorizedException("path does not match authorized subject");
+                    }
+                    if (!$this->remoteStorageTokenIntrospection->hasReadScope($path->getModuleName())) {
+                        throw new UnauthorizedException("path does not match authorized scope");
+                    }
+
                     if ($path->getIsFolder()) {
                         // FIXME: use more generic exceptions?
                         throw new BadRequestException("can not put a folder");
@@ -122,6 +144,14 @@ class RemoteStorageRequestHandler
                 "*",
                 function ($pathInfo) use ($request) {
                     $path = new Path($pathInfo);
+
+                    if ($path->getUserId() !== $this->remoteStorageTokenIntrospection->getSub()) {
+                        throw new UnauthorizedException("path does not match authorized subject");
+                    }
+                    if (!$this->remoteStorageTokenIntrospection->hasReadScope($path->getModuleName())) {
+                        throw new UnauthorizedException("path does not match authorized scope");
+                    }
+
                     if ($path->getIsFolder()) {
                         // FIXME: use more generic exceptions?
                         throw new BadRequestException("can not delete a folder");
@@ -144,6 +174,15 @@ class RemoteStorageRequestHandler
             $service->options(
                 "*",
                 function ($pathInfo) use ($request) {
+                    $path = new Path($pathInfo);
+
+                    if ($path->getUserId() !== $this->remoteStorageTokenIntrospection->getSub()) {
+                        throw new UnauthorizedException("path does not match authorized subject");
+                    }
+                    if (!$this->remoteStorageTokenIntrospection->hasReadScope($path->getModuleName())) {
+                        throw new UnauthorizedException("path does not match authorized scope");
+                    }
+
                     return new OptionsResponse();
                 }
             );
@@ -157,6 +196,8 @@ class RemoteStorageRequestHandler
             return new RemoteStorageErrorResponse($request, 412);
         } catch (NotModifiedException $e) {
             return new RemoteStorageErrorResponse($request, 304);
+        } catch (UnauthorizedException $e) {
+            return new RemoteStorageErrorResponse($request, 401);
         }
     }
 

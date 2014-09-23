@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "5668e84426bca47ef0b9b80b7ed6cae2",
+    "hash": "ed237ecec155ab932cc8905301ccdb6c",
     "packages": [
         {
             "name": "fkooman/config",
@@ -121,16 +121,16 @@
         },
         {
             "name": "fkooman/oauth-rs",
-            "version": "0.7.0",
+            "version": "0.7.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/fkooman/php-oauth-lib-rs.git",
-                "reference": "84247921a9706a21d57c24fdab9a51e7f4892bca"
+                "reference": "ef78211f40756364110554d6c2c6d0fdad9ddccf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fkooman/php-oauth-lib-rs/zipball/84247921a9706a21d57c24fdab9a51e7f4892bca",
-                "reference": "84247921a9706a21d57c24fdab9a51e7f4892bca",
+                "url": "https://api.github.com/repos/fkooman/php-oauth-lib-rs/zipball/ef78211f40756364110554d6c2c6d0fdad9ddccf",
+                "reference": "ef78211f40756364110554d6c2c6d0fdad9ddccf",
                 "shasum": ""
             },
             "require": {
@@ -156,7 +156,7 @@
                 }
             ],
             "description": "Library for implementing OAuth 2.0 resource servers",
-            "time": "2014-09-12 14:28:03"
+            "time": "2014-09-23 10:53:04"
         },
         {
             "name": "fkooman/rest",
