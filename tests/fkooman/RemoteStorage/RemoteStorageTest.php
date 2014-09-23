@@ -176,7 +176,7 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException fkooman\RemoteStorage\Exception\PreconditionFailedException
+     * @expectedException fkooman\RemoteStorage\Exception\NotModifiedException
      */
     public function testGetFolderIfMatch()
     {
@@ -188,7 +188,7 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException fkooman\RemoteStorage\Exception\PreconditionFailedException
+     * @expectedException fkooman\RemoteStorage\Exception\NotModifiedException
      */
     public function testGetDocumentIfMatch()
     {

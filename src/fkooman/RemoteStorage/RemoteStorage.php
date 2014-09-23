@@ -18,6 +18,8 @@
 namespace fkooman\RemoteStorage;
 
 use fkooman\RemoteStorage\Exception\PreconditionFailedException;
+use fkooman\RemoteStorage\Exception\NotModifiedException;
+
 use fkooman\Json\Json;
 
 class RemoteStorage
@@ -88,7 +90,7 @@ class RemoteStorage
     public function getDocument(Path $p, array $ifNoneMatch = null)
     {
         if (null !== $ifNoneMatch && in_array($this->md->getVersion($p), $ifNoneMatch)) {
-            throw new PreconditionFailedException();
+            throw new NotModifiedException();
         }
 
         return $this->d->getDocument($p);
@@ -97,7 +99,7 @@ class RemoteStorage
     public function getFolder(Path $p, array $ifNoneMatch = null)
     {
         if (null !== $ifNoneMatch && in_array($this->md->getVersion($p), $ifNoneMatch)) {
-            throw new PreconditionFailedException();
+            throw new NotModifiedException();
         }
 
         $f = array(

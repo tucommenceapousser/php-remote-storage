@@ -196,7 +196,7 @@ class RemoteStorageRequestHandlerTest extends PHPUnit_Framework_TestCase
         $request->setPathInfo("/admin/foo/bar/baz.txt");
         $request->setHeader("If-None-Match", $documentVersion);
         $response = $this->r->handleRequest($request);
-        $this->assertEquals(412, $response->getStatusCode());
+        $this->assertEquals(304, $response->getStatusCode());
         $this->assertEquals("", $response->getContent());
     }
 
@@ -218,7 +218,7 @@ class RemoteStorageRequestHandlerTest extends PHPUnit_Framework_TestCase
         $request->setPathInfo("/admin/foo/bar/");
         $request->setHeader("If-None-Match", $folderVersion);
         $response = $this->r->handleRequest($request);
-        $this->assertEquals(412, $response->getStatusCode());
+        $this->assertEquals(304, $response->getStatusCode());
         $this->assertEquals("", $response->getContent());
     }
 
