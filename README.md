@@ -44,8 +44,8 @@ on and RHEL 7.
     $ git clone https://github.com/fkooman/php-remote-storage.git
     $ cd php-remote-storage
     $ /path/to/composer.phar install
-    $ mkdir data
-    $ sudo chown apache.apache data
+    $ mkdir -p data/storage
+    $ sudo chown -R apache.apache data
     $ sudo semanage fcontext -a -t httpd_sys_rw_content_t '/var/www/php-remote-storage/data(/.*)?'
     $ sudo restorecon -R /var/www/php-remote-storage/data
     $ cd config
