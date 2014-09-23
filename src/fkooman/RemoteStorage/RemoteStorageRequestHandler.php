@@ -109,7 +109,7 @@ class RemoteStorageRequestHandler
                     if ($path->getUserId() !== $this->remoteStorageTokenIntrospection->getSub()) {
                         throw new UnauthorizedException("path does not match authorized subject");
                     }
-                    if (!$this->remoteStorageTokenIntrospection->hasReadScope($path->getModuleName())) {
+                    if (!$this->remoteStorageTokenIntrospection->hasWriteScope($path->getModuleName())) {
                         throw new UnauthorizedException("path does not match authorized scope");
                     }
 
@@ -148,7 +148,7 @@ class RemoteStorageRequestHandler
                     if ($path->getUserId() !== $this->remoteStorageTokenIntrospection->getSub()) {
                         throw new UnauthorizedException("path does not match authorized subject");
                     }
-                    if (!$this->remoteStorageTokenIntrospection->hasReadScope($path->getModuleName())) {
+                    if (!$this->remoteStorageTokenIntrospection->hasWriteScope($path->getModuleName())) {
                         throw new UnauthorizedException("path does not match authorized scope");
                     }
 
