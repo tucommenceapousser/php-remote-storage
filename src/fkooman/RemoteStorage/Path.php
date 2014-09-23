@@ -89,13 +89,19 @@ class Path
 
     public function getFolderTreeToUserRoot()
     {
+
         $p = $this->getFolderPath();
-        $folderTree = array($p);
         do {
-            $rpos = strrpos($p, "/", -2);
-            $p = substr($p, 0, $rpos + 1);
             $folderTree[] = $p;
-        } while (0 !== strrpos($p, "/", -2));
+
+            // remove from last "/" to previous "/", e.g.:
+            // "/foo/bar/baz/" -> "/foo/bar/"
+
+            // remove the last "/"
+            $p = substr($p, 0, strlen($p) - 1);
+            // remove everything after the now last "/"
+            $p = substr($p, 0, strrpos($p, "/") + 1);
+        } while (substr_count($p, "/") > 1);
 
         return $folderTree;
     }

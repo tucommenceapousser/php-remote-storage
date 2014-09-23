@@ -19,6 +19,7 @@ namespace fkooman\RemoteStorage;
 
 use fkooman\RemoteStorage\Exception\DocumentException;
 use fkooman\RemoteStorage\Exception\NotFoundException;
+use fkooman\RemoteStorage\Exception\ConflictException;
 
 class DocumentStorage
 {
@@ -66,7 +67,12 @@ class DocumentStorage
 
         $folderTree = $p->getFolderTreeFromUserRoot();
         foreach ($folderTree as $pathItem) {
-            if (!file_exists($this->baseDir . $pathItem)) {
+            $folderPath = $this->baseDir . $pathItem;
+            $folderPathAsFile = substr($folderPath, 0, strlen($folderPath)-1);
+            if (file_exists($folderPathAsFile) && is_file($folderPathAsFile)) {
+                throw new ConflictException("file already exists in path preventing folder creation");
+            }
+            if (!file_exists($folderPath)) {
                 // create it
                 if (false === @mkdir($this->baseDir . $pathItem, 0770)) {
                     throw new DocumentException("unable to create directory");
@@ -75,11 +81,20 @@ class DocumentStorage
         }
 
         $documentPath = $this->baseDir . $p->getPath();
+        if (file_exists($documentPath) && is_dir($documentPath)) {
+            throw new ConflictException("document path is already a folder");
+        }
         if (false === @file_put_contents($documentPath, $documentContent)) {
             throw new DocumentException("unable to write document");
         }
+        // PHP caches files and doesn't flush on getting file size, so we
+        // really have to flush the cache manually, otherwise directory listings
+        // potentially give you the wrong information. This only affects the 
+        // unit tests, as getting a directory listing and putting a file are 
+        // always separated executions
+        clearstatcache(true, $documentPath);
 
-        return $p->getFolderTreeFromUserRoot();
+        return $folderTree;
     }
 
     /**

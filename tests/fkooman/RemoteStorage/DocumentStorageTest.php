@@ -23,6 +23,7 @@ use fkooman\RemoteStorage\Exception\NotFoundException;
 class DocumentStorageTest extends PHPUnit_Framework_TestCase
 {
     private $document;
+    private $tempFile;
 
     public function setUp()
     {
@@ -32,6 +33,7 @@ class DocumentStorageTest extends PHPUnit_Framework_TestCase
         }
         mkdir($tempFile);
         $this->document = new DocumentStorage($tempFile);
+        $this->tempFile = $tempFile;
     }
 
     public function testPutDocument()
@@ -46,6 +48,74 @@ class DocumentStorageTest extends PHPUnit_Framework_TestCase
             ),
             $this->document->putDocument($p, $d)
         );
+    }
+
+    public function testPutTwoDocuments()
+    {
+        $p1 = new Path("/admin/messages/foo/baz.txt");
+        $p2 = new Path("/admin/messages/foo/bar.txt");
+        $p3 = new Path("/admin/messages/foo/");
+        $this->assertEquals(
+            array (
+                '/admin/',
+                '/admin/messages/',
+                '/admin/messages/foo/'
+            ),
+            $this->document->putDocument($p1, 'Hello Baz!')
+        );
+        $this->assertEquals(
+            array (
+                '/admin/',
+                '/admin/messages/',
+                '/admin/messages/foo/'
+            ),
+            $this->document->putDocument($p2, 'Hello Bar!')
+        );
+        $this->assertEquals(
+            array (
+                '/admin/',
+                '/admin/messages/',
+                '/admin/messages/foo/'
+            ),
+            $this->document->putDocument($p2, 'Hello Updated Bar!')
+        );
+        $this->assertEquals(
+            array(
+                "bar.txt" => array(
+                    "Content-Length" => 18
+                ),
+                "baz.txt" => array(
+                    "Content-Length" => 10
+                )
+            ),
+            $this->document->getFolder($p3)
+        );
+    }
+
+    /**
+     * @expectedException fkooman\RemoteStorage\Exception\ConflictException
+     */
+    public function testPutDocumentOnFolder()
+    {
+        // first write this
+        $p = new Path("/foo/bar/baz");
+        $this->document->putDocument($p, "Hello World");
+        // now try to write to /foo/bar as a file, bar is already a folder
+        $p = new Path("/foo/bar");
+        $this->document->putDocument($p, "Hello World");
+    }
+
+    /**
+     * @expectedException fkooman\RemoteStorage\Exception\ConflictException
+     */
+    public function testPutFolderOnDocument()
+    {
+        // first write this
+        $p = new Path("/foo/bar/baz");
+        $this->document->putDocument($p, "Hello World");
+        // now try to write to /foo/bar as a file, bar is already a folder
+        $p = new Path("/foo/bar/baz/foo");
+        $this->document->putDocument($p, "Hello World");
     }
 
     public function testGetDocument()

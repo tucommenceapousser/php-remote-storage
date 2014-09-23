@@ -155,4 +155,15 @@ class PathTest extends PHPUnit_Framework_TestCase
             $path->getFolderTreeFromUserRoot()
         );
     }
+
+    public function testShortPathTreeFromUserRoot()
+    {
+        $path = new Path("/foo/bar");
+        $this->assertEquals(
+            array(
+                "/foo/",
+            ),
+            $path->getFolderTreeFromUserRoot()
+        );
+    }
 }
