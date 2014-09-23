@@ -176,14 +176,17 @@ class RemoteStorageRequestHandler
                 function ($pathInfo) use ($request) {
                     $path = new Path($pathInfo);
 
-                    if ($path->getUserId() !== $this->remoteStorageTokenIntrospection->getSub()) {
-                        throw new UnauthorizedException("path does not match authorized subject");
-                    }
-                    if (!$this->remoteStorageTokenIntrospection->hasReadScope($path->getModuleName())) {
-                        throw new UnauthorizedException("path does not match authorized scope");
-                    }
-
-                    return new OptionsResponse();
+                    $response = new RemoteStorageResponse($request);
+                    $response->setHeader(
+                        "Access-Control-Allow-Methods",
+                        "GET, PUT, DELETE, HEAD, OPTIONS"
+                    );
+                    // FIXME: are Origin and X-Requested-With really needed?
+                    $response->setHeader(
+                        "Access-Control-Allow-Headers", 
+                        "Authorization, Content-Length, Content-Type, Origin, X-Requested-With, If-Match, If-None-Match"
+                    );
+                    return $response;
                 }
             );
 

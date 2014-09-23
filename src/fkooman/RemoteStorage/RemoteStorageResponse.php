@@ -22,7 +22,7 @@ use fkooman\Http\Response;
 
 class RemoteStorageResponse extends Response
 {
-    public function __construct(Request $request, $statusCode, $entityVersion, $contentType = null)
+    public function __construct(Request $request, $statusCode = 200, $entityVersion = null, $contentType = "application/ld+json")
     {
         parent::__construct($statusCode);
         if ("GET" === $request->getRequestMethod()) {
@@ -31,11 +31,11 @@ class RemoteStorageResponse extends Response
         if (null !== $request->getHeader("Origin")) {
             $this->setHeader("Access-Control-Allow-Origin", $request->getHeader("Origin"));
         }
-        $this->setHeader("ETag", sprintf('"%s"', $entityVersion));
-        if (null === $contentType) {
-            // folder
-            $contentType = "application/ld+json";
+        if (null !== $entityVersion) {
+            $this->setHeader("ETag", sprintf('"%s"', $entityVersion));
         }
-        $this->setContentType($contentType);
+        if (null !== $contentType) {
+            $this->setContentType($contentType);
+        }
     }
 }
