@@ -25,6 +25,7 @@ use fkooman\RemoteStorage\Exception\NotModifiedException;
 use fkooman\RemoteStorage\Exception\BadRequestException;
 use fkooman\RemoteStorage\Exception\UnauthorizedException;
 use fkooman\RemoteStorage\Exception\ConflictException;
+use fkooman\RemoteStorage\Exception\InternalServerErrorException;
 
 class RemoteStorageRequestHandler
 {
@@ -209,6 +210,8 @@ class RemoteStorageRequestHandler
             return new RemoteStorageErrorResponse($request, 401);
         } catch (ConflictException $e) {
             return new RemoteStorageErrorResponse($request, 409);
+        } catch (InternalServerErrorException $e) {
+            return new RemoteStorageErrorResponse($request, 500);
         }
     }
 

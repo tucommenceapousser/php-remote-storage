@@ -19,6 +19,6 @@ namespace fkooman\RemoteStorage\Exception;
 
 use Exception;
 
-class DocumentException extends Exception
+class InternalServerErrorException extends Exception
 {
 }

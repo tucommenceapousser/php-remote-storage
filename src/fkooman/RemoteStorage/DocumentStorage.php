@@ -17,9 +17,9 @@
 
 namespace fkooman\RemoteStorage;
 
-use fkooman\RemoteStorage\Exception\DocumentException;
 use fkooman\RemoteStorage\Exception\NotFoundException;
 use fkooman\RemoteStorage\Exception\ConflictException;
+use fkooman\RemoteStorage\Exception\InternalServerErrorException;
 
 class DocumentStorage
 {
@@ -30,15 +30,10 @@ class DocumentStorage
         $this->baseDir = $baseDir;
     }
 
-    public function getBaseDir()
-    {
-        return $this->baseDir;
-    }
-
     public function getDocument(Path $p)
     {
         if ($p->getIsFolder()) {
-            throw new DocumentException("unable to get folder");
+            throw new BadRequestException("unable to get folder");
         }
 
         $documentPath = $this->baseDir . $p->getPath();
@@ -48,7 +43,7 @@ class DocumentStorage
 
         $documentContent = @file_get_contents($documentPath);
         if (false === $documentContent) {
-            throw new DocumentException("unable to read document");
+            throw new InternalServerErrorException("unable to read document");
         }
 
         return $documentContent;
@@ -62,7 +57,7 @@ class DocumentStorage
     public function putDocument(Path $p, $documentContent)
     {
         if ($p->getIsFolder()) {
-            throw new DocumentException("unable to put folder");
+            throw new BadRequestException("unable to put folder");
         }
 
         $folderTree = $p->getFolderTreeFromUserRoot();
@@ -75,7 +70,7 @@ class DocumentStorage
             if (!file_exists($folderPath)) {
                 // create it
                 if (false === @mkdir($this->baseDir . $pathItem, 0770)) {
-                    throw new DocumentException("unable to create directory");
+                    throw new InternalServerErrorException("unable to create directory");
                 }
             }
         }
@@ -85,12 +80,12 @@ class DocumentStorage
             throw new ConflictException("document path is already a folder");
         }
         if (false === @file_put_contents($documentPath, $documentContent)) {
-            throw new DocumentException("unable to write document");
+            throw new InternalServerErrorException("unable to write document");
         }
         // PHP caches files and doesn't flush on getting file size, so we
         // really have to flush the cache manually, otherwise directory listings
-        // potentially give you the wrong information. This only affects the 
-        // unit tests, as getting a directory listing and putting a file are 
+        // potentially give you the wrong information. This only affects the
+        // unit tests, as getting a directory listing and putting a file are
         // always separated executions
         clearstatcache(true, $documentPath);
 
@@ -106,7 +101,7 @@ class DocumentStorage
     public function deleteDocument(Path $p)
     {
         if ($p->getIsFolder()) {
-            throw new DocumentException("unable to delete folder");
+            throw new BadRequestException("unable to delete folder");
         }
 
         $documentPath = $this->baseDir . $p->getPath();
@@ -116,7 +111,7 @@ class DocumentStorage
         }
 
         if (false === @unlink($documentPath)) {
-            throw new DocumentException("unable to delete file");
+            throw new InternalServerErrorException("unable to delete file");
         }
 
         $deletedObjects = array();
@@ -137,7 +132,7 @@ class DocumentStorage
     public function getFolder(Path $p)
     {
         if (!$p->getIsFolder()) {
-            throw new DocumentException("not a folder");
+            throw new BadRequestException("not a folder");
         }
 
         $folderPath = $this->baseDir . $p->getPath();
@@ -164,14 +159,14 @@ class DocumentStorage
     private function isEmptyFolder(Path $p)
     {
         if (!$p->getIsFolder()) {
-            throw new DocumentException("not a folder");
+            throw new BadRequestException("not a folder");
         }
 
         $folderPath = $this->baseDir . $p->getPath();
 
         $entries = glob($folderPath . "*", GLOB_ERR);
         if (false === $entries) {
-            throw new DocumentException("unable to read folder");
+            throw new InternalServerErrorException("unable to read folder");
         }
 
         return 0 === count($entries);
@@ -180,11 +175,11 @@ class DocumentStorage
     private function deleteFolder(Path $p)
     {
         if (!$p->getIsFolder()) {
-            throw new DocumentException("not a folder");
+            throw new BadRequestException("not a folder");
         }
         $folderPath = $this->baseDir . $p->getPath();
         if (false === @rmdir($folderPath)) {
-            throw new DocumentException("unable to delete folder");
+            throw new InternalServerErrorException("unable to delete folder");
         }
     }
 }
