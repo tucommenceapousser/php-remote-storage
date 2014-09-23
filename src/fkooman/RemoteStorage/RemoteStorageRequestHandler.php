@@ -43,7 +43,7 @@ class RemoteStorageRequestHandler
     {
         try {
             $service = new Service($request);
-            $service->get(
+            $service->match(array("GET", "HEAD"),
                 "*",
                 function ($pathInfo) use ($request) {
                     $path = new Path($pathInfo);
@@ -62,14 +62,16 @@ class RemoteStorageRequestHandler
                             $folderVersion = '"e:7398243bf0d8b3c6c7e7ec618b3ee703"';
                         }
                         $rsr = new RemoteStorageResponse($request, 200, $folderVersion);
-                        $rsr->setContent(
-                            $this->remoteStorage->getFolder(
-                                $path,
-                                $this->stripQuotes(
-                                    $request->getHeader("If-None-Match")
+                        if ("GET" === $request->getRequestMethod()) {
+                            $rsr->setContent(
+                                $this->remoteStorage->getFolder(
+                                    $path,
+                                    $this->stripQuotes(
+                                        $request->getHeader("If-None-Match")
+                                    )
                                 )
-                            )
-                        );
+                            );
+                        }
 
                         return $rsr;
                     } else {
@@ -87,14 +89,16 @@ class RemoteStorageRequestHandler
                         $documentContent = $this->remoteStorage->getDocument($path);
 
                         $rsr = new RemoteStorageResponse($request, 200, $documentVersion, $documentContentType);
-                        $rsr->setContent(
-                            $this->remoteStorage->getDocument(
-                                $path,
-                                $this->stripQuotes(
-                                    $request->getHeader("If-None-Match")
+                        if ("GET" === $request->getRequestMethod()) {
+                            $rsr->setContent(
+                                $this->remoteStorage->getDocument(
+                                    $path,
+                                    $this->stripQuotes(
+                                        $request->getHeader("If-None-Match")
+                                    )
                                 )
-                            )
-                        );
+                            );
+                        }
 
                         return $rsr;
                     }
@@ -183,9 +187,10 @@ class RemoteStorageRequestHandler
                     );
                     // FIXME: are Origin and X-Requested-With really needed?
                     $response->setHeader(
-                        "Access-Control-Allow-Headers", 
+                        "Access-Control-Allow-Headers",
                         "Authorization, Content-Length, Content-Type, Origin, X-Requested-With, If-Match, If-None-Match"
                     );
+
                     return $response;
                 }
             );
