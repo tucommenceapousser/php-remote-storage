@@ -80,6 +80,7 @@ ln -s ../../../etc/php-remote-storage ${RPM_BUILD_ROOT}%{_datadir}/php-remote-st
 
 # Data
 mkdir -p ${RPM_BUILD_ROOT}%{_localstatedir}/lib/php-remote-storage
+mkdir -p ${RPM_BUILD_ROOT}%{_localstatedir}/lib/php-remote-storage/storage
 
 %post
 semanage fcontext -a -t httpd_sys_rw_content_t '%{_localstatedir}/lib/php-remote-storage(/.*)?' 2>/dev/null || :

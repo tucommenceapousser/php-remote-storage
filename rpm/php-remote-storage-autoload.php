@@ -9,7 +9,7 @@ use Symfony\Component\ClassLoader\UniversalClassLoader;
 $loader = new UniversalClassLoader();
 $loader->registerNamespaces(
     array(
-        'fkooman\\RemoteStorage' $baseDir . '/src'),
+        'fkooman\\RemoteStorage' => $baseDir . '/src',
         'fkooman\\Rest' => $vendorDir,
         'fkooman\\OAuth\\ResourceServer' => $vendorDir,
         'fkooman\\OAuth\\Common' => $vendorDir,
