@@ -27,6 +27,8 @@ class RemoteStorageErrorResponse extends Response
         parent::__construct($statusCode);
         if (null !== $request->getHeader("Origin")) {
             $this->setHeader("Access-Control-Allow-Origin", $request->getHeader("Origin"));
+        } elseif (in_array($request->getRequestMethod(), array("GET", "HEAD"))) {
+            $this->setHeader("Access-Control-Allow-Origin", "*");
         }
     }
 }

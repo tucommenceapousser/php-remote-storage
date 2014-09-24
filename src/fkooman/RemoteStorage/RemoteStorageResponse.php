@@ -30,6 +30,8 @@ class RemoteStorageResponse extends Response
         }
         if (null !== $request->getHeader("Origin")) {
             $this->setHeader("Access-Control-Allow-Origin", $request->getHeader("Origin"));
+        } elseif (in_array($request->getRequestMethod(), array("GET", "HEAD", "OPTIONS"))) {
+            $this->setHeader("Access-Control-Allow-Origin", "*");
         }
         if (null !== $entityVersion) {
             $this->setHeader("ETag", sprintf('"%s"', $entityVersion));
