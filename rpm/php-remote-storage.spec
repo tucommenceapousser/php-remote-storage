@@ -3,7 +3,7 @@
 
 Name:       php-remote-storage
 Version:    0.1.0
-Release:    1%{?dist}
+Release:    2%{?dist}
 Summary:    remoteStorage server written in PHP
 
 Group:      Applications/Internet
@@ -60,7 +60,7 @@ sed -i "s|dirname(__DIR__)|'%{_datadir}/php-remote-storage'|" bin/php-remote-sto
 
 %install
 # Apache configuration
-install -m 0644 -D -p %{SOURCE1} ${RPM_BUILD_ROOT}%{_sysconfdir}/httpd/conf.d/php-remote-storages.conf
+install -m 0644 -D -p %{SOURCE1} ${RPM_BUILD_ROOT}%{_sysconfdir}/httpd/conf.d/php-remote-storage.conf
 
 # Application
 mkdir -p ${RPM_BUILD_ROOT}%{_datadir}/php-remote-storage
@@ -100,11 +100,13 @@ fi
 %{_datadir}/php-remote-storage/src
 %{_datadir}/php-remote-storage/vendor
 %{_datadir}/php-remote-storage/web
-%{_datadir}/php-remote-storage/views
 %{_datadir}/php-remote-storage/config
 %dir %attr(0700,apache,apache) %{_localstatedir}/lib/php-remote-storage
 %doc README.md agpl-3.0.txt composer.json docs/ config/
 
 %changelog
+* Wed Sep 24 2014 François Kooman <fkooman@tuxed.net> - 0.1.0-2
+- include storage directory as well when creating folder
+
 * Sun Sep 14 2014 François Kooman <fkooman@tuxed.net> - 0.1.0-1
 - initial package
