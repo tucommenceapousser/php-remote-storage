@@ -18,7 +18,6 @@ $loader->registerNamespaces(
         'fkooman\\Config' => $vendorDir,
         'Symfony\\Component\\Yaml' => $vendorDir,
         'Symfony\\Component\\EventDispatcher' => $vendorDir,
-        #'Guzzle\\Tests' => $vendorDir,
         'Guzzle' => $vendorDir
     )
 );
