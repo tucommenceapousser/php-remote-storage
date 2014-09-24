@@ -21,7 +21,9 @@ packages can for now be found in the
 [repository](https://repos.fedoraproject.org/repo/fkooman/php-oauth). For 
 setting up a development environment, see below.
 
-**RPM CURRENTLY NOT AVAILABLE**
+# Docker
+It is possible to use Docker to evaluate this server, see the `docker` folder
+in this repository.
 
 # Development Requirements
 On Fedora/CentOS:
