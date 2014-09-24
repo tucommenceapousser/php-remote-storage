@@ -20,6 +20,10 @@ namespace fkooman\RemoteStorage;
 use PDO;
 use fkooman\Http\Request;
 use fkooman\Json\Json;
+use fkooman\OAuth\ResourceServer\ResourceServer;
+use Guzzle\Http\Client;
+use Guzzle\Plugin\Mock\MockPlugin;
+use Guzzle\Http\Message\Response;
 
 use PHPUnit_Framework_TestCase;
 
@@ -47,16 +51,40 @@ class RemoteStorageRequestHandlerTest extends PHPUnit_Framework_TestCase
         $document = new DocumentStorage($tempFile);
         $remoteStorage = new RemoteStorage($md, $document);
 
-        $introspect = new RemoteStorageTokenIntrospection(
-            array(
-                "active" => true,
-                "sub" => "admin",
-                "scope" => "foo:rw"
-            )
+        $plugin = new MockPlugin();
+        for ($i = 0 ; $i < 4 ; $i++) {
+            // we need the same response multiple times...
+            $plugin->addResponse(
+                new Response(
+                    200,
+                    null,
+                    '{"active": true, "sub": "admin", "scope": "foo:rw"}'
+                )
+            );
+        }
+        $client = new Client("https://auth.example.org/introspect");
+        $client->addSubscriber($plugin);
+
+        $resourceServer = new ResourceServer(
+            $client
         );
 
-        $this->r = new RemoteStorageRequestHandler($remoteStorage, $introspect);
+        $this->r = new RemoteStorageRequestHandler($remoteStorage, $resourceServer);
         $this->j = new Json();
+    }
+
+    /**
+     * Method to create a new request object to set some default headers
+     */
+    private function newRequest($requestMethod, $addBearerToken = true)
+    {
+        $request = new Request("https://www.example.org", $requestMethod);
+        $request->setHeader("Origin", "https://foo.bar.example.org");
+        if ($addBearerToken) {
+            $request->setHeader("Authorization", "Bearer 12345");
+        }
+
+        return $request;
     }
 
     public function testStripQuotes()
@@ -69,29 +97,27 @@ class RemoteStorageRequestHandlerTest extends PHPUnit_Framework_TestCase
 
     public function testPutDocument()
     {
-        $request = new Request("https://www.example.org", "PUT");
-        $request->setHeader("Origin", "http://www.example.org");
+        $request = $this->newRequest("PUT");
         $request->setPathInfo("/admin/foo/bar/baz.txt");
         $request->setContentType("text/plain");
         $request->setContent("Hello World!");
         $response = $this->r->handleRequest($request);
         $this->assertEquals("application/json", $response->getContentType());
-        $this->assertEquals("http://www.example.org", $response->getHeader("Access-Control-Allow-Origin"));
+        $this->assertEquals("https://foo.bar.example.org", $response->getHeader("Access-Control-Allow-Origin"));
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertRegexp('/1:[a-z0-9]+/i', $response->getHeader('ETag'));
     }
 
     public function testGetDocument()
     {
-        $request = new Request("https://www.example.org", "PUT");
-        $request->setHeader("Origin", "http://www.example.org");
+        $request = $this->newRequest("PUT");
         $request->setPathInfo("/admin/foo/bar/baz.txt");
         $request->setContentType("text/plain");
         $request->setContent("Hello World!");
         $response = $this->r->handleRequest($request);
         $this->assertEquals(200, $response->getStatusCode());
 
-        $request = new Request("https://www.example.org");
+        $request = $this->newRequest("GET");
         $request->setPathInfo("/admin/foo/bar/baz.txt");
         $response = $this->r->handleRequest($request);
         $this->assertEquals("text/plain", $response->getContentType());
@@ -102,7 +128,7 @@ class RemoteStorageRequestHandlerTest extends PHPUnit_Framework_TestCase
 
     public function testGetNonExistingDocument()
     {
-        $request = new Request("https://www.example.org");
+        $request = $this->newRequest("GET");
         $request->setPathInfo("/admin/foo/bar/baz.txt");
         $response = $this->r->handleRequest($request);
         $this->assertEquals(404, $response->getStatusCode());
@@ -110,28 +136,25 @@ class RemoteStorageRequestHandlerTest extends PHPUnit_Framework_TestCase
 
     public function testDeleteDocument()
     {
-        $request = new Request("https://www.example.org", "PUT");
-        $request->setHeader("Origin", "http://www.example.org");
+        $request = $this->newRequest("PUT");
         $request->setPathInfo("/admin/foo/bar/baz.txt");
         $request->setContentType("text/plain");
         $request->setContent("Hello World!");
         $response = $this->r->handleRequest($request);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("http://www.example.org", $response->getHeader("Access-Control-Allow-Origin"));
+        $this->assertEquals("https://foo.bar.example.org", $response->getHeader("Access-Control-Allow-Origin"));
 
-        $request = new Request("https://www.example.org", "DELETE");
-        $request->setHeader("Origin", "http://www.example.org");
+        $request = $this->newRequest("DELETE");
         $request->setPathInfo("/admin/foo/bar/baz.txt");
         $response = $this->r->handleRequest($request);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("http://www.example.org", $response->getHeader("Access-Control-Allow-Origin"));
+        $this->assertEquals("https://foo.bar.example.org", $response->getHeader("Access-Control-Allow-Origin"));
         $this->assertRegexp('/1:[a-z0-9]+/i', $response->getHeader('ETag'));
     }
 
     public function testDeleteNonExistingDocument()
     {
-        $request = new Request("https://www.example.org", "DELETE");
-        $request->setHeader("Origin", "http://www.example.org");
+        $request = $this->newRequest("DELETE");
         $request->setPathInfo("/admin/foo/bar/baz.txt");
         $response = $this->r->handleRequest($request);
         $this->assertEquals(404, $response->getStatusCode());
@@ -139,7 +162,7 @@ class RemoteStorageRequestHandlerTest extends PHPUnit_Framework_TestCase
 
     public function testGetNonExistingFolder()
     {
-        $request = new Request("https://www.example.org", "GET");
+        $request = $this->newRequest("GET");
         $request->setPathInfo("/admin/foo/bar/");
         $response = $this->r->handleRequest($request);
         $this->assertEquals("application/ld+json", $response->getContentType());
@@ -156,15 +179,14 @@ class RemoteStorageRequestHandlerTest extends PHPUnit_Framework_TestCase
 
     public function testGetFolder()
     {
-        $request = new Request("https://www.example.org", "PUT");
-        $request->setHeader("Origin", "http://www.example.org");
+        $request = $this->newRequest("PUT");
         $request->setPathInfo("/admin/foo/bar/baz.txt");
         $request->setContentType("text/plain");
         $request->setContent("Hello World!");
         $response = $this->r->handleRequest($request);
         $this->assertEquals(200, $response->getStatusCode());
 
-        $request = new Request("https://www.example.org", "GET");
+        $request = $this->newRequest("GET");
         $request->setPathInfo("/admin/foo/bar/");
         $response = $this->r->handleRequest($request);
         $this->assertEquals("application/ld+json", $response->getContentType());
@@ -181,8 +203,7 @@ class RemoteStorageRequestHandlerTest extends PHPUnit_Framework_TestCase
 
     public function testGetSameVersionDocument()
     {
-        $request = new Request("https://www.example.org", "PUT");
-        $request->setHeader("Origin", "http://www.example.org");
+        $request = $this->newRequest("PUT");
         $request->setPathInfo("/admin/foo/bar/baz.txt");
         $request->setContentType("text/plain");
         $request->setContent("Hello World!");
@@ -191,8 +212,7 @@ class RemoteStorageRequestHandlerTest extends PHPUnit_Framework_TestCase
         $documentVersion = $response->getHeader('ETag');
         $this->assertNotNull($documentVersion);
 
-        $request = new Request("https://www.example.org", "GET");
-        $request->setHeader("Origin", "http://www.example.org");
+        $request = $this->newRequest("GET");
         $request->setPathInfo("/admin/foo/bar/baz.txt");
         $request->setHeader("If-None-Match", $documentVersion);
         $response = $this->r->handleRequest($request);
@@ -202,19 +222,18 @@ class RemoteStorageRequestHandlerTest extends PHPUnit_Framework_TestCase
 
     public function testGetSameVersionFolder()
     {
-        $request = new Request("https://www.example.org", "PUT");
-        $request->setHeader("Origin", "http://www.example.org");
+        $request = $this->newRequest("PUT");
         $request->setPathInfo("/admin/foo/bar/baz.txt");
         $request->setContentType("text/plain");
         $request->setContent("Hello World!");
         $response = $this->r->handleRequest($request);
 
-        $request = new Request("https://www.example.org", "GET");
+        $request = $this->newRequest("GET");
         $request->setPathInfo("/admin/foo/bar/");
         $response = $this->r->handleRequest($request);
         $folderVersion = $response->getHeader('ETag');
 
-        $request = new Request("https://www.example.org", "GET");
+        $request = $this->newRequest("GET");
         $request->setPathInfo("/admin/foo/bar/");
         $request->setHeader("If-None-Match", $folderVersion);
         $response = $this->r->handleRequest($request);
@@ -224,15 +243,13 @@ class RemoteStorageRequestHandlerTest extends PHPUnit_Framework_TestCase
 
     public function testPutNonMatchingVersion()
     {
-        $request = new Request("https://www.example.org", "PUT");
-        $request->setHeader("Origin", "http://www.example.org");
+        $request = $this->newRequest("PUT");
         $request->setPathInfo("/admin/foo/bar/baz.txt");
         $request->setContentType("text/plain");
         $request->setContent("Hello World!");
         $response = $this->r->handleRequest($request);
 
-        $request = new Request("https://www.example.org", "PUT");
-        $request->setHeader("Origin", "http://www.example.org");
+        $request = $this->newRequest("PUT");
         $request->setPathInfo("/admin/foo/bar/baz.txt");
         $request->setHeader("If-Match", '"non-matching-version"');
         $request->setContentType("text/plain");
@@ -244,15 +261,13 @@ class RemoteStorageRequestHandlerTest extends PHPUnit_Framework_TestCase
 
     public function testDeleteNonMatchingVersion()
     {
-        $request = new Request("https://www.example.org", "PUT");
-        $request->setHeader("Origin", "http://www.example.org");
+        $request = $this->newRequest("PUT");
         $request->setPathInfo("/admin/foo/bar/baz.txt");
         $request->setContentType("text/plain");
         $request->setContent("Hello World!");
         $response = $this->r->handleRequest($request);
 
-        $request = new Request("https://www.example.org", "DELETE");
-        $request->setHeader("Origin", "http://www.example.org");
+        $request = $this->newRequest("DELETE");
         $request->setPathInfo("/admin/foo/bar/baz.txt");
         $request->setHeader("If-Match", '"non-matching-version"');
         $response = $this->r->handleRequest($request);

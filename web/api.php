@@ -26,7 +26,9 @@ use fkooman\RemoteStorage\RemoteStorage;
 use fkooman\RemoteStorage\RemoteStorageRequestHandler;
 use fkooman\RemoteStorage\MetadataStorage;
 use fkooman\RemoteStorage\DocumentStorage;
-use fkooman\RemoteStorage\RemoteStorageTokenIntrospection;
+
+use fkooman\OAuth\ResourceServer\ResourceServer;
+use Guzzle\Http\Client;
 
 try {
     $config = Config::fromIniFile(
@@ -45,18 +47,16 @@ try {
         $config->l('storageDir', true)
     );
 
-    // FIXME: use fkooman\OAuth\ResourceServer
-    $introspect = new RemoteStorageTokenIntrospection(
-        array(
-            "active" => true,
-            "sub" => "admin",
-            "scope" => "foo:rw"
+    $resourceServer = new ResourceServer(
+        new Client(
+            $config->l('tokenIntrospectionUri', true)
         )
     );
 
-    $remoteStorage = new RemoteStorage($md, $document);
-    $remoteStorageRequestHandler = new RemoteStorageRequestHandler($remoteStorage, $introspect);
     $request = Request::fromIncomingRequest(new IncomingRequest());
+
+    $remoteStorage = new RemoteStorage($md, $document);
+    $remoteStorageRequestHandler = new RemoteStorageRequestHandler($remoteStorage, $resourceServer);
     $response = $remoteStorageRequestHandler->handleRequest($request);
     $response->sendResponse();
 } catch (Exception $e) {

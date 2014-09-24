@@ -19,6 +19,15 @@ namespace fkooman\RemoteStorage;
 
 use fkooman\Http\Request;
 use fkooman\Rest\Service;
+
+use fkooman\Http\JsonResponse;
+
+use fkooman\OAuth\ResourceServer\ResourceServer;
+use fkooman\OAuth\ResourceServer\ResourceServerException;
+use fkooman\OAuth\ResourceServer\TokenIntrospection;
+
+use fkooman\OAuth\Common\Scope;
+
 use fkooman\RemoteStorage\Exception\NotFoundException;
 use fkooman\RemoteStorage\Exception\PreconditionFailedException;
 use fkooman\RemoteStorage\Exception\NotModifiedException;
@@ -32,18 +41,21 @@ class RemoteStorageRequestHandler
     /** @var fkooman\RemoteStorage\RemoteStorage */
     private $remoteStorage;
 
-    /** @var fkooman\RemoteStorage\RemoteStorageTokenIntrospection */
-    private $remoteStorageTokenIntrospection;
+    /** @var fkooman\OAuth\ResourceServer\ResourceServer */
+    private $resourceServer;
 
-    public function __construct(RemoteStorage $remoteStorage, RemoteStorageTokenIntrospection $t)
+    public function __construct(RemoteStorage $remoteStorage, ResourceServer $resourceServer)
     {
         $this->remoteStorage = $remoteStorage;
-        $this->remoteStorageTokenIntrospection = $t;
+        $this->resourceServer = $resourceServer;
     }
 
     public function handleRequest(Request $request)
     {
         try {
+            $this->resourceServer->setAuthorizationHeader($request->getHeader("Authorization"));
+            $this->resourceServer->setAccessTokenQueryParameter($request->getQueryParameter("access_token"));
+
             $service = new Service($request);
             $service->match(array("GET", "HEAD"),
                 "*",
@@ -51,10 +63,11 @@ class RemoteStorageRequestHandler
                     $path = new Path($pathInfo);
                     if ($path->getIsFolder()) {
                         // folder
-                        if ($path->getUserId() !== $this->remoteStorageTokenIntrospection->getSub()) {
+                        $tokenIntrospection = $this->resourceServer->verifyToken();
+                        if ($path->getUserId() !== $tokenIntrospection->getSub()) {
                             throw new UnauthorizedException("path does not match authorized subject");
                         }
-                        if (!$this->remoteStorageTokenIntrospection->hasReadScope($path->getModuleName())) {
+                        if (!$this->hasReadScope($tokenIntrospection, $path->getModuleName())) {
                             throw new UnauthorizedException("path does not match authorized scope");
                         }
                         $folderVersion = $this->remoteStorage->getVersion($path);
@@ -79,10 +92,11 @@ class RemoteStorageRequestHandler
                     } else {
                         // document
                         if (!$path->getIsPublic()) {
-                            if ($path->getUserId() !== $this->remoteStorageTokenIntrospection->getSub()) {
+                            $tokenIntrospection = $this->resourceServer->verifyToken();
+                            if ($path->getUserId() !== $tokenIntrospection->getSub()) {
                                 throw new UnauthorizedException("path does not match authorized subject");
                             }
-                            if (!$this->remoteStorageTokenIntrospection->hasReadScope($path->getModuleName())) {
+                            if (!$this->hasReadScope($tokenIntrospection, $path->getModuleName())) {
                                 throw new UnauthorizedException("path does not match authorized scope");
                             }
                         }
@@ -112,10 +126,14 @@ class RemoteStorageRequestHandler
                 function ($pathInfo) use ($request) {
                     $path = new Path($pathInfo);
 
-                    if ($path->getUserId() !== $this->remoteStorageTokenIntrospection->getSub()) {
+                    $tokenIntrospection = $this->resourceServer->verifyToken();
+
+                    if ($path->getUserId() !== $tokenIntrospection->getSub()) {
+                        // FIXME: should be Forbidden?
                         throw new UnauthorizedException("path does not match authorized subject");
                     }
-                    if (!$this->remoteStorageTokenIntrospection->hasWriteScope($path->getModuleName())) {
+                    if (!$this->hasWriteScope($tokenIntrospection, $path->getModuleName())) {
+                        // FIXME: should throw ResourceServerException ???
                         throw new UnauthorizedException("path does not match authorized scope");
                     }
 
@@ -151,10 +169,12 @@ class RemoteStorageRequestHandler
                 function ($pathInfo) use ($request) {
                     $path = new Path($pathInfo);
 
-                    if ($path->getUserId() !== $this->remoteStorageTokenIntrospection->getSub()) {
+                    $tokenIntrospection = $this->resourceServer->verifyToken();
+
+                    if ($path->getUserId() !== $tokenIntrospection->getSub()) {
                         throw new UnauthorizedException("path does not match authorized subject");
                     }
-                    if (!$this->remoteStorageTokenIntrospection->hasWriteScope($path->getModuleName())) {
+                    if (!$this->hasWriteScope($tokenIntrospection, $path->getModuleName())) {
                         throw new UnauthorizedException("path does not match authorized scope");
                     }
 
@@ -212,7 +232,38 @@ class RemoteStorageRequestHandler
             return new RemoteStorageErrorResponse($request, 409);
         } catch (InternalServerErrorException $e) {
             return new RemoteStorageErrorResponse($request, 500);
+        } catch (ResourceServerException $e) {
+            $e->setRealm("remoteStorage");
+            $response = new JsonResponse($e->getStatusCode());
+            if (null !== $e->getAuthenticateHeader()) {
+                // for "internal_server_error" responses no WWW-Authenticate header is set
+                $response->setHeader("WWW-Authenticate", $e->getAuthenticateHeader());
+            }
+            $response->setContent(
+                array(
+                    "error" => $e->getMessage(),
+                    "code" => $e->getStatusCode(),
+                    "error_description" => $e->getDescription()
+                )
+            );
+
+            return $response;
         }
+    }
+
+    public function hasReadScope(TokenIntrospection $i, $moduleName)
+    {
+        $hasReadWriteScope = $i->getScope()->hasScope(Scope::fromString(sprintf("%s:%s", $moduleName, "rw")));
+        $hasReadScope = $i->getScope()->hasScope(Scope::fromString(sprintf("%s:%s", $moduleName, "r")));
+
+        return $hasReadWriteScope || $hasReadScope;
+    }
+
+    public function hasWriteScope(TokenIntrospection $i, $moduleName)
+    {
+        $hasReadWriteScope = $i->getScope()->hasScope(Scope::fromString(sprintf("%s:%s", $moduleName, "rw")));
+
+        return $hasReadWriteScope;
     }
 
     /**
