@@ -16,11 +16,6 @@ Alias /php-remote-storage /usr/share/php-remote-storage/web
       Allow from ::1
     </IfModule>
     
-    # CORS
-    Header set Access-Control-Allow-Origin "*"
-    Header set Access-Control-Allow-Headers "Authorization, Content-Type"
-    Header set Access-Control-Allow-Methods "PUT, GET, DELETE, OPTIONS"
-
     RewriteEngine On
     RewriteCond %{HTTP:Authorization} ^(.+)$
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]

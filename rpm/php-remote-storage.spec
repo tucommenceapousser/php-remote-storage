@@ -36,6 +36,13 @@ Requires:   php-composer(fkooman/oauth-rs) < 0.8.0
 #Requires:   php-composer(symfony/classloader) < 3.0
 Requires:   php-pear(pear.symfony.com/ClassLoader) >= 2.3.9
 Requires:   php-pear(pear.symfony.com/ClassLoader) < 3.0
+Requires:   php-pear(pear.symfony.com/Yaml) >= 2.3.9
+Requires:   php-pear(pear.symfony.com/Yaml) < 3.0
+Requires:   php-pear(pear.symfony.com/EventDispatcher) >= 2.3.9
+Requires:   php-pear(pear.symfony.com/EventDispatcher) < 3.0
+
+Requires:   php-pear(guzzlephp.org/pear/Guzzle) >= 3.9.2
+Requires:   php-pear(guzzlephp.org/pear/Guzzle) < 4.0
 
 Requires(post): policycoreutils-python
 Requires(postun): policycoreutils-python
