@@ -1,3 +1,4 @@
+Alias /.well-known/webfinger /usr/share/php-remote-storage/web/webfinger.php
 Alias /php-remote-storage /usr/share/php-remote-storage/web
 
 <Directory /usr/share/php-remote-storage/web>
