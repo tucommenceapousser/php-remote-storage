@@ -2,8 +2,8 @@
 %global github_name      php-remote-storage
 
 Name:       php-remote-storage
-Version:    0.1.0
-Release:    2%{?dist}
+Version:    0.1.1
+Release:    1%{?dist}
 Summary:    remoteStorage server written in PHP
 
 Group:      Applications/Internet
@@ -105,6 +105,9 @@ fi
 %doc README.md agpl-3.0.txt composer.json docs/ config/
 
 %changelog
+* Wed Sep 24 2014 François Kooman <fkooman@tuxed.net> - 0.1.1-1
+- update to 0.1.1
+
 * Wed Sep 24 2014 François Kooman <fkooman@tuxed.net> - 0.1.0-2
 - include storage directory as well when creating folder
 
