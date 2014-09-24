@@ -20,8 +20,6 @@ namespace fkooman\RemoteStorage;
 use fkooman\Http\Request;
 use fkooman\Rest\Service;
 
-use fkooman\Http\JsonResponse;
-
 use fkooman\OAuth\ResourceServer\ResourceServer;
 use fkooman\OAuth\ResourceServer\ResourceServerException;
 use fkooman\OAuth\ResourceServer\TokenIntrospection;
@@ -234,18 +232,11 @@ class RemoteStorageRequestHandler
             return new RemoteStorageErrorResponse($request, 500);
         } catch (ResourceServerException $e) {
             $e->setRealm("remoteStorage");
-            $response = new JsonResponse($e->getStatusCode());
+            $response = new RemoteStorageErrorResponse($request, $e->getStatusCode());
             if (null !== $e->getAuthenticateHeader()) {
                 // for "internal_server_error" responses no WWW-Authenticate header is set
                 $response->setHeader("WWW-Authenticate", $e->getAuthenticateHeader());
             }
-            $response->setContent(
-                array(
-                    "error" => $e->getMessage(),
-                    "code" => $e->getStatusCode(),
-                    "error_description" => $e->getDescription()
-                )
-            );
 
             return $response;
         }
