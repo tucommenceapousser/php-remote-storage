@@ -27,9 +27,13 @@ RUN sed -i 's/Require local/Require all granted/' /etc/httpd/conf.d/php-remote-s
 RUN sed -i 's/Allow from 127.0.0.1/Allow from All/' /etc/httpd/conf.d/php-remote-storage.conf
 RUN sed -i 's/Allow from ::1//' /etc/httpd/conf.d/php-remote-storage.conf
 
-# Modify OAut server configuration to allow dynamic client registration for
+# Modify OAuth server configuration to allow dynamic client registration for
 # remoteStorage clients
 RUN sed -i 's/allowRemoteStorageClients = false/allowRemoteStorageClients = true/' /etc/php-oauth-as/oauth.ini
+
+# Use the OAuth server introspect endpoint, as this is on the same machine
+# non TLS is fine...
+RUN sed -i 's|https://auth.example.org/introspect.php|http://localhost/php-oauth-as/introspect.php|' /etc/php-remote-storage/rs.ini
 
 # Add users to php-simple-auth
 RUN php-simple-auth-add-user /etc/php-simple-auth/users.json admin adm1n
