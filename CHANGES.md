@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.3
+- fix PUT and DELETE by adding Access-Control-Expose-Headers response header
+- support `*:r` and `*:rw` scope values
+
 ## 0.1.2
 - add WebFinger
 
