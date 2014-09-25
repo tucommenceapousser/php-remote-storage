@@ -198,20 +198,7 @@ class RemoteStorageRequestHandler
             $service->options(
                 "*",
                 function ($pathInfo) use ($request) {
-                    $path = new Path($pathInfo);
-
-                    $response = new RemoteStorageResponse($request);
-                    $response->setHeader(
-                        "Access-Control-Allow-Methods",
-                        "GET, PUT, DELETE, HEAD, OPTIONS"
-                    );
-                    // FIXME: are Origin and X-Requested-With really needed?
-                    $response->setHeader(
-                        "Access-Control-Allow-Headers",
-                        "Authorization, Content-Length, Content-Type, Origin, X-Requested-With, If-Match, If-None-Match"
-                    );
-
-                    return $response;
+                    return new RemoteStorageResponse($request, 200, null, null);
                 }
             );
 

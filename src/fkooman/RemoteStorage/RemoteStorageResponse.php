@@ -39,5 +39,23 @@ class RemoteStorageResponse extends Response
         if (null !== $contentType) {
             $this->setContentType($contentType);
         }
+        // this is needed for all responses...
+        $this->setHeader(
+            "Access-Control-Expose-Headers",
+            "ETag, Content-Type, Content-Length"
+        );
+
+        // this is only needed for OPTIONS requests
+        if ("OPTIONS" === $request->getRequestMethod()) {
+            $this->setHeader(
+                "Access-Control-Allow-Methods",
+                "GET, PUT, DELETE, HEAD, OPTIONS"
+            );
+            // FIXME: are Origin and X-Requested-With really needed?
+            $this->setHeader(
+                "Access-Control-Allow-Headers",
+                "Authorization, Content-Length, Content-Type, Origin, X-Requested-With, If-Match, If-None-Match"
+            );
+        }
     }
 }
