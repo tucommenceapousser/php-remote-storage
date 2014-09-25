@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.1.4
+- remove WebFinger, move it to `php-simple-auth` where it belongs
+
 ## 0.1.3
 - fix PUT and DELETE by adding Access-Control-Expose-Headers response header
 - support `*:r` and `*:rw` scope values
