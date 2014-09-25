@@ -244,17 +244,24 @@ class RemoteStorageRequestHandler
 
     public function hasReadScope(TokenIntrospection $i, $moduleName)
     {
-        $hasReadWriteScope = $i->getScope()->hasScope(Scope::fromString(sprintf("%s:%s", $moduleName, "rw")));
-        $hasReadScope = $i->getScope()->hasScope(Scope::fromString(sprintf("%s:%s", $moduleName, "r")));
+        $validReadScopes = array(
+            "*:r",
+            "*:rw",
+            sprintf("%s:%s", $moduleName, "r"),
+            sprintf("%s:%s", $moduleName, "rw")
+        );
 
-        return $hasReadWriteScope || $hasReadScope;
+        return $i->getScope()->hasAnyScope(new Scope($validReadScopes));
     }
 
     public function hasWriteScope(TokenIntrospection $i, $moduleName)
     {
-        $hasReadWriteScope = $i->getScope()->hasScope(Scope::fromString(sprintf("%s:%s", $moduleName, "rw")));
+        $validWriteScopes = array(
+            "*:rw",
+            sprintf("%s:%s", $moduleName, "rw")
+        );
 
-        return $hasReadWriteScope;
+        return $i->getScope()->hasAnyScope(new Scope($validWriteScopes));
     }
 
     /**
