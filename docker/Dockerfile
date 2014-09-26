@@ -36,8 +36,8 @@ RUN sed -i 's/allowRemoteStorageClients = false/allowRemoteStorageClients = true
 RUN sed -i 's|https://auth.example.org/introspect.php|http://localhost/php-oauth-as/introspect.php|' /etc/php-remote-storage/rs.ini
 
 # Add users to php-simple-auth
-RUN php-simple-auth-add-user /etc/php-simple-auth/users.json admin adm1n
-RUN php-simple-auth-add-user /etc/php-simple-auth/users.json fkooman foobar
+RUN php-simple-auth-add-user admin adm1n
+RUN php-simple-auth-add-user fkooman foobar
 
 USER apache
 
