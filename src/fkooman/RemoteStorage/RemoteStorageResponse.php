@@ -42,7 +42,7 @@ class RemoteStorageResponse extends Response
         // this is needed for all responses...
         $this->setHeader(
             "Access-Control-Expose-Headers",
-            "ETag, Content-Type, Content-Length"
+            "ETag, Content-Length"
         );
 
         // this is only needed for OPTIONS requests
