@@ -24,7 +24,6 @@ use fkooman\OAuth\ResourceServer\ResourceServer;
 use Guzzle\Http\Client;
 use Guzzle\Plugin\Mock\MockPlugin;
 use Guzzle\Http\Message\Response;
-
 use PHPUnit_Framework_TestCase;
 
 class RemoteStorageRequestHandlerTest extends PHPUnit_Framework_TestCase
@@ -52,7 +51,7 @@ class RemoteStorageRequestHandlerTest extends PHPUnit_Framework_TestCase
         $remoteStorage = new RemoteStorage($md, $document);
 
         $plugin = new MockPlugin();
-        for ($i = 0 ; $i < 4 ; $i++) {
+        for ($i = 0; $i < 4; $i++) {
             // we need the same response multiple times...
             $plugin->addResponse(
                 new Response(
@@ -171,7 +170,7 @@ class RemoteStorageRequestHandlerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(
             array(
                 "@context" => "http://remotestorage.io/spec/folder-description",
-                "items" => array()
+                "items" => array(),
             ),
             $this->j->decode($response->getContent())
         );

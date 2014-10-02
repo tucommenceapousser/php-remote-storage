@@ -19,13 +19,10 @@ namespace fkooman\RemoteStorage;
 
 use fkooman\Http\Request;
 use fkooman\Rest\Service;
-
 use fkooman\OAuth\ResourceServer\ResourceServer;
 use fkooman\OAuth\ResourceServer\ResourceServerException;
 use fkooman\OAuth\ResourceServer\TokenIntrospection;
-
 use fkooman\OAuth\Common\Scope;
-
 use fkooman\RemoteStorage\Exception\NotFoundException;
 use fkooman\RemoteStorage\Exception\PreconditionFailedException;
 use fkooman\RemoteStorage\Exception\NotModifiedException;
@@ -235,7 +232,7 @@ class RemoteStorageRequestHandler
             "*:r",
             "*:rw",
             sprintf("%s:%s", $moduleName, "r"),
-            sprintf("%s:%s", $moduleName, "rw")
+            sprintf("%s:%s", $moduleName, "rw"),
         );
 
         return $i->getScope()->hasAnyScope(new Scope($validReadScopes));
@@ -245,7 +242,7 @@ class RemoteStorageRequestHandler
     {
         $validWriteScopes = array(
             "*:rw",
-            sprintf("%s:%s", $moduleName, "rw")
+            sprintf("%s:%s", $moduleName, "rw"),
         );
 
         return $i->getScope()->hasAnyScope(new Scope($validWriteScopes));

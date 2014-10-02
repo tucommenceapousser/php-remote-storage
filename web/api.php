@@ -15,24 +15,22 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require_once dirname(__DIR__) . "/vendor/autoload.php";
+require_once dirname(__DIR__)."/vendor/autoload.php";
 
 use fkooman\Config\Config;
 use fkooman\Http\Request;
 use fkooman\Http\JsonResponse;
 use fkooman\Http\IncomingRequest;
-
 use fkooman\RemoteStorage\RemoteStorage;
 use fkooman\RemoteStorage\RemoteStorageRequestHandler;
 use fkooman\RemoteStorage\MetadataStorage;
 use fkooman\RemoteStorage\DocumentStorage;
-
 use fkooman\OAuth\ResourceServer\ResourceServer;
 use Guzzle\Http\Client;
 
 try {
     $config = Config::fromIniFile(
-        dirname(__DIR__) . "/config/rs.ini"
+        dirname(__DIR__)."/config/rs.ini"
     );
 
     $md = new MetadataStorage(
@@ -65,7 +63,7 @@ try {
         array(
             "error" => "internal_server_error",
             "error_class" => get_class($e),
-            "error_description" => $e->getMessage()
+            "error_description" => $e->getMessage(),
         )
     );
     $response->sendResponse();

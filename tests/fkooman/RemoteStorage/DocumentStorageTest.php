@@ -44,7 +44,7 @@ class DocumentStorageTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(
             array(
                 '/foo/',
-                '/foo/bar/'
+                '/foo/bar/',
             ),
             $this->document->putDocument($p, $d)
         );
@@ -59,7 +59,7 @@ class DocumentStorageTest extends PHPUnit_Framework_TestCase
             array (
                 '/admin/',
                 '/admin/messages/',
-                '/admin/messages/foo/'
+                '/admin/messages/foo/',
             ),
             $this->document->putDocument($p1, 'Hello Baz!')
         );
@@ -67,7 +67,7 @@ class DocumentStorageTest extends PHPUnit_Framework_TestCase
             array (
                 '/admin/',
                 '/admin/messages/',
-                '/admin/messages/foo/'
+                '/admin/messages/foo/',
             ),
             $this->document->putDocument($p2, 'Hello Bar!')
         );
@@ -75,18 +75,18 @@ class DocumentStorageTest extends PHPUnit_Framework_TestCase
             array (
                 '/admin/',
                 '/admin/messages/',
-                '/admin/messages/foo/'
+                '/admin/messages/foo/',
             ),
             $this->document->putDocument($p2, 'Hello Updated Bar!')
         );
         $this->assertEquals(
             array(
                 "bar.txt" => array(
-                    "Content-Length" => 18
+                    "Content-Length" => 18,
                 ),
                 "baz.txt" => array(
-                    "Content-Length" => 10
-                )
+                    "Content-Length" => 10,
+                ),
             ),
             $this->document->getFolder($p3)
         );
@@ -126,7 +126,7 @@ class DocumentStorageTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(
             array(
                 '/foo/',
-                '/foo/bar/'
+                '/foo/bar/',
             ),
             $this->document->putDocument($p, $d)
         );
@@ -159,7 +159,7 @@ class DocumentStorageTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(
             array(
                 '/foo/',
-                '/foo/bar/'
+                '/foo/bar/',
             ),
             $this->document->putDocument($p, $d)
         );
@@ -167,7 +167,7 @@ class DocumentStorageTest extends PHPUnit_Framework_TestCase
             array(
                 '/foo/bar/baz',
                 '/foo/bar/',
-                '/foo/'
+                '/foo/',
             ),
             $this->document->deleteDocument($p)
         );
@@ -184,7 +184,7 @@ class DocumentStorageTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(
             array(
                 '/foo/',
-                '/foo/bar/'
+                '/foo/bar/',
             ),
             $this->document->putDocument($p, $d)
         );
@@ -192,7 +192,7 @@ class DocumentStorageTest extends PHPUnit_Framework_TestCase
             array(
                 '/foo/bar/baz',
                 '/foo/bar/',
-                '/foo/'
+                '/foo/',
             ),
             $this->document->deleteDocument($p)
         );
@@ -208,7 +208,7 @@ class DocumentStorageTest extends PHPUnit_Framework_TestCase
             array(
                 '/foo/',
                 '/foo/bar/',
-                '/foo/bar/baz/'
+                '/foo/bar/baz/',
             ),
             $this->document->putDocument($p, $d)
         );
@@ -238,7 +238,7 @@ class DocumentStorageTest extends PHPUnit_Framework_TestCase
                 '/foo/',
                 '/foo/bar/',
                 '/foo/bar/baz/',
-                '/foo/bar/baz/foobar/'
+                '/foo/bar/baz/foobar/',
             ),
             $this->document->putDocument($p, $d)
         );
@@ -250,7 +250,7 @@ class DocumentStorageTest extends PHPUnit_Framework_TestCase
                 '/foo/bar/baz/foobar/',
                 '/foo/bar/baz/',
                 '/foo/bar/',
-                '/foo/'
+                '/foo/',
             ),
             $this->document->deleteDocument($p)
         );

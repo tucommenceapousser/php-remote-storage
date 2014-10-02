@@ -89,7 +89,6 @@ class Path
 
     public function getFolderTreeToUserRoot()
     {
-
         $p = $this->getFolderPath();
         do {
             $folderTree[] = $p;

@@ -36,7 +36,7 @@ class DocumentStorage
             throw new BadRequestException("unable to get folder");
         }
 
-        $documentPath = $this->baseDir . $p->getPath();
+        $documentPath = $this->baseDir.$p->getPath();
         if (false === file_exists($documentPath)) {
             throw new NotFoundException();
         }
@@ -62,20 +62,20 @@ class DocumentStorage
 
         $folderTree = $p->getFolderTreeFromUserRoot();
         foreach ($folderTree as $pathItem) {
-            $folderPath = $this->baseDir . $pathItem;
+            $folderPath = $this->baseDir.$pathItem;
             $folderPathAsFile = substr($folderPath, 0, strlen($folderPath)-1);
             if (file_exists($folderPathAsFile) && is_file($folderPathAsFile)) {
                 throw new ConflictException("file already exists in path preventing folder creation");
             }
             if (!file_exists($folderPath)) {
                 // create it
-                if (false === @mkdir($this->baseDir . $pathItem, 0770)) {
+                if (false === @mkdir($this->baseDir.$pathItem, 0770)) {
                     throw new InternalServerErrorException("unable to create directory");
                 }
             }
         }
 
-        $documentPath = $this->baseDir . $p->getPath();
+        $documentPath = $this->baseDir.$p->getPath();
         if (file_exists($documentPath) && is_dir($documentPath)) {
             throw new ConflictException("document path is already a folder");
         }
@@ -104,7 +104,7 @@ class DocumentStorage
             throw new BadRequestException("unable to delete folder");
         }
 
-        $documentPath = $this->baseDir . $p->getPath();
+        $documentPath = $this->baseDir.$p->getPath();
 
         if (false === file_exists($documentPath)) {
             throw new NotFoundException();
@@ -135,9 +135,9 @@ class DocumentStorage
             throw new BadRequestException("not a folder");
         }
 
-        $folderPath = $this->baseDir . $p->getPath();
+        $folderPath = $this->baseDir.$p->getPath();
 
-        $entries = glob($folderPath . "*", GLOB_ERR|GLOB_MARK);
+        $entries = glob($folderPath."*", GLOB_ERR|GLOB_MARK);
         if (false === $entries) {
             // directory does not exist, return empty list
             return array();
@@ -145,10 +145,10 @@ class DocumentStorage
         $folderEntries = array();
         foreach ($entries as $e) {
             if (is_dir($e)) {
-                $folderEntries[basename($e) . "/"] = array();
+                $folderEntries[basename($e)."/"] = array();
             } else {
                 $folderEntries[basename($e)] = array(
-                    "Content-Length" => filesize($e)
+                    "Content-Length" => filesize($e),
                 );
             }
         }
@@ -162,9 +162,9 @@ class DocumentStorage
             throw new BadRequestException("not a folder");
         }
 
-        $folderPath = $this->baseDir . $p->getPath();
+        $folderPath = $this->baseDir.$p->getPath();
 
-        $entries = glob($folderPath . "*", GLOB_ERR);
+        $entries = glob($folderPath."*", GLOB_ERR);
         if (false === $entries) {
             throw new InternalServerErrorException("unable to read folder");
         }
@@ -177,7 +177,7 @@ class DocumentStorage
         if (!$p->getIsFolder()) {
             throw new BadRequestException("not a folder");
         }
-        $folderPath = $this->baseDir . $p->getPath();
+        $folderPath = $this->baseDir.$p->getPath();
         if (false === @rmdir($folderPath)) {
             throw new InternalServerErrorException("unable to delete folder");
         }

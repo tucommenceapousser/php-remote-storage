@@ -43,7 +43,7 @@ class MetadataStorage
         $stmt = $this->db->prepare(
             sprintf(
                 "SELECT version, content_type FROM %s WHERE path = :path",
-                $this->prefix . "md"
+                $this->prefix."md"
             )
         );
         $stmt->bindValue(":path", $p->getPath(), PDO::PARAM_STR);
@@ -91,20 +91,20 @@ class MetadataStorage
     {
         $currentVersion = $this->getVersion($p);
         if (null === $currentVersion) {
-            $newVersion = '1:' . Utils::randomHex();
+            $newVersion = '1:'.Utils::randomHex();
             $stmt = $this->db->prepare(
                 sprintf(
                     "INSERT INTO %s (path, content_type, version) VALUES(:path, :content_type, :version)",
-                    $this->prefix . "md"
+                    $this->prefix."md"
                 )
             );
         } else {
             $explodedData = explode(":", $currentVersion);
-            $newVersion = $explodedData[0] + 1 . ':' . Utils::randomHex();
+            $newVersion = sprintf("%d:%s", $explodedData[0] + 1, Utils::randomHex());
             $stmt = $this->db->prepare(
                 sprintf(
                     "UPDATE %s SET version = :version, content_type = :content_type WHERE path = :path",
-                    $this->prefix . "md"
+                    $this->prefix."md"
                 )
             );
         }
@@ -124,7 +124,7 @@ class MetadataStorage
         $stmt = $this->db->prepare(
             sprintf(
                 "DELETE FROM %s WHERE path = :path",
-                $this->prefix . "md"
+                $this->prefix."md"
             )
         );
         $stmt->bindValue(":path", $p->getPath(), PDO::PARAM_STR);
@@ -145,7 +145,7 @@ class MetadataStorage
                 version VARCHAR(255) NOT NULL,
                 UNIQUE (path)
             )",
-            $prefix . 'md'
+            $prefix.'md'
         );
 
         return $query;
@@ -164,7 +164,7 @@ class MetadataStorage
             $this->db->query(
                 sprintf(
                     "DELETE FROM %s",
-                    $this->prefix . $t
+                    $this->prefix.$t
                 )
             );
         }

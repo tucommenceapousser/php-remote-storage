@@ -89,7 +89,7 @@ class PathTest extends PHPUnit_Framework_TestCase
             "/admin/public/foo/",
             "/admin/foo/",
             "/admin/public/foo/bar.txt",
-            "/admin/public/foo/bar/very/long/path/with/Document"
+            "/admin/public/foo/bar/very/long/path/with/Document",
         );
         foreach ($testPath as $t) {
             try {
@@ -137,7 +137,7 @@ class PathTest extends PHPUnit_Framework_TestCase
             array(
                 "/admin/",
                 "/admin/contacts/",
-                "/admin/contacts/work/"
+                "/admin/contacts/work/",
             ),
             $path->getFolderTreeFromUserRoot()
         );
@@ -150,7 +150,7 @@ class PathTest extends PHPUnit_Framework_TestCase
             array(
                 "/admin/",
                 "/admin/contacts/",
-                "/admin/contacts/work/"
+                "/admin/contacts/work/",
             ),
             $path->getFolderTreeFromUserRoot()
         );

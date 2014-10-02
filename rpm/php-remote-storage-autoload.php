@@ -2,14 +2,14 @@
 $vendorDir = '/usr/share/php';
 $baseDir   = dirname(__DIR__);
 
-require_once $vendorDir . '/Symfony/Component/ClassLoader/UniversalClassLoader.php';
+require_once $vendorDir.'/Symfony/Component/ClassLoader/UniversalClassLoader.php';
 
 use Symfony\Component\ClassLoader\UniversalClassLoader;
 
 $loader = new UniversalClassLoader();
 $loader->registerNamespaces(
     array(
-        'fkooman\\RemoteStorage' => $baseDir . '/src',
+        'fkooman\\RemoteStorage' => $baseDir.'/src',
         'fkooman\\Rest' => $vendorDir,
         'fkooman\\OAuth\\ResourceServer' => $vendorDir,
         'fkooman\\OAuth\\Common' => $vendorDir,
@@ -18,7 +18,7 @@ $loader->registerNamespaces(
         'fkooman\\Config' => $vendorDir,
         'Symfony\\Component\\Yaml' => $vendorDir,
         'Symfony\\Component\\EventDispatcher' => $vendorDir,
-        'Guzzle' => $vendorDir
+        'Guzzle' => $vendorDir,
     )
 );
 
