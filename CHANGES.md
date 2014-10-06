@@ -2,6 +2,7 @@
 
 ## 0.1.5
 - use Exception from fkooman\rest
+- CORS expose-headers does not need to contain Content-Type
 
 ## 0.1.4
 - remove WebFinger, move it to `php-simple-auth` where it belongs
