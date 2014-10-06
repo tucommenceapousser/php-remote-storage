@@ -18,7 +18,7 @@
 namespace fkooman\RemoteStorage;
 
 use PHPUnit_Framework_TestCase;
-use fkooman\RemoteStorage\Exception\NotFoundException;
+use fkooman\Http\Exception\NotFoundException;
 
 class DocumentStorageTest extends PHPUnit_Framework_TestCase
 {
@@ -93,7 +93,7 @@ class DocumentStorageTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException fkooman\RemoteStorage\Exception\ConflictException
+     * @expectedException fkooman\Http\Exception\ConflictException
      */
     public function testPutDocumentOnFolder()
     {
@@ -106,7 +106,7 @@ class DocumentStorageTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException fkooman\RemoteStorage\Exception\ConflictException
+     * @expectedException fkooman\Http\Exception\ConflictException
      */
     public function testPutFolderOnDocument()
     {
@@ -134,7 +134,7 @@ class DocumentStorageTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException fkooman\RemoteStorage\Exception\NotFoundException
+     * @expectedException fkooman\Http\Exception\NotFoundException
      */
     public function testGetMissingDocument()
     {
@@ -143,7 +143,7 @@ class DocumentStorageTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException fkooman\RemoteStorage\Exception\NotFoundException
+     * @expectedException fkooman\Http\Exception\NotFoundException
      */
     public function testDeleteMissingDocument()
     {
@@ -174,7 +174,7 @@ class DocumentStorageTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException fkooman\RemoteStorage\Exception\NotFoundException
+     * @expectedException fkooman\Http\Exception\NotFoundException
      */
     public function testDoubleDeleteDocument()
     {

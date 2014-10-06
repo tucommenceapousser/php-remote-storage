@@ -19,7 +19,7 @@ namespace fkooman\RemoteStorage;
 
 use PDO;
 use PHPUnit_Framework_TestCase;
-use fkooman\RemoteStorage\Exception\NotFoundException;
+use fkooman\Http\Exception\NotFoundException;
 use fkooman\Json\Json;
 
 class RemoteStorageTest extends PHPUnit_Framework_TestCase
@@ -156,7 +156,7 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException fkooman\RemoteStorage\Exception\PreconditionFailedException
+     * @expectedException fkooman\Http\Exception\PreconditionFailedException
      */
     public function testPutIfMatchPrecondition()
     {
@@ -166,7 +166,7 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException fkooman\RemoteStorage\Exception\PreconditionFailedException
+     * @expectedException fkooman\Http\Exception\PreconditionFailedException
      */
     public function testDeleteIfMatchPrecondition()
     {
@@ -176,7 +176,7 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException fkooman\RemoteStorage\Exception\NotModifiedException
+     * @expectedException fkooman\Http\Exception\NotModifiedException
      */
     public function testGetFolderIfMatch()
     {
@@ -188,7 +188,7 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException fkooman\RemoteStorage\Exception\NotModifiedException
+     * @expectedException fkooman\Http\Exception\NotModifiedException
      */
     public function testGetDocumentIfMatch()
     {
@@ -206,7 +206,7 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException fkooman\RemoteStorage\Exception\PreconditionFailedException
+     * @expectedException fkooman\Http\Exception\PreconditionFailedException
      */
     public function testPutDocumentIfNoneMatchStarFail()
     {

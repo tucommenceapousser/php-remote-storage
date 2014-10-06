@@ -17,19 +17,14 @@
 
 namespace fkooman\RemoteStorage;
 
+use Exception;
 use fkooman\Http\Request;
 use fkooman\Rest\Service;
 use fkooman\OAuth\ResourceServer\ResourceServer;
 use fkooman\OAuth\ResourceServer\ResourceServerException;
 use fkooman\OAuth\ResourceServer\TokenIntrospection;
 use fkooman\OAuth\Common\Scope;
-use fkooman\RemoteStorage\Exception\NotFoundException;
-use fkooman\RemoteStorage\Exception\PreconditionFailedException;
-use fkooman\RemoteStorage\Exception\NotModifiedException;
-use fkooman\RemoteStorage\Exception\BadRequestException;
-use fkooman\RemoteStorage\Exception\UnauthorizedException;
-use fkooman\RemoteStorage\Exception\ConflictException;
-use fkooman\RemoteStorage\Exception\InternalServerErrorException;
+use fkooman\Http\Exception\HttpException;
 
 class RemoteStorageRequestHandler
 {
@@ -200,20 +195,6 @@ class RemoteStorageRequestHandler
             );
 
             return $service->run();
-        } catch (BadRequestException $e) {
-            return new RemoteStorageErrorResponse($request, 400);
-        } catch (NotFoundException $e) {
-            return new RemoteStorageErrorResponse($request, 404);
-        } catch (PreconditionFailedException $e) {
-            return new RemoteStorageErrorResponse($request, 412);
-        } catch (NotModifiedException $e) {
-            return new RemoteStorageErrorResponse($request, 304);
-        } catch (UnauthorizedException $e) {
-            return new RemoteStorageErrorResponse($request, 401);
-        } catch (ConflictException $e) {
-            return new RemoteStorageErrorResponse($request, 409);
-        } catch (InternalServerErrorException $e) {
-            return new RemoteStorageErrorResponse($request, 500);
         } catch (ResourceServerException $e) {
             $e->setRealm("remoteStorage");
             $response = new RemoteStorageErrorResponse($request, $e->getStatusCode());
@@ -223,6 +204,10 @@ class RemoteStorageRequestHandler
             }
 
             return $response;
+        } catch (Exception $e) {
+            $code = ($e instanceof HttpException) ? $e->getCode() : 500;
+
+            return new RemoteStorageErrorResponse($request, $code);
         }
     }
 

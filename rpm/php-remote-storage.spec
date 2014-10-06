@@ -2,7 +2,7 @@
 %global github_name      php-remote-storage
 
 Name:       php-remote-storage
-Version:    0.1.4
+Version:    0.1.5
 Release:    1%{?dist}
 Summary:    remoteStorage server written in PHP
 
@@ -24,7 +24,7 @@ Requires:   php-composer(fkooman/json) >= 0.5.1
 Requires:   php-composer(fkooman/json) < 0.6.0
 Requires:   php-composer(fkooman/config) >= 0.3.3
 Requires:   php-composer(fkooman/config) < 0.4.0
-Requires:   php-composer(fkooman/rest) >= 0.4.7
+Requires:   php-composer(fkooman/rest) >= 0.4.10
 Requires:   php-composer(fkooman/rest) < 0.5.0
 Requires:   php-composer(fkooman/oauth-common) >= 0.5.0
 Requires:   php-composer(fkooman/oauth-common) < 0.6.0
@@ -107,6 +107,9 @@ fi
 %doc README.md agpl-3.0.txt composer.json docs/ config/
 
 %changelog
+* Mon Oct 06 2014 François Kooman <fkooman@tuxed.net> - 0.1.5-1
+- update to 0.1.5
+
 * Thu Sep 25 2014 François Kooman <fkooman@tuxed.net> - 0.1.4-1
 - update to 0.1.4
 
