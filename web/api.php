@@ -19,13 +19,14 @@ require_once dirname(__DIR__)."/vendor/autoload.php";
 
 use fkooman\Config\Config;
 use fkooman\Http\Request;
-use fkooman\Http\JsonResponse;
 use fkooman\Http\IncomingRequest;
 use fkooman\RemoteStorage\RemoteStorage;
 use fkooman\RemoteStorage\RemoteStorageRequestHandler;
 use fkooman\RemoteStorage\MetadataStorage;
 use fkooman\RemoteStorage\DocumentStorage;
 use fkooman\OAuth\ResourceServer\ResourceServer;
+use fkooman\Http\Exception\HttpException;
+use fkooman\Http\Exception\InternalServerErrorException;
 use Guzzle\Http\Client;
 
 try {
@@ -58,13 +59,12 @@ try {
     $response = $remoteStorageRequestHandler->handleRequest($request);
     $response->sendResponse();
 } catch (Exception $e) {
-    $response = new JsonResponse(500);
-    $response->setContent(
-        array(
-            "error" => "internal_server_error",
-            "error_class" => get_class($e),
-            "error_description" => $e->getMessage(),
-        )
-    );
+    if ($e instanceof HttpException) {
+        $response = $e->getResponse();
+    } else {
+        // we catch all other (unexpected) exceptions and return a 500
+        $e = new InternalServerErrorException($e->getMessage());
+        $response = $e->getResponse();
+    }
     $response->sendResponse();
 }

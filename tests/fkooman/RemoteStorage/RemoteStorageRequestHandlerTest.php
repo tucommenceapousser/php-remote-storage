@@ -125,12 +125,15 @@ class RemoteStorageRequestHandlerTest extends PHPUnit_Framework_TestCase
         $this->assertRegexp('/1:[a-z0-9]+/i', $response->getHeader('ETag'));
     }
 
+    /**
+     * @expectedException fkooman\Http\Exception\NotFoundException
+     * @expectedExceptionMessage document not found
+     */
     public function testGetNonExistingDocument()
     {
         $request = $this->newRequest("GET");
         $request->setPathInfo("/admin/foo/bar/baz.txt");
-        $response = $this->r->handleRequest($request);
-        $this->assertEquals(404, $response->getStatusCode());
+        $this->r->handleRequest($request);
     }
 
     public function testDeleteDocument()
@@ -151,12 +154,15 @@ class RemoteStorageRequestHandlerTest extends PHPUnit_Framework_TestCase
         $this->assertRegexp('/1:[a-z0-9]+/i', $response->getHeader('ETag'));
     }
 
+    /**
+     * @expectedException fkooman\Http\Exception\NotFoundException
+     * @expectedExceptionMessage document not found
+     */
     public function testDeleteNonExistingDocument()
     {
         $request = $this->newRequest("DELETE");
         $request->setPathInfo("/admin/foo/bar/baz.txt");
-        $response = $this->r->handleRequest($request);
-        $this->assertEquals(404, $response->getStatusCode());
+        $this->r->handleRequest($request);
     }
 
     public function testGetNonExistingFolder()
@@ -200,6 +206,10 @@ class RemoteStorageRequestHandlerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(12, $folderData['items']['baz.txt']['Content-Length']);
     }
 
+    /**
+     * @expectedException fkooman\Http\Exception\NotModifiedException
+     * @expectedExceptionMessage document not modified
+     */
     public function testGetSameVersionDocument()
     {
         $request = $this->newRequest("PUT");
@@ -214,11 +224,13 @@ class RemoteStorageRequestHandlerTest extends PHPUnit_Framework_TestCase
         $request = $this->newRequest("GET");
         $request->setPathInfo("/admin/foo/bar/baz.txt");
         $request->setHeader("If-None-Match", $documentVersion);
-        $response = $this->r->handleRequest($request);
-        $this->assertEquals(304, $response->getStatusCode());
-        $this->assertEquals("", $response->getContent());
+        $this->r->handleRequest($request);
     }
 
+    /**
+     * @expectedException fkooman\Http\Exception\NotModifiedException
+     * @expectedExceptionMessage folder not modified
+     */
     public function testGetSameVersionFolder()
     {
         $request = $this->newRequest("PUT");
@@ -235,11 +247,13 @@ class RemoteStorageRequestHandlerTest extends PHPUnit_Framework_TestCase
         $request = $this->newRequest("GET");
         $request->setPathInfo("/admin/foo/bar/");
         $request->setHeader("If-None-Match", $folderVersion);
-        $response = $this->r->handleRequest($request);
-        $this->assertEquals(304, $response->getStatusCode());
-        $this->assertEquals("", $response->getContent());
+        $this->r->handleRequest($request);
     }
 
+    /**
+     * @expectedException fkooman\Http\Exception\PreconditionFailedException
+     * @expectedExceptionMessage version mismatch
+     */
     public function testPutNonMatchingVersion()
     {
         $request = $this->newRequest("PUT");
@@ -253,11 +267,13 @@ class RemoteStorageRequestHandlerTest extends PHPUnit_Framework_TestCase
         $request->setHeader("If-Match", '"non-matching-version"');
         $request->setContentType("text/plain");
         $request->setContent("Hello New World!");
-        $response = $this->r->handleRequest($request);
-        $this->assertEquals(412, $response->getStatusCode());
-        $this->assertEquals("", $response->getContent());
+        $this->r->handleRequest($request);
     }
 
+    /**
+     * @expectedException fkooman\Http\Exception\PreconditionFailedException
+     * @expectedExceptionMessage version mismatch
+     */
     public function testDeleteNonMatchingVersion()
     {
         $request = $this->newRequest("PUT");
@@ -269,8 +285,6 @@ class RemoteStorageRequestHandlerTest extends PHPUnit_Framework_TestCase
         $request = $this->newRequest("DELETE");
         $request->setPathInfo("/admin/foo/bar/baz.txt");
         $request->setHeader("If-Match", '"non-matching-version"');
-        $response = $this->r->handleRequest($request);
-        $this->assertEquals(412, $response->getStatusCode());
-        $this->assertEquals("", $response->getContent());
+        $this->r->handleRequest($request);
     }
 }

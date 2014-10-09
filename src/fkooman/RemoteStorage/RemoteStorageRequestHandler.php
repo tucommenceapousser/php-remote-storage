@@ -17,14 +17,12 @@
 
 namespace fkooman\RemoteStorage;
 
-use Exception;
 use fkooman\Http\Request;
 use fkooman\Rest\Service;
 use fkooman\OAuth\ResourceServer\ResourceServer;
 use fkooman\OAuth\ResourceServer\ResourceServerException;
 use fkooman\OAuth\ResourceServer\TokenIntrospection;
 use fkooman\OAuth\Common\Scope;
-use fkooman\Http\Exception\HttpException;
 
 class RemoteStorageRequestHandler
 {
@@ -42,17 +40,45 @@ class RemoteStorageRequestHandler
 
     public function handleRequest(Request $request)
     {
-        try {
-            $this->resourceServer->setAuthorizationHeader($request->getHeader("Authorization"));
-            $this->resourceServer->setAccessTokenQueryParameter($request->getQueryParameter("access_token"));
+        $this->resourceServer->setAuthorizationHeader($request->getHeader("Authorization"));
+        $this->resourceServer->setAccessTokenQueryParameter($request->getQueryParameter("access_token"));
 
-            $service = new Service($request);
-            $service->match(array("GET", "HEAD"),
-                "*",
-                function ($pathInfo) use ($request) {
-                    $path = new Path($pathInfo);
-                    if ($path->getIsFolder()) {
-                        // folder
+        $service = new Service($request);
+        $service->match(array("GET", "HEAD"),
+            "*",
+            function ($pathInfo) use ($request) {
+                $path = new Path($pathInfo);
+                if ($path->getIsFolder()) {
+                    // folder
+                    $tokenIntrospection = $this->resourceServer->verifyToken();
+                    if ($path->getUserId() !== $tokenIntrospection->getSub()) {
+                        throw new UnauthorizedException("path does not match authorized subject");
+                    }
+                    if (!$this->hasReadScope($tokenIntrospection, $path->getModuleName())) {
+                        throw new UnauthorizedException("path does not match authorized scope");
+                    }
+                    $folderVersion = $this->remoteStorage->getVersion($path);
+                    if (null === $folderVersion) {
+                        // folder does not exist, so we just invent this
+                        // ETag that will be the same for all empty folders
+                        $folderVersion = '"e:7398243bf0d8b3c6c7e7ec618b3ee703"';
+                    }
+                    $rsr = new RemoteStorageResponse($request, 200, $folderVersion);
+                    if ("GET" === $request->getRequestMethod()) {
+                        $rsr->setContent(
+                            $this->remoteStorage->getFolder(
+                                $path,
+                                $this->stripQuotes(
+                                    $request->getHeader("If-None-Match")
+                                )
+                            )
+                        );
+                    }
+
+                    return $rsr;
+                } else {
+                    // document
+                    if (!$path->getIsPublic()) {
                         $tokenIntrospection = $this->resourceServer->verifyToken();
                         if ($path->getUserId() !== $tokenIntrospection->getSub()) {
                             throw new UnauthorizedException("path does not match authorized subject");
@@ -60,155 +86,112 @@ class RemoteStorageRequestHandler
                         if (!$this->hasReadScope($tokenIntrospection, $path->getModuleName())) {
                             throw new UnauthorizedException("path does not match authorized scope");
                         }
-                        $folderVersion = $this->remoteStorage->getVersion($path);
-                        if (null === $folderVersion) {
-                            // folder does not exist, so we just invent this
-                            // ETag that will be the same for all empty folders
-                            $folderVersion = '"e:7398243bf0d8b3c6c7e7ec618b3ee703"';
-                        }
-                        $rsr = new RemoteStorageResponse($request, 200, $folderVersion);
-                        if ("GET" === $request->getRequestMethod()) {
-                            $rsr->setContent(
-                                $this->remoteStorage->getFolder(
-                                    $path,
-                                    $this->stripQuotes(
-                                        $request->getHeader("If-None-Match")
-                                    )
-                                )
-                            );
-                        }
-
-                        return $rsr;
-                    } else {
-                        // document
-                        if (!$path->getIsPublic()) {
-                            $tokenIntrospection = $this->resourceServer->verifyToken();
-                            if ($path->getUserId() !== $tokenIntrospection->getSub()) {
-                                throw new UnauthorizedException("path does not match authorized subject");
-                            }
-                            if (!$this->hasReadScope($tokenIntrospection, $path->getModuleName())) {
-                                throw new UnauthorizedException("path does not match authorized scope");
-                            }
-                        }
-                        $documentVersion = $this->remoteStorage->getVersion($path);
-                        $documentContentType = $this->remoteStorage->getContentType($path);
-                        $documentContent = $this->remoteStorage->getDocument($path);
-
-                        $rsr = new RemoteStorageResponse($request, 200, $documentVersion, $documentContentType);
-                        if ("GET" === $request->getRequestMethod()) {
-                            $rsr->setContent(
-                                $this->remoteStorage->getDocument(
-                                    $path,
-                                    $this->stripQuotes(
-                                        $request->getHeader("If-None-Match")
-                                    )
-                                )
-                            );
-                        }
-
-                        return $rsr;
                     }
-                }
-            );
-
-            $service->put(
-                "*",
-                function ($pathInfo) use ($request) {
-                    $path = new Path($pathInfo);
-
-                    $tokenIntrospection = $this->resourceServer->verifyToken();
-
-                    if ($path->getUserId() !== $tokenIntrospection->getSub()) {
-                        // FIXME: should be Forbidden?
-                        throw new UnauthorizedException("path does not match authorized subject");
-                    }
-                    if (!$this->hasWriteScope($tokenIntrospection, $path->getModuleName())) {
-                        // FIXME: should throw ResourceServerException ???
-                        throw new UnauthorizedException("path does not match authorized scope");
-                    }
-
-                    if ($path->getIsFolder()) {
-                        // FIXME: use more generic exceptions?
-                        throw new BadRequestException("can not put a folder");
-                    }
-                    if (null === $request->getContentType()) {
-                        throw new BadRequestException("Content-Type not specified");
-                    }
-
-                    $x = $this->remoteStorage->putDocument(
-                        $path,
-                        $request->getContentType(),
-                        $request->getContent(),
-                        $this->stripQuotes(
-                            $request->getHeader("If-Match")
-                        ),
-                        $this->stripQuotes(
-                            $request->getHeader("If-None-Match")
-                        )
-                    );
                     $documentVersion = $this->remoteStorage->getVersion($path);
-                    $rsr = new RemoteStorageResponse($request, 200, $documentVersion, 'application/json');
-                    $rsr->setContent($x);
+                    $documentContentType = $this->remoteStorage->getContentType($path);
+                    $documentContent = $this->remoteStorage->getDocument($path);
+
+                    $rsr = new RemoteStorageResponse($request, 200, $documentVersion, $documentContentType);
+                    if ("GET" === $request->getRequestMethod()) {
+                        $rsr->setContent(
+                            $this->remoteStorage->getDocument(
+                                $path,
+                                $this->stripQuotes(
+                                    $request->getHeader("If-None-Match")
+                                )
+                            )
+                        );
+                    }
 
                     return $rsr;
                 }
-            );
-
-            $service->delete(
-                "*",
-                function ($pathInfo) use ($request) {
-                    $path = new Path($pathInfo);
-
-                    $tokenIntrospection = $this->resourceServer->verifyToken();
-
-                    if ($path->getUserId() !== $tokenIntrospection->getSub()) {
-                        throw new UnauthorizedException("path does not match authorized subject");
-                    }
-                    if (!$this->hasWriteScope($tokenIntrospection, $path->getModuleName())) {
-                        throw new UnauthorizedException("path does not match authorized scope");
-                    }
-
-                    if ($path->getIsFolder()) {
-                        // FIXME: use more generic exceptions?
-                        throw new BadRequestException("can not delete a folder");
-                    }
-                    // need to get the version before the delete
-                    $documentVersion = $this->remoteStorage->getVersion($path);
-                    $x = $this->remoteStorage->deleteDocument(
-                        $path,
-                        $this->stripQuotes(
-                            $request->getHeader("If-Match")
-                        )
-                    );
-                    $rsr = new RemoteStorageResponse($request, 200, $documentVersion, 'application/json');
-                    $rsr->setContent($x);
-
-                    return $rsr;
-                }
-            );
-
-            $service->options(
-                "*",
-                function ($pathInfo) use ($request) {
-                    return new RemoteStorageResponse($request, 200, null, null);
-                }
-            );
-
-            return $service->run();
-        } catch (ResourceServerException $e) {
-            $e->setRealm("remoteStorage");
-            $response = new RemoteStorageErrorResponse($request, $e->getStatusCode());
-            if (null !== $e->getAuthenticateHeader()) {
-                // for "internal_server_error" responses no WWW-Authenticate header is set
-                $response->setHeader("WWW-Authenticate", $e->getAuthenticateHeader());
             }
+        );
 
-            return $response;
-        } catch (Exception $e) {
-            $code = ($e instanceof HttpException) ? $e->getCode() : 500;
+        $service->put(
+            "*",
+            function ($pathInfo) use ($request) {
+                $path = new Path($pathInfo);
 
-            return new RemoteStorageErrorResponse($request, $code);
-        }
+                $tokenIntrospection = $this->resourceServer->verifyToken();
+
+                if ($path->getUserId() !== $tokenIntrospection->getSub()) {
+                    // FIXME: should be Forbidden?
+                    throw new UnauthorizedException("path does not match authorized subject");
+                }
+                if (!$this->hasWriteScope($tokenIntrospection, $path->getModuleName())) {
+                    // FIXME: should throw ResourceServerException ???
+                    throw new UnauthorizedException("path does not match authorized scope");
+                }
+
+                if ($path->getIsFolder()) {
+                    // FIXME: use more generic exceptions?
+                    throw new BadRequestException("can not put a folder");
+                }
+                if (null === $request->getContentType()) {
+                    throw new BadRequestException("Content-Type not specified");
+                }
+
+                $x = $this->remoteStorage->putDocument(
+                    $path,
+                    $request->getContentType(),
+                    $request->getContent(),
+                    $this->stripQuotes(
+                        $request->getHeader("If-Match")
+                    ),
+                    $this->stripQuotes(
+                        $request->getHeader("If-None-Match")
+                    )
+                );
+                $documentVersion = $this->remoteStorage->getVersion($path);
+                $rsr = new RemoteStorageResponse($request, 200, $documentVersion, 'application/json');
+                $rsr->setContent($x);
+
+                return $rsr;
+            }
+        );
+
+        $service->delete(
+            "*",
+            function ($pathInfo) use ($request) {
+                $path = new Path($pathInfo);
+
+                $tokenIntrospection = $this->resourceServer->verifyToken();
+
+                if ($path->getUserId() !== $tokenIntrospection->getSub()) {
+                    throw new UnauthorizedException("path does not match authorized subject");
+                }
+                if (!$this->hasWriteScope($tokenIntrospection, $path->getModuleName())) {
+                    throw new UnauthorizedException("path does not match authorized scope");
+                }
+
+                if ($path->getIsFolder()) {
+                    // FIXME: use more generic exceptions?
+                    throw new BadRequestException("can not delete a folder");
+                }
+                // need to get the version before the delete
+                $documentVersion = $this->remoteStorage->getVersion($path);
+                $x = $this->remoteStorage->deleteDocument(
+                    $path,
+                    $this->stripQuotes(
+                        $request->getHeader("If-Match")
+                    )
+                );
+                $rsr = new RemoteStorageResponse($request, 200, $documentVersion, 'application/json');
+                $rsr->setContent($x);
+
+                return $rsr;
+            }
+        );
+
+        $service->options(
+            "*",
+            function ($pathInfo) use ($request) {
+                return new RemoteStorageResponse($request, 200, null, null);
+            }
+        );
+
+        return $service->run();
     }
 
     public function hasReadScope(TokenIntrospection $i, $moduleName)
