@@ -66,5 +66,6 @@ try {
         $e = new InternalServerErrorException($e->getMessage());
         $response = $e->getResponse();
     }
+    // FIXME: add CORS
     $response->sendResponse();
 }
