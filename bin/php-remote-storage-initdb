@@ -16,23 +16,23 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require_once dirname(__DIR__) . '/vendor/autoload.php';
+require_once dirname(__DIR__).'/vendor/autoload.php';
 
 use fkooman\Config\Config;
 use fkooman\RemoteStorage\MetadataStorage;
 
 try {
-    $config = Config::fromIniFile(dirname(__DIR__) . "/config/rs.ini");
+    $config = Config::fromIniFile(dirname(__DIR__)."/config/rs.ini");
 
     $db = new PDO(
         $config->s('MetadataStorage')->l('dsn'),
-        $config->s('PdoStorage')->l('username', false),
-        $config->s('PdoStorage')->l('password', false)
+        $config->s('MetadataStorage')->l('username', false),
+        $config->s('MetadataStorage')->l('password', false)
     );
 
     $metadataStorage = new MetadataStorage($db);
     $metadataStorage->initDatabase();
 } catch (Exception $e) {
-    echo $e->getMessage() . PHP_EOL;
+    echo $e->getMessage().PHP_EOL;
     exit(1);
 }
