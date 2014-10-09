@@ -17,8 +17,7 @@
 
 namespace fkooman\RemoteStorage;
 
-use fkooman\Http\Exception\PreconditionFailedException;
-use fkooman\Http\Exception\NotModifiedException;
+use fkooman\RemoteStorage\Exception\RemoteStorageException;
 use fkooman\Json\Json;
 
 class RemoteStorage
@@ -43,11 +42,11 @@ class RemoteStorage
     public function putDocument(Path $p, $contentType, $documentData, array $ifMatch = null, array $ifNoneMatch = null)
     {
         if (null !== $ifMatch && !in_array($this->md->getVersion($p), $ifMatch)) {
-            throw new PreconditionFailedException("version mismatch");
+            throw new RemoteStorageException("version mismatch");
         }
 
         if (null !== $ifNoneMatch && in_array("*", $ifNoneMatch) && null !== $this->md->getVersion($p)) {
-            throw new PreconditionFailedException("document already exists");
+            throw new RemoteStorageException("document already exists");
         }
 
         $updatedEntities = $this->d->putDocument($p, $documentData);
@@ -60,15 +59,16 @@ class RemoteStorage
     public function deleteDocument(Path $p, array $ifMatch = null)
     {
         if (null !== $ifMatch && !in_array($this->md->getVersion($p), $ifMatch)) {
-            throw new PreconditionFailedException("version mismatch");
+            throw new RemoteStorageException("version mismatch");
         }
         $deletedEntities = $this->d->deleteDocument($p);
         foreach ($deletedEntities as $d) {
             $this->md->deleteNode(new Path($d));
         }
 
-        // increment the version from increment the version from the folder
-        // containing the last deleted folder and up to the user root
+        // increment the version from the folder containing the last deleted
+        // folder and up to the user root, we cannot conveniently do this from
+        // the MetadataStorage class :(
         foreach ($p->getFolderTreeToUserRoot() as $i) {
             if (null !== $this->md->getVersion(new Path($i))) {
                 $this->md->updateFolder(new Path($i));
@@ -89,7 +89,7 @@ class RemoteStorage
     public function getDocument(Path $p, array $ifNoneMatch = null)
     {
         if (null !== $ifNoneMatch && in_array($this->md->getVersion($p), $ifNoneMatch)) {
-            throw new NotModifiedException("document not modified");
+            throw new RemoteStorageException("document not modified");
         }
 
         return $this->d->getDocument($p);
@@ -98,7 +98,7 @@ class RemoteStorage
     public function getFolder(Path $p, array $ifNoneMatch = null)
     {
         if (null !== $ifNoneMatch && in_array($this->md->getVersion($p), $ifNoneMatch)) {
-            throw new NotModifiedException("folder not modified");
+            throw new RemoteStorageException("folder not modified");
         }
 
         $f = array(

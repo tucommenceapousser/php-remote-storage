@@ -19,7 +19,7 @@ namespace fkooman\RemoteStorage;
 
 use PDO;
 use PHPUnit_Framework_TestCase;
-use fkooman\Http\Exception\NotFoundException;
+use fkooman\RemoteStorage\Exception\DocumentStorageException;
 use fkooman\Json\Json;
 
 class RemoteStorageTest extends PHPUnit_Framework_TestCase
@@ -84,7 +84,7 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
         try {
             $this->r->getDocument($p);
             $this->assertTrue(false);
-        } catch (NotFoundException $e) {
+        } catch (DocumentStorageException $e) {
             $this->assertTrue(true);
         }
         // directory should also not be there anymore
@@ -156,7 +156,8 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException fkooman\Http\Exception\PreconditionFailedException
+     * @expectedException fkooman\RemoteStorage\Exception\RemoteStorageException
+     * @expectedExceptionMessage version mismatch
      */
     public function testPutIfMatchPrecondition()
     {
@@ -166,7 +167,8 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException fkooman\Http\Exception\PreconditionFailedException
+     * @expectedException fkooman\RemoteStorage\Exception\RemoteStorageException
+     * @expectedExceptionMessage version mismatch
      */
     public function testDeleteIfMatchPrecondition()
     {
@@ -176,7 +178,8 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException fkooman\Http\Exception\NotModifiedException
+     * @expectedException fkooman\RemoteStorage\Exception\RemoteStorageException
+     * @expectedExceptionMessage folder not modified
      */
     public function testGetFolderIfMatch()
     {
@@ -188,7 +191,8 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException fkooman\Http\Exception\NotModifiedException
+     * @expectedException fkooman\RemoteStorage\Exception\RemoteStorageException
+     * @expectedExceptionMessage document not modified
      */
     public function testGetDocumentIfMatch()
     {
@@ -206,7 +210,8 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException fkooman\Http\Exception\PreconditionFailedException
+     * @expectedException fkooman\RemoteStorage\Exception\RemoteStorageException
+     * @expectedExceptionMessage document already exists
      */
     public function testPutDocumentIfNoneMatchStarFail()
     {

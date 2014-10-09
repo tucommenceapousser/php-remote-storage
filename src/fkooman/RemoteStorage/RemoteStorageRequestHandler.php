@@ -23,6 +23,8 @@ use fkooman\OAuth\ResourceServer\ResourceServer;
 use fkooman\OAuth\ResourceServer\ResourceServerException;
 use fkooman\OAuth\ResourceServer\TokenIntrospection;
 use fkooman\OAuth\Common\Scope;
+use fkooman\Http\Exception\NotFoundException;
+use fkooman\Http\Exception\PreconditionFailedException;
 
 class RemoteStorageRequestHandler
 {
@@ -63,6 +65,17 @@ class RemoteStorageRequestHandler
                         // ETag that will be the same for all empty folders
                         $folderVersion = '"e:7398243bf0d8b3c6c7e7ec618b3ee703"';
                     }
+
+                    $requestedVersion = $this->stripQuotes(
+                        $request->getHeader("If-None-Match")
+                    );
+
+                    if (null !== $requestedVersion) {
+                        if (in_array($folderVersion, $requestedVersion)) {
+                            return new RemoteStorageResponse($request, 304, $folderVersion);
+                        }
+                    }
+
                     $rsr = new RemoteStorageResponse($request, 200, $folderVersion);
                     if ("GET" === $request->getRequestMethod()) {
                         $rsr->setContent(
@@ -88,7 +101,21 @@ class RemoteStorageRequestHandler
                         }
                     }
                     $documentVersion = $this->remoteStorage->getVersion($path);
+                    if (null === $documentVersion) {
+                        throw new NotFoundException("document not found");
+                    }
+
+                    $requestedVersion = $this->stripQuotes(
+                        $request->getHeader("If-None-Match")
+                    );
                     $documentContentType = $this->remoteStorage->getContentType($path);
+
+                    if (null !== $requestedVersion) {
+                        if (in_array($documentVersion, $requestedVersion)) {
+                            return new RemoteStorageResponse($request, 304, $documentVersion, $documentContentType);
+                        }
+                    }
+
                     $documentContent = $this->remoteStorage->getDocument($path);
 
                     $rsr = new RemoteStorageResponse($request, 200, $documentVersion, $documentContentType);
@@ -96,9 +123,7 @@ class RemoteStorageRequestHandler
                         $rsr->setContent(
                             $this->remoteStorage->getDocument(
                                 $path,
-                                $this->stripQuotes(
-                                    $request->getHeader("If-None-Match")
-                                )
+                                $requestedVersion
                             )
                         );
                     }
@@ -128,21 +153,31 @@ class RemoteStorageRequestHandler
                     // FIXME: use more generic exceptions?
                     throw new BadRequestException("can not put a folder");
                 }
-                if (null === $request->getContentType()) {
-                    throw new BadRequestException("Content-Type not specified");
+
+                $ifMatch = $this->stripQuotes(
+                    $request->getHeader("If-Match")
+                );
+                $ifNoneMatch = $this->stripQuotes(
+                    $request->getHeader("If-None-Match")
+                );
+
+                $documentVersion = $this->remoteStorage->getVersion($path);
+                if (null !== $ifMatch && !in_array($documentVersion, $ifMatch)) {
+                    throw new PreconditionFailedException("version mismatch");
+                }
+
+                if (null !== $ifNoneMatch && in_array("*", $ifNoneMatch) && null !== $documentVersion) {
+                    throw new PreconditionFailedException("document already exists");
                 }
 
                 $x = $this->remoteStorage->putDocument(
                     $path,
                     $request->getContentType(),
                     $request->getContent(),
-                    $this->stripQuotes(
-                        $request->getHeader("If-Match")
-                    ),
-                    $this->stripQuotes(
-                        $request->getHeader("If-None-Match")
-                    )
+                    $ifMatch,
+                    $ifNoneMatch
                 );
+                // we have to get the version again after the PUT
                 $documentVersion = $this->remoteStorage->getVersion($path);
                 $rsr = new RemoteStorageResponse($request, 200, $documentVersion, 'application/json');
                 $rsr->setContent($x);
@@ -171,11 +206,20 @@ class RemoteStorageRequestHandler
                 }
                 // need to get the version before the delete
                 $documentVersion = $this->remoteStorage->getVersion($path);
+                if (null === $documentVersion) {
+                    throw new NotFoundException("document not found");
+                }
+
+                $ifMatch = $this->stripQuotes(
+                    $request->getHeader("If-Match")
+                );
+                if (null !== $ifMatch && !in_array($documentVersion, $ifMatch)) {
+                    throw new PreconditionFailedException("version mismatch");
+                }
+
                 $x = $this->remoteStorage->deleteDocument(
                     $path,
-                    $this->stripQuotes(
-                        $request->getHeader("If-Match")
-                    )
+                    $ifMatch
                 );
                 $rsr = new RemoteStorageResponse($request, 200, $documentVersion, 'application/json');
                 $rsr->setContent($x);

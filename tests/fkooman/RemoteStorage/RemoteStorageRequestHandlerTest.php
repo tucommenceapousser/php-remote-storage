@@ -206,10 +206,6 @@ class RemoteStorageRequestHandlerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(12, $folderData['items']['baz.txt']['Content-Length']);
     }
 
-    /**
-     * @expectedException fkooman\Http\Exception\NotModifiedException
-     * @expectedExceptionMessage document not modified
-     */
     public function testGetSameVersionDocument()
     {
         $request = $this->newRequest("PUT");
@@ -224,13 +220,10 @@ class RemoteStorageRequestHandlerTest extends PHPUnit_Framework_TestCase
         $request = $this->newRequest("GET");
         $request->setPathInfo("/admin/foo/bar/baz.txt");
         $request->setHeader("If-None-Match", $documentVersion);
-        $this->r->handleRequest($request);
+        $response = $this->r->handleRequest($request);
+        $this->assertEquals(304, $response->getStatusCode());
     }
 
-    /**
-     * @expectedException fkooman\Http\Exception\NotModifiedException
-     * @expectedExceptionMessage folder not modified
-     */
     public function testGetSameVersionFolder()
     {
         $request = $this->newRequest("PUT");
@@ -247,7 +240,8 @@ class RemoteStorageRequestHandlerTest extends PHPUnit_Framework_TestCase
         $request = $this->newRequest("GET");
         $request->setPathInfo("/admin/foo/bar/");
         $request->setHeader("If-None-Match", $folderVersion);
-        $this->r->handleRequest($request);
+        $response = $this->r->handleRequest($request);
+        $this->assertEquals(304, $response->getStatusCode());
     }
 
     /**
