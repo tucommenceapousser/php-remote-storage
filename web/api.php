@@ -21,7 +21,7 @@ use fkooman\Config\Config;
 use fkooman\Http\Request;
 use fkooman\Http\IncomingRequest;
 use fkooman\RemoteStorage\RemoteStorage;
-use fkooman\RemoteStorage\RemoteStorageRequestHandler;
+use fkooman\RemoteStorage\RemoteStorageService;
 use fkooman\RemoteStorage\MetadataStorage;
 use fkooman\RemoteStorage\DocumentStorage;
 use fkooman\OAuth\ResourceServer\ResourceServer;
@@ -55,7 +55,7 @@ try {
     $request = Request::fromIncomingRequest(new IncomingRequest());
 
     $remoteStorage = new RemoteStorage($md, $document);
-    $remoteStorageRequestHandler = new RemoteStorageRequestHandler($remoteStorage, $resourceServer);
+    $remoteStorageRequestHandler = new RemoteStorageService($remoteStorage, $resourceServer);
     $response = $remoteStorageRequestHandler->handleRequest($request);
     $response->sendResponse();
 } catch (Exception $e) {

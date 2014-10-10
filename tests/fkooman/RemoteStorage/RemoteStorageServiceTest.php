@@ -26,7 +26,7 @@ use Guzzle\Plugin\Mock\MockPlugin;
 use Guzzle\Http\Message\Response;
 use PHPUnit_Framework_TestCase;
 
-class RemoteStorageRequestHandlerTest extends PHPUnit_Framework_TestCase
+class RemoteStorageServiceTest extends PHPUnit_Framework_TestCase
 {
     private $r;
     private $j;
@@ -68,7 +68,7 @@ class RemoteStorageRequestHandlerTest extends PHPUnit_Framework_TestCase
             $client
         );
 
-        $this->r = new RemoteStorageRequestHandler($remoteStorage, $resourceServer);
+        $this->r = new RemoteStorageService($remoteStorage, $resourceServer);
         $this->j = new Json();
     }
 

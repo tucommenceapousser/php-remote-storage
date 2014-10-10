@@ -26,7 +26,7 @@ use fkooman\OAuth\Common\Scope;
 use fkooman\Http\Exception\NotFoundException;
 use fkooman\Http\Exception\PreconditionFailedException;
 
-class RemoteStorageRequestHandler
+class RemoteStorageService
 {
     /** @var fkooman\RemoteStorage\RemoteStorage */
     private $remoteStorage;
