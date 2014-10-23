@@ -28,15 +28,10 @@ class RemoteStorage
     /** @var fkooman\RemoteStorage\DocumentStorage */
     private $d;
 
-    /** @var fkooman\Json\Json */
-    private $j;
-
     public function __construct(MetadataStorage $md, DocumentStorage $d)
     {
         $this->md = $md;
         $this->d = $d;
-        $this->j = new Json();
-        $this->j->setForceObject(true);
     }
 
     public function putDocument(Path $p, $contentType, $documentData, array $ifMatch = null, array $ifNoneMatch = null)
@@ -114,6 +109,6 @@ class RemoteStorage
             }
         }
 
-        return $this->j->encode($f);
+        return Json::encode($f, JSON_FORCE_OBJECT);
     }
 }

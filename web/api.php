@@ -17,47 +17,38 @@
 
 require_once dirname(__DIR__)."/vendor/autoload.php";
 
-use fkooman\Config\Config;
-use fkooman\Http\Request;
-use fkooman\Http\IncomingRequest;
+use fkooman\Ini\IniReader;
+use fkooman\Rest\Plugin\Bearer\BearerAuthentication;
 use fkooman\RemoteStorage\RemoteStorage;
 use fkooman\RemoteStorage\RemoteStorageService;
 use fkooman\RemoteStorage\MetadataStorage;
 use fkooman\RemoteStorage\DocumentStorage;
-use fkooman\OAuth\ResourceServer\ResourceServer;
 use fkooman\Http\Exception\HttpException;
 use fkooman\Http\Exception\InternalServerErrorException;
-use Guzzle\Http\Client;
 
 try {
-    $config = Config::fromIniFile(
-        dirname(__DIR__)."/config/rs.ini"
+    $iniReader = IniReader::fromFile(
+        dirname(__DIR__).'/config/rs.ini'
     );
 
     $md = new MetadataStorage(
         new PDO(
-            $config->s('MetadataStorage')->l('dsn'),
-            $config->s('PdoStorage')->l('username', false),
-            $config->s('PdoStorage')->l('password', false)
+            $iniReader->v('MetadataStorage', 'dsn'),
+            $iniReader->v('MetadataStorage', 'username', false),
+            $iniReader->v('MetadataStorage', 'password', false)
         )
     );
 
     $document = new DocumentStorage(
-        $config->l('storageDir', true)
+        $iniReader->v('storageDir')
     );
 
-    $resourceServer = new ResourceServer(
-        new Client(
-            $config->l('tokenIntrospectionUri', true)
-        )
-    );
-
-    $request = Request::fromIncomingRequest(new IncomingRequest());
+    $bearerAuthentication = new BearerAuthentication($iniReader->v('tokenIntrospectionUri'), 'remoteStorage');
 
     $remoteStorage = new RemoteStorage($md, $document);
-    $remoteStorageRequestHandler = new RemoteStorageService($remoteStorage, $resourceServer);
-    $response = $remoteStorageRequestHandler->handleRequest($request);
-    $response->sendResponse();
+    $remoteStorageService = new RemoteStorageService($remoteStorage);
+    $remoteStorageService->registerBeforeEachMatchPlugin($bearerAuthentication);
+    $remoteStorageService->run()->sendResponse();
 } catch (Exception $e) {
     if ($e instanceof HttpException) {
         $response = $e->getResponse();

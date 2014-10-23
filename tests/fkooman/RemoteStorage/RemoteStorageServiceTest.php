@@ -20,16 +20,12 @@ namespace fkooman\RemoteStorage;
 use PDO;
 use fkooman\Http\Request;
 use fkooman\Json\Json;
-use fkooman\OAuth\ResourceServer\ResourceServer;
-use Guzzle\Http\Client;
-use Guzzle\Plugin\Mock\MockPlugin;
-use Guzzle\Http\Message\Response;
+use fkooman\OAuth\Common\TokenIntrospection;
 use PHPUnit_Framework_TestCase;
 
 class RemoteStorageServiceTest extends PHPUnit_Framework_TestCase
 {
     private $r;
-    private $j;
 
     public function setUp()
     {
@@ -50,38 +46,31 @@ class RemoteStorageServiceTest extends PHPUnit_Framework_TestCase
         $document = new DocumentStorage($tempFile);
         $remoteStorage = new RemoteStorage($md, $document);
 
-        $plugin = new MockPlugin();
-        for ($i = 0; $i < 4; $i++) {
-            // we need the same response multiple times...
-            $plugin->addResponse(
-                new Response(
-                    200,
-                    null,
-                    '{"active": true, "sub": "admin", "scope": "foo:rw"}'
+        $stub = $this->getMockBuilder('fkooman\Rest\Plugin\Bearer\BearerAuthentication')
+                     //->setMockClassName('fkooman\Rest\Plugin\Bearer\BearerAuthentication')
+                     ->disableOriginalConstructor()
+                     ->getMock();
+        $stub->method('execute')->willReturn(
+            new TokenIntrospection(
+                array(
+                    'active' => true,
+                    'sub' => 'admin',
+                    'scope' => 'foo:rw',
                 )
-            );
-        }
-        $client = new Client("https://auth.example.org/introspect");
-        $client->addSubscriber($plugin);
-
-        $resourceServer = new ResourceServer(
-            $client
+            )
         );
 
-        $this->r = new RemoteStorageService($remoteStorage, $resourceServer);
-        $this->j = new Json();
+        $this->r = new RemoteStorageService($remoteStorage);
+        $this->r->registerBeforeEachMatchPlugin($stub);
     }
 
     /**
      * Method to create a new request object to set some default headers
      */
-    private function newRequest($requestMethod, $addBearerToken = true)
+    private function newRequest($requestMethod)
     {
         $request = new Request("https://www.example.org", $requestMethod);
         $request->setHeader("Origin", "https://foo.bar.example.org");
-        if ($addBearerToken) {
-            $request->setHeader("Authorization", "Bearer 12345");
-        }
 
         return $request;
     }
@@ -100,7 +89,9 @@ class RemoteStorageServiceTest extends PHPUnit_Framework_TestCase
         $request->setPathInfo("/admin/foo/bar/baz.txt");
         $request->setContentType("text/plain");
         $request->setContent("Hello World!");
-        $response = $this->r->handleRequest($request);
+
+        $response = $this->r->run($request);
+
         $this->assertEquals("application/json", $response->getContentType());
         $this->assertEquals("https://foo.bar.example.org", $response->getHeader("Access-Control-Allow-Origin"));
         $this->assertEquals(200, $response->getStatusCode());
@@ -113,12 +104,12 @@ class RemoteStorageServiceTest extends PHPUnit_Framework_TestCase
         $request->setPathInfo("/admin/foo/bar/baz.txt");
         $request->setContentType("text/plain");
         $request->setContent("Hello World!");
-        $response = $this->r->handleRequest($request);
+        $response = $this->r->run($request);
         $this->assertEquals(200, $response->getStatusCode());
 
         $request = $this->newRequest("GET");
         $request->setPathInfo("/admin/foo/bar/baz.txt");
-        $response = $this->r->handleRequest($request);
+        $response = $this->r->run($request);
         $this->assertEquals("text/plain", $response->getContentType());
         $this->assertEquals("Hello World!", $response->getContent());
         $this->assertEquals(200, $response->getStatusCode());
@@ -133,7 +124,7 @@ class RemoteStorageServiceTest extends PHPUnit_Framework_TestCase
     {
         $request = $this->newRequest("GET");
         $request->setPathInfo("/admin/foo/bar/baz.txt");
-        $this->r->handleRequest($request);
+        $this->r->run($request);
     }
 
     public function testDeleteDocument()
@@ -142,13 +133,13 @@ class RemoteStorageServiceTest extends PHPUnit_Framework_TestCase
         $request->setPathInfo("/admin/foo/bar/baz.txt");
         $request->setContentType("text/plain");
         $request->setContent("Hello World!");
-        $response = $this->r->handleRequest($request);
+        $response = $this->r->run($request);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("https://foo.bar.example.org", $response->getHeader("Access-Control-Allow-Origin"));
 
         $request = $this->newRequest("DELETE");
         $request->setPathInfo("/admin/foo/bar/baz.txt");
-        $response = $this->r->handleRequest($request);
+        $response = $this->r->run($request);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("https://foo.bar.example.org", $response->getHeader("Access-Control-Allow-Origin"));
         $this->assertRegexp('/1:[a-z0-9]+/i', $response->getHeader('ETag'));
@@ -162,14 +153,14 @@ class RemoteStorageServiceTest extends PHPUnit_Framework_TestCase
     {
         $request = $this->newRequest("DELETE");
         $request->setPathInfo("/admin/foo/bar/baz.txt");
-        $this->r->handleRequest($request);
+        $this->r->run($request);
     }
 
     public function testGetNonExistingFolder()
     {
         $request = $this->newRequest("GET");
         $request->setPathInfo("/admin/foo/bar/");
-        $response = $this->r->handleRequest($request);
+        $response = $this->r->run($request);
         $this->assertEquals("application/ld+json", $response->getContentType());
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertRegexp('/e:[a-z0-9]+/i', $response->getHeader('ETag'));
@@ -178,7 +169,7 @@ class RemoteStorageServiceTest extends PHPUnit_Framework_TestCase
                 "@context" => "http://remotestorage.io/spec/folder-description",
                 "items" => array(),
             ),
-            $this->j->decode($response->getContent())
+            Json::decode($response->getContent())
         );
     }
 
@@ -188,16 +179,16 @@ class RemoteStorageServiceTest extends PHPUnit_Framework_TestCase
         $request->setPathInfo("/admin/foo/bar/baz.txt");
         $request->setContentType("text/plain");
         $request->setContent("Hello World!");
-        $response = $this->r->handleRequest($request);
+        $response = $this->r->run($request);
         $this->assertEquals(200, $response->getStatusCode());
 
         $request = $this->newRequest("GET");
         $request->setPathInfo("/admin/foo/bar/");
-        $response = $this->r->handleRequest($request);
+        $response = $this->r->run($request);
         $this->assertEquals("application/ld+json", $response->getContentType());
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertRegexp('/1:[a-z0-9]+/i', $response->getHeader('ETag'));
-        $folderData = $this->j->decode($response->getContent());
+        $folderData = Json::decode($response->getContent());
         $this->assertEquals(2, count($folderData));
         $this->assertEquals(1, count($folderData['items']));
         $this->assertEquals('http://remotestorage.io/spec/folder-description', $folderData['@context']);
@@ -212,7 +203,7 @@ class RemoteStorageServiceTest extends PHPUnit_Framework_TestCase
         $request->setPathInfo("/admin/foo/bar/baz.txt");
         $request->setContentType("text/plain");
         $request->setContent("Hello World!");
-        $response = $this->r->handleRequest($request);
+        $response = $this->r->run($request);
         $this->assertEquals(200, $response->getStatusCode());
         $documentVersion = $response->getHeader('ETag');
         $this->assertNotNull($documentVersion);
@@ -220,7 +211,7 @@ class RemoteStorageServiceTest extends PHPUnit_Framework_TestCase
         $request = $this->newRequest("GET");
         $request->setPathInfo("/admin/foo/bar/baz.txt");
         $request->setHeader("If-None-Match", $documentVersion);
-        $response = $this->r->handleRequest($request);
+        $response = $this->r->run($request);
         $this->assertEquals(304, $response->getStatusCode());
     }
 
@@ -230,17 +221,17 @@ class RemoteStorageServiceTest extends PHPUnit_Framework_TestCase
         $request->setPathInfo("/admin/foo/bar/baz.txt");
         $request->setContentType("text/plain");
         $request->setContent("Hello World!");
-        $response = $this->r->handleRequest($request);
+        $response = $this->r->run($request);
 
         $request = $this->newRequest("GET");
         $request->setPathInfo("/admin/foo/bar/");
-        $response = $this->r->handleRequest($request);
+        $response = $this->r->run($request);
         $folderVersion = $response->getHeader('ETag');
 
         $request = $this->newRequest("GET");
         $request->setPathInfo("/admin/foo/bar/");
         $request->setHeader("If-None-Match", $folderVersion);
-        $response = $this->r->handleRequest($request);
+        $response = $this->r->run($request);
         $this->assertEquals(304, $response->getStatusCode());
     }
 
@@ -254,14 +245,14 @@ class RemoteStorageServiceTest extends PHPUnit_Framework_TestCase
         $request->setPathInfo("/admin/foo/bar/baz.txt");
         $request->setContentType("text/plain");
         $request->setContent("Hello World!");
-        $response = $this->r->handleRequest($request);
+        $response = $this->r->run($request);
 
         $request = $this->newRequest("PUT");
         $request->setPathInfo("/admin/foo/bar/baz.txt");
         $request->setHeader("If-Match", '"non-matching-version"');
         $request->setContentType("text/plain");
         $request->setContent("Hello New World!");
-        $this->r->handleRequest($request);
+        $this->r->run($request);
     }
 
     /**
@@ -274,11 +265,11 @@ class RemoteStorageServiceTest extends PHPUnit_Framework_TestCase
         $request->setPathInfo("/admin/foo/bar/baz.txt");
         $request->setContentType("text/plain");
         $request->setContent("Hello World!");
-        $response = $this->r->handleRequest($request);
+        $response = $this->r->run($request);
 
         $request = $this->newRequest("DELETE");
         $request->setPathInfo("/admin/foo/bar/baz.txt");
         $request->setHeader("If-Match", '"non-matching-version"');
-        $this->r->handleRequest($request);
+        $this->r->run($request);
     }
 }

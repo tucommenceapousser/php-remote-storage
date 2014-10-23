@@ -18,19 +18,19 @@
 
 require_once dirname(__DIR__).'/vendor/autoload.php';
 
-use fkooman\Config\Config;
+use fkooman\Ini\IniReader;
 use fkooman\RemoteStorage\MetadataStorage;
 
 try {
-    $config = Config::fromIniFile(dirname(__DIR__)."/config/rs.ini");
+    $iniReader = IniReader::fromFile(dirname(__DIR__).'/config/rs.ini');
 
-    $db = new PDO(
-        $config->s('MetadataStorage')->l('dsn'),
-        $config->s('MetadataStorage')->l('username', false),
-        $config->s('MetadataStorage')->l('password', false)
+    $pdo = new PDO(
+        $iniReader->v('MetadataStorage', 'dsn'),
+        $iniReader->v('MetadataStorage', 'username', false),
+        $iniReader->v('MetadataStorage', 'password', false)
     );
 
-    $metadataStorage = new MetadataStorage($db);
+    $metadataStorage = new MetadataStorage($pdo);
     $metadataStorage->initDatabase();
 } catch (Exception $e) {
     echo $e->getMessage().PHP_EOL;

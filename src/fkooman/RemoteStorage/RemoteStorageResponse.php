@@ -22,8 +22,12 @@ use fkooman\Http\Response;
 
 class RemoteStorageResponse extends Response
 {
-    public function __construct(Request $request, $statusCode = 200, $entityVersion = null, $contentType = "application/ld+json")
-    {
+    public function __construct(
+        Request $request,
+        $statusCode = 200,
+        $entityVersion = null,
+        $contentType = "application/ld+json"
+    ) {
         parent::__construct($statusCode);
         if ("GET" === $request->getRequestMethod()) {
             $this->setHeader("Expires", 0);

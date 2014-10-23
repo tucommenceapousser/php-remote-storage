@@ -1,7 +1,7 @@
 {
     "autoload": {
         "psr-0": {
-            "fkooman\\RemoteStorage\\": "src/"
+            "fkooman\\RemoteStorage": "src/"
         }
     },
     "description": "Remote Storage Server written in PHP",
@@ -9,9 +9,10 @@
     "name": "fkooman/remote-storage",
     "require": {
         "ext-openssl": "*",
-        "fkooman/config": "~0.3.3",
-        "fkooman/oauth-rs": "~0.7.1",
-        "fkooman/rest": "~0.4.11",
-        "php": "~5.4"
+        "fkooman/ini": "~0.2.0",
+        "fkooman/json": "~0.6.0",
+        "fkooman/rest": "~0.6.1",
+        "fkooman/rest-plugin-bearer": "~0.1.0",
+        "php": ">=5.3.3"
     }
 }
