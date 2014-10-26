@@ -51,11 +51,11 @@ try {
     $remoteStorageService->run()->sendResponse();
 } catch (Exception $e) {
     if ($e instanceof HttpException) {
-        $response = $e->getResponse();
+        $response = $e->getJsonResponse();
     } else {
         // we catch all other (unexpected) exceptions and return a 500
         $e = new InternalServerErrorException($e->getMessage());
-        $response = $e->getResponse();
+        $response = $e->getJsonResponse();
     }
     // FIXME: add CORS
     $response->sendResponse();
