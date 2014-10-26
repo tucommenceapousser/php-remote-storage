@@ -12,7 +12,7 @@
         "fkooman/ini": "~0.2.0",
         "fkooman/json": "~0.6.0",
         "fkooman/rest": "~0.6.2",
-        "fkooman/rest-plugin-bearer": "~0.1.1",
+        "fkooman/rest-plugin-bearer": "~0.2.0",
         "php": ">=5.3.3"
     }
 }

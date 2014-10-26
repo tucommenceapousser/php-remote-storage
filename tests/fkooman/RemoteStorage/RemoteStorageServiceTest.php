@@ -20,7 +20,7 @@ namespace fkooman\RemoteStorage;
 use PDO;
 use fkooman\Http\Request;
 use fkooman\Json\Json;
-use fkooman\OAuth\Common\TokenIntrospection;
+use fkooman\Rest\Plugin\Bearer\TokenIntrospection;
 use PHPUnit_Framework_TestCase;
 
 class RemoteStorageServiceTest extends PHPUnit_Framework_TestCase

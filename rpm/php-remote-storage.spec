@@ -24,10 +24,10 @@ Requires:   php-composer(fkooman/json) >= 0.6.0
 Requires:   php-composer(fkooman/json) < 0.7.0
 Requires:   php-composer(fkooman/ini) >= 0.2.0
 Requires:   php-composer(fkooman/ini) < 0.3.0
-Requires:   php-composer(fkooman/rest) >= 0.6.1
+Requires:   php-composer(fkooman/rest) >= 0.6.2
 Requires:   php-composer(fkooman/rest) < 0.7.0
-Requires:   php-composer(fkooman/rest-plugin-bearer) >= 0.1.0
-Requires:   php-composer(fkooman/rest-plugin-bearer) < 0.2.0
+Requires:   php-composer(fkooman/rest-plugin-bearer) >= 0.2.0
+Requires:   php-composer(fkooman/rest-plugin-bearer) < 0.3.0
 
 #Starting F21 we can use the composer dependency for Symfony
 #Requires:   php-composer(symfony/classloader) >= 2.3.9

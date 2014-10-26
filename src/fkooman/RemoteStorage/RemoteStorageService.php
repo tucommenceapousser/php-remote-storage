@@ -19,8 +19,8 @@ namespace fkooman\RemoteStorage;
 
 use fkooman\Http\Request;
 use fkooman\Rest\Service;
-use fkooman\OAuth\Common\Scope;
-use fkooman\OAuth\Common\TokenIntrospection;
+use fkooman\Rest\Plugin\Bearer\Scope;
+use fkooman\Rest\Plugin\Bearer\TokenIntrospection;
 use fkooman\Http\Exception\NotFoundException;
 use fkooman\Http\Exception\PreconditionFailedException;
 use fkooman\Http\Exception\ForbiddenException;
@@ -280,7 +280,13 @@ class RemoteStorageService extends Service
             sprintf("%s:%s", $moduleName, "rw"),
         );
 
-        return $i->getScope()->hasAnyScope(new Scope($validReadScopes));
+        foreach ($validReadScopes as $scope) {
+            if ($i->getScope()->hasScope($scope)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function hasWriteScope(TokenIntrospection $i, $moduleName)
@@ -290,7 +296,13 @@ class RemoteStorageService extends Service
             sprintf("%s:%s", $moduleName, "rw"),
         );
 
-        return $i->getScope()->hasAnyScope(new Scope($validWriteScopes));
+        foreach ($validWriteScopes as $scope) {
+            if ($i->getScope()->hasScope($scope)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
