@@ -97,7 +97,7 @@ class RemoteStorageService extends Service
             'OPTIONS',
             '*',
             function ($matchAll, Request $request) {
-                return $this->optionRequest($matchAll, $request);
+                return $this->optionsRequest($matchAll, $request);
             },
             // no Bearer token required for OPTIONS request
             array('fkooman\Rest\Plugin\Bearer\BearerAuthentication')
@@ -111,7 +111,7 @@ class RemoteStorageService extends Service
         if ($path->getUserId() !== $tokenIntrospection->getSub()) {
             throw new ForbiddenException("path does not match authorized subject");
         }
-        if (!$this->hasReadScope($tokenIntrospection, $path->getModuleName())) {
+        if (!$this->hasReadScope($tokenIntrospection->getScope(), $path->getModuleName())) {
             throw new ForbiddenException("path does not match authorized scope");
         }
 
@@ -155,7 +155,7 @@ class RemoteStorageService extends Service
             if ($path->getUserId() !== $tokenIntrospection->getSub()) {
                 throw new ForbiddenException("path does not match authorized subject");
             }
-            if (!$this->hasReadScope($tokenIntrospection, $path->getModuleName())) {
+            if (!$this->hasReadScope($tokenIntrospection->getScope(), $path->getModuleName())) {
                 throw new ForbiddenException("path does not match authorized scope");
             }
         }
@@ -197,7 +197,7 @@ class RemoteStorageService extends Service
         if ($path->getUserId() !== $tokenIntrospection->getSub()) {
             throw new ForbiddenException("path does not match authorized subject");
         }
-        if (!$this->hasWriteScope($tokenIntrospection, $path->getModuleName())) {
+        if (!$this->hasWriteScope($tokenIntrospection->getScope(), $path->getModuleName())) {
             throw new ForbiddenException("path does not match authorized scope");
         }
 
@@ -239,7 +239,7 @@ class RemoteStorageService extends Service
         if ($path->getUserId() !== $tokenIntrospection->getSub()) {
             throw new ForbiddenException("path does not match authorized subject");
         }
-        if (!$this->hasWriteScope($tokenIntrospection, $path->getModuleName())) {
+        if (!$this->hasWriteScope($tokenIntrospection->getScope(), $path->getModuleName())) {
             throw new ForbiddenException("path does not match authorized scope");
         }
 
@@ -266,12 +266,12 @@ class RemoteStorageService extends Service
         return $rsr;
     }
 
-    public function optionRequest($matchAll, Request $request)
+    public function optionsRequest($matchAll, Request $request)
     {
         return new RemoteStorageResponse($request, 200, null, null);
     }
 
-    public function hasReadScope(TokenIntrospection $i, $moduleName)
+    public function hasReadScope(Scope $i, $moduleName)
     {
         $validReadScopes = array(
             "*:r",
@@ -281,7 +281,7 @@ class RemoteStorageService extends Service
         );
 
         foreach ($validReadScopes as $scope) {
-            if ($i->getScope()->hasScope($scope)) {
+            if ($i->hasScope($scope)) {
                 return true;
             }
         }
@@ -289,7 +289,7 @@ class RemoteStorageService extends Service
         return false;
     }
 
-    public function hasWriteScope(TokenIntrospection $i, $moduleName)
+    public function hasWriteScope(Scope $i, $moduleName)
     {
         $validWriteScopes = array(
             "*:rw",
@@ -297,7 +297,7 @@ class RemoteStorageService extends Service
         );
 
         foreach ($validWriteScopes as $scope) {
-            if ($i->getScope()->hasScope($scope)) {
+            if ($i->hasScope($scope)) {
                 return true;
             }
         }
