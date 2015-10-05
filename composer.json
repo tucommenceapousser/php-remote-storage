@@ -10,6 +10,7 @@
     "require": {
         "ext-openssl": "*",
         "fkooman/ini": "~0.2.0",
+        "fkooman/io": "^1.0.0",
         "fkooman/json": "~0.6.0",
         "fkooman/rest": "~0.6.2",
         "fkooman/rest-plugin-bearer": "~0.2.1",
