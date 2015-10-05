@@ -1,7 +1,7 @@
 {
     "autoload": {
         "psr-0": {
-            "fkooman\\RemoteStorage": "src/"
+            "fkooman\\RemoteStorage\\": "src/"
         }
     },
     "description": "Remote Storage Server written in PHP",
