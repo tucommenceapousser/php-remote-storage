@@ -13,7 +13,3 @@ dsn = "sqlite:/var/lib/php-remote-storage/metadata.sqlite"
 ;username = "rs"
 ;password = "s3cr3t"
 ;dsn = "pgsql:host=localhost;port=5432;dbname=XYZ;user=ABC;password=DEF"
-
-; use a persistent DB connection, make sure to ENABLE this for PRODUCTION 
-; systems
-persistentConnection = false
