@@ -81,25 +81,14 @@ This is the Apache configuration you use for development. Place it in
 
     <Directory /var/www/php-remote-storage/web>
         AllowOverride None
-        Options FollowSymLinks
 
-        <IfModule mod_authz_core.c>
-          # Apache 2.4
-          Require local
-        </IfModule>
-        <IfModule !mod_authz_core.c>
-          # Apache 2.2
-          Order Deny,Allow
-          Deny from All
-          Allow from 127.0.0.1
-          Allow from ::1
-        </IfModule>
+        Require local
+        #Require all granted
 
         RewriteEngine On
-        RewriteCond %{HTTP:Authorization} ^(.+)$
-        RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+        RewriteBase /php-remote-storage
+        RewriteCond %{REQUEST_FILENAME} !-f
+        RewriteRule ^(.*)$ index.php/$1 [QSA,L]
 
-        # HSTS: https://developer.mozilla.org/en-US/docs/Security/HTTP_Strict_Transport_Security
-        #Header set Strict-Transport-Security max-age=604800
+        SetEnvIfNoCase ^Authorization$ "(.+)" HTTP_AUTHORIZATION=$1
     </Directory>
-
