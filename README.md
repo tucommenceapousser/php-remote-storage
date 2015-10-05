@@ -5,38 +5,12 @@
 This is a remoteStorage server implementation written in PHP. It aims at 
 implementing `draft-dejong-remotestorage-03.txt`.
 
-# License
-Licensed under the GNU Affero General Public License as published by the Free
-Software Foundation, either version 3 of the License, or (at your option) any
-later version.
-
-    https://www.gnu.org/licenses/agpl.html
-
-This roughly means that if you use this software in your service you need to
-make the source code available to the users of your service (if you modify
-it). Refer to the license for the exact details.
-
-# Installation
-Please use the RPM packages for actually running it on a server. The RPM 
-packages can for now be found in the 
-[repository](https://repos.fedorapeople.org/repos/fkooman/php-oauth/). For 
-setting up a development environment, see below.
-
-# Docker
-It is possible to use Docker to evaluate this server, see the `docker` folder
-in this repository.
-
 # Development Requirements
-On Fedora/CentOS:
+On Fedora >= 22:
 
-    $ sudo yum install php-pdo php-openssl httpd'
+    $ sudo dnf -y install php-pdo php-openssl httpd'
 
 You also need to download [Composer](https://getcomposer.org/).
-
-The software is being tested with Fedora 20 and CentOS 7 and should also work 
-on and RHEL 7.
-
-**NOTE**: PHP 5.4 or higher is required.
 
 # Development Installation
 *NOTE*: in the `chown` line you need to use your own user account name!
@@ -67,7 +41,7 @@ Now you can initialize the metadata database:
 Copy paste the contents of the Apache section (see below) in the file 
 `/etc/httpd/conf.d/php-remote-storage.conf`.
 
-    $ sudo service httpd restart
+    $ sudo systemctl restart httpd
 
 If you ever remove the software, you can also remove the SELinux context:
 
@@ -92,3 +66,14 @@ This is the Apache configuration you use for development. Place it in
 
         SetEnvIfNoCase ^Authorization$ "(.+)" HTTP_AUTHORIZATION=$1
     </Directory>
+
+# License
+Licensed under the GNU Affero General Public License as published by the Free
+Software Foundation, either version 3 of the License, or (at your option) any
+later version.
+
+    https://www.gnu.org/licenses/agpl.html
+
+This roughly means that if you use this software in your service you need to
+make the source code available to the users of your service (if you modify
+it). Refer to the license for the exact details.
