@@ -4,7 +4,7 @@
             "fkooman\\RemoteStorage\\": "src/"
         }
     },
-    "description": "Remote Storage Server written in PHP",
+    "description": "remoteStorage Server",
     "license": "AGPL-3.0",
     "name": "fkooman/remote-storage",
     "require": {
