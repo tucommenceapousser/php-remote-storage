@@ -14,7 +14,6 @@
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 namespace fkooman\RemoteStorage;
 
 class Utils
@@ -24,7 +23,7 @@ class Utils
         $randomString = bin2hex(openssl_random_pseudo_bytes($len, $strong));
         // @codeCoverageIgnoreStart
         if (false === $strong) {
-            throw new Exception("unable to securely generate random string");
+            throw new Exception('unable to securely generate random string');
         }
         // @codeCoverageIgnoreEnd
         return $randomString;

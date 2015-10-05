@@ -14,7 +14,6 @@
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 namespace fkooman\RemoteStorage;
 
 use PDO;
@@ -38,25 +37,25 @@ class MetadataStorageTest extends PHPUnit_Framework_TestCase
 
     public function testCreateDocument()
     {
-        $p = new Path("/foo/bar/baz.txt");
+        $p = new Path('/foo/bar/baz.txt');
         $this->assertNull($this->md->getVersion($p));
-        $this->md->updateDocument($p, "text/plain");
+        $this->md->updateDocument($p, 'text/plain');
         $this->assertStringMatchesFormat('%s', $this->md->getVersion($p));
-        $this->assertEquals("text/plain", $this->md->getContentType($p));
+        $this->assertEquals('text/plain', $this->md->getContentType($p));
     }
 
     public function testUpdateDocument()
     {
-        $p = new Path("/foo/bar/baz.txt");
+        $p = new Path('/foo/bar/baz.txt');
         $this->assertNull($this->md->getVersion($p));
-        $this->md->updateDocument($p, "text/plain");
+        $this->md->updateDocument($p, 'text/plain');
         $beforeUpdateVersion = $this->md->getVersion($p);
         $this->assertStringMatchesFormat('%s', $beforeUpdateVersion);
-        $this->assertEquals("text/plain", $this->md->getContentType($p));
+        $this->assertEquals('text/plain', $this->md->getContentType($p));
 
         // the update
-        $this->md->updateDocument($p, "application/json");
-        $this->assertEquals("application/json", $this->md->getContentType($p));
+        $this->md->updateDocument($p, 'application/json');
+        $this->assertEquals('application/json', $this->md->getContentType($p));
         $afterUpdateVersion = $this->md->getVersion($p);
         $this->assertStringMatchesFormat('%s', $afterUpdateVersion);
         $this->assertNotEquals($beforeUpdateVersion, $afterUpdateVersion);
@@ -64,11 +63,11 @@ class MetadataStorageTest extends PHPUnit_Framework_TestCase
 
     public function testDeleteDocument()
     {
-        $p = new Path("/foo/bar/baz.txt");
+        $p = new Path('/foo/bar/baz.txt');
         $this->assertNull($this->md->getVersion($p));
-        $this->md->updateDocument($p, "text/plain");
+        $this->md->updateDocument($p, 'text/plain');
         $this->assertStringMatchesFormat('%s', $this->md->getVersion($p));
-        $this->assertEquals("text/plain", $this->md->getContentType($p));
+        $this->assertEquals('text/plain', $this->md->getContentType($p));
 
         $this->md->deleteNode($p);
         $this->assertNull($this->md->getVersion($p));
@@ -77,18 +76,18 @@ class MetadataStorageTest extends PHPUnit_Framework_TestCase
     public function testUpdateDeleteUpdate()
     {
         // version MUST NOT be reused
-        $p = new Path("/foo/bar/baz.txt");
+        $p = new Path('/foo/bar/baz.txt');
         $this->assertNull($this->md->getVersion($p));
-        $this->md->updateDocument($p, "text/plain");
+        $this->md->updateDocument($p, 'text/plain');
         $beforeDeleteVersion = $this->md->getVersion($p);
         $this->md->deleteNode($p);
-        $this->md->updateDocument($p, "application/json");
+        $this->md->updateDocument($p, 'application/json');
         $this->assertNotEquals($beforeDeleteVersion, $this->md->getVersion($p));
     }
 
     public function testUpdateFolder()
     {
-        $p = new Path("/foo/bar/baz/");
+        $p = new Path('/foo/bar/baz/');
         $this->assertNull($this->md->getVersion($p));
         $this->md->updateFolder($p);
         $this->assertNotNull($this->md->getVersion($p));
@@ -99,7 +98,7 @@ class MetadataStorageTest extends PHPUnit_Framework_TestCase
      */
     public function testDeleteNonExistingNode()
     {
-        $p = new Path("/foo/bar/baz.txt");
+        $p = new Path('/foo/bar/baz.txt');
         $this->md->deleteNode($p);
     }
 
@@ -108,7 +107,7 @@ class MetadataStorageTest extends PHPUnit_Framework_TestCase
      */
     public function testFolderUpdateOnNonFolder()
     {
-        $p = new Path("/foo/bar/baz.txt");
+        $p = new Path('/foo/bar/baz.txt');
         $this->md->updateFolder($p);
     }
 }

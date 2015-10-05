@@ -14,7 +14,6 @@
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 namespace fkooman\RemoteStorage;
 
 use fkooman\RemoteStorage\Exception\DocumentStorageException;
@@ -43,7 +42,7 @@ class DocumentStorage
         $documentPath = $this->baseDir.$p->getPath();
         $documentContent = @file_get_contents($documentPath);
         if (false === $documentContent) {
-            throw new DocumentStorageException("unable to read document");
+            throw new DocumentStorageException('unable to read document');
         }
 
         return $documentContent;
@@ -59,24 +58,24 @@ class DocumentStorage
         $folderTree = $p->getFolderTreeFromUserRoot();
         foreach ($folderTree as $pathItem) {
             $folderPath = $this->baseDir.$pathItem;
-            $folderPathAsFile = substr($folderPath, 0, strlen($folderPath)-1);
+            $folderPathAsFile = substr($folderPath, 0, strlen($folderPath) - 1);
             if (file_exists($folderPathAsFile) && is_file($folderPathAsFile)) {
-                throw new DocumentStorageException("file already exists in path preventing folder creation");
+                throw new DocumentStorageException('file already exists in path preventing folder creation');
             }
             if (!file_exists($folderPath)) {
                 // create it
                 if (false === @mkdir($this->baseDir.$pathItem, 0770)) {
-                    throw new DocumentStorageException("unable to create directory");
+                    throw new DocumentStorageException('unable to create directory');
                 }
             }
         }
 
         $documentPath = $this->baseDir.$p->getPath();
         if (file_exists($documentPath) && is_dir($documentPath)) {
-            throw new DocumentStorageException("document path is already a folder");
+            throw new DocumentStorageException('document path is already a folder');
         }
         if (false === @file_put_contents($documentPath, $documentContent)) {
-            throw new DocumentStorageException("unable to write document");
+            throw new DocumentStorageException('unable to write document');
         }
         // PHP caches files and doesn't flush on getting file size, so we
         // really have to flush the cache manually, otherwise directory listings
@@ -98,7 +97,7 @@ class DocumentStorage
     {
         $documentPath = $this->baseDir.$p->getPath();
         if (false === @unlink($documentPath)) {
-            throw new DocumentStorageException("unable to delete file");
+            throw new DocumentStorageException('unable to delete file');
         }
 
         $deletedObjects = array();
@@ -129,7 +128,7 @@ class DocumentStorage
     public function getFolder(Path $p)
     {
         $folderPath = $this->baseDir.$p->getPath();
-        $entries = glob($folderPath."*", GLOB_ERR|GLOB_MARK);
+        $entries = glob($folderPath.'*', GLOB_ERR | GLOB_MARK);
         if (false === $entries) {
             // directory does not exist, return empty list
             return array();
@@ -137,10 +136,10 @@ class DocumentStorage
         $folderEntries = array();
         foreach ($entries as $e) {
             if (is_dir($e)) {
-                $folderEntries[basename($e)."/"] = array();
+                $folderEntries[basename($e).'/'] = array();
             } else {
                 $folderEntries[basename($e)] = array(
-                    "Content-Length" => filesize($e),
+                    'Content-Length' => filesize($e),
                 );
             }
         }
@@ -152,9 +151,9 @@ class DocumentStorage
     {
         $folderPath = $this->baseDir.$p->getPath();
 
-        $entries = glob($folderPath."*", GLOB_ERR);
+        $entries = glob($folderPath.'*', GLOB_ERR);
         if (false === $entries) {
-            throw new DocumentStorageException("unable to read folder");
+            throw new DocumentStorageException('unable to read folder');
         }
 
         return 0 === count($entries);
@@ -164,7 +163,7 @@ class DocumentStorage
     {
         $folderPath = $this->baseDir.$p->getPath();
         if (false === @rmdir($folderPath)) {
-            throw new DocumentStorageException("unable to delete folder");
+            throw new DocumentStorageException('unable to delete folder');
         }
     }
 }

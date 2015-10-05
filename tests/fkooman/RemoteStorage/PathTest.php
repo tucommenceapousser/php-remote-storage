@@ -14,7 +14,6 @@
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 namespace fkooman\RemoteStorage;
 
 use fkooman\RemoteStorage\Exception\PathException;
@@ -24,72 +23,72 @@ class PathTest extends PHPUnit_Framework_TestCase
 {
     public function testPrivateDocument()
     {
-        $p = new Path("/admin/path/to/Document.txt");
-        $this->assertEquals("admin", $p->getUserId());
+        $p = new Path('/admin/path/to/Document.txt');
+        $this->assertEquals('admin', $p->getUserId());
         $this->assertFalse($p->getIsPublic());
         $this->assertFalse($p->getIsFolder());
-        $this->assertEquals("/admin/path/to/Document.txt", $p->getPath());
+        $this->assertEquals('/admin/path/to/Document.txt', $p->getPath());
     }
 
     public function testPrivateFolder()
     {
-        $p = new Path("/admin/path/to/Folder/");
-        $this->assertEquals("admin", $p->getUserId());
+        $p = new Path('/admin/path/to/Folder/');
+        $this->assertEquals('admin', $p->getUserId());
         $this->assertFalse($p->getIsPublic());
         $this->assertTrue($p->getIsFolder());
-        $this->assertEquals("/admin/path/to/Folder/", $p->getPath());
-        $this->assertEquals("path", $p->getModuleName());
+        $this->assertEquals('/admin/path/to/Folder/', $p->getPath());
+        $this->assertEquals('path', $p->getModuleName());
     }
 
     public function testModuleName()
     {
-        $p = new Path("/admin/public/foo/bar/baz.txt");
-        $this->assertEquals("foo", $p->getModuleName());
-        $p = new Path("/admin/public/foo/");
-        $this->assertEquals("foo", $p->getModuleName());
-        $p = new Path("/admin/foo/bar/baz.txt");
-        $this->assertEquals("foo", $p->getModuleName());
-        $p = new Path("/admin/foo/");
-        $this->assertEquals("foo", $p->getModuleName());
+        $p = new Path('/admin/public/foo/bar/baz.txt');
+        $this->assertEquals('foo', $p->getModuleName());
+        $p = new Path('/admin/public/foo/');
+        $this->assertEquals('foo', $p->getModuleName());
+        $p = new Path('/admin/foo/bar/baz.txt');
+        $this->assertEquals('foo', $p->getModuleName());
+        $p = new Path('/admin/foo/');
+        $this->assertEquals('foo', $p->getModuleName());
     }
 
     public function testNoModuleName()
     {
-        $p = new Path("/admin/public/foo");
+        $p = new Path('/admin/public/foo');
         $this->assertFalse($p->getModuleName());
-        $p = new Path("/admin/public/");
+        $p = new Path('/admin/public/');
         $this->assertFalse($p->getModuleName());
-        $p = new Path("/admin/foo");
+        $p = new Path('/admin/foo');
         $this->assertFalse($p->getModuleName());
-        $p = new Path("/admin/");
+        $p = new Path('/admin/');
         $this->assertFalse($p->getModuleName());
     }
 
     public function testPublicDocument()
     {
-        $p = new Path("/admin/public/path/to/Document.txt");
-        $this->assertEquals("admin", $p->getUserId());
+        $p = new Path('/admin/public/path/to/Document.txt');
+        $this->assertEquals('admin', $p->getUserId());
         $this->assertTrue($p->getIsPublic());
         $this->assertFalse($p->getIsFolder());
     }
 
     public function testPublicFolder()
     {
-        $p = new Path("/admin/public/path/to/Folder/");
-        $this->assertEquals("admin", $p->getUserId());
+        $p = new Path('/admin/public/path/to/Folder/');
+        $this->assertEquals('admin', $p->getUserId());
         $this->assertTrue($p->getIsPublic());
         $this->assertTrue($p->getIsFolder());
         $this->assertFalse($p->getIsDocument());
-        $this->assertEquals("path", $p->getModuleName());
+        $this->assertEquals('path', $p->getModuleName());
     }
 
     public function testValidPaths()
     {
         $testPath = array(
-            "/admin/public/foo/",
-            "/admin/foo/",
-            "/admin/public/foo/bar.txt",
-            "/admin/public/foo/bar/very/long/path/with/Document",
+            '/admin/public/foo/',
+            '/admin/foo/',
+            '/admin/public/foo/bar.txt',
+            '/admin/public/foo/bar/very/long/path/with/Document',
         );
         foreach ($testPath as $t) {
             try {
@@ -113,12 +112,12 @@ class PathTest extends PHPUnit_Framework_TestCase
     public function testInvalidPaths()
     {
         $testPath = array(
-            "/",
-            "/admin",
-            "///",
-            "/admin/foo//bar/",
-            "admin/public/foo.txt",
-            "/admin/foo/../../",
+            '/',
+            '/admin',
+            '///',
+            '/admin/foo//bar/',
+            'admin/public/foo.txt',
+            '/admin/foo/../../',
         );
         foreach ($testPath as $t) {
             try {
@@ -132,12 +131,12 @@ class PathTest extends PHPUnit_Framework_TestCase
 
     public function testDocumentPathTreeFolderFromUserRoot()
     {
-        $path = new Path("/admin/contacts/work/colleagues.vcf");
+        $path = new Path('/admin/contacts/work/colleagues.vcf');
         $this->assertEquals(
             array(
-                "/admin/",
-                "/admin/contacts/",
-                "/admin/contacts/work/",
+                '/admin/',
+                '/admin/contacts/',
+                '/admin/contacts/work/',
             ),
             $path->getFolderTreeFromUserRoot()
         );
@@ -145,12 +144,12 @@ class PathTest extends PHPUnit_Framework_TestCase
 
     public function testFolderPathTreeFolderFromUserRoot()
     {
-        $path = new Path("/admin/contacts/work/");
+        $path = new Path('/admin/contacts/work/');
         $this->assertEquals(
             array(
-                "/admin/",
-                "/admin/contacts/",
-                "/admin/contacts/work/",
+                '/admin/',
+                '/admin/contacts/',
+                '/admin/contacts/work/',
             ),
             $path->getFolderTreeFromUserRoot()
         );
@@ -158,10 +157,10 @@ class PathTest extends PHPUnit_Framework_TestCase
 
     public function testShortPathTreeFromUserRoot()
     {
-        $path = new Path("/foo/bar");
+        $path = new Path('/foo/bar');
         $this->assertEquals(
             array(
-                "/foo/",
+                '/foo/',
             ),
             $path->getFolderTreeFromUserRoot()
         );

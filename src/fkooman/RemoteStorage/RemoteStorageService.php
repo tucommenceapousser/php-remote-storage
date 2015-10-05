@@ -14,7 +14,6 @@
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 namespace fkooman\RemoteStorage;
 
 use fkooman\Http\Request;
@@ -112,10 +111,10 @@ class RemoteStorageService extends Service
         $path = new Path($matchAll);
 
         if ($path->getUserId() !== $tokenIntrospection->getSub()) {
-            throw new ForbiddenException("path does not match authorized subject");
+            throw new ForbiddenException('path does not match authorized subject');
         }
         if (!$this->hasReadScope($tokenIntrospection->getScope(), $path->getModuleName())) {
-            throw new ForbiddenException("path does not match authorized scope");
+            throw new ForbiddenException('path does not match authorized scope');
         }
 
         $folderVersion = $this->remoteStorage->getVersion($path);
@@ -126,7 +125,7 @@ class RemoteStorageService extends Service
         }
 
         $requestedVersion = $this->stripQuotes(
-            $request->getHeader("If-None-Match")
+            $request->getHeader('If-None-Match')
         );
 
         if (null !== $requestedVersion) {
@@ -136,12 +135,12 @@ class RemoteStorageService extends Service
         }
 
         $rsr = new RemoteStorageResponse($request, 200, $folderVersion);
-        if ("GET" === $request->getRequestMethod()) {
+        if ('GET' === $request->getRequestMethod()) {
             $rsr->setContent(
                 $this->remoteStorage->getFolder(
                     $path,
                     $this->stripQuotes(
-                        $request->getHeader("If-None-Match")
+                        $request->getHeader('If-None-Match')
                     )
                 )
             );
@@ -156,19 +155,19 @@ class RemoteStorageService extends Service
 
         if (null !== $tokenIntrospection) {
             if ($path->getUserId() !== $tokenIntrospection->getSub()) {
-                throw new ForbiddenException("path does not match authorized subject");
+                throw new ForbiddenException('path does not match authorized subject');
             }
             if (!$this->hasReadScope($tokenIntrospection->getScope(), $path->getModuleName())) {
-                throw new ForbiddenException("path does not match authorized scope");
+                throw new ForbiddenException('path does not match authorized scope');
             }
         }
         $documentVersion = $this->remoteStorage->getVersion($path);
         if (null === $documentVersion) {
-            throw new NotFoundException("document not found");
+            throw new NotFoundException('document not found');
         }
 
         $requestedVersion = $this->stripQuotes(
-            $request->getHeader("If-None-Match")
+            $request->getHeader('If-None-Match')
         );
         $documentContentType = $this->remoteStorage->getContentType($path);
 
@@ -181,7 +180,7 @@ class RemoteStorageService extends Service
         $documentContent = $this->remoteStorage->getDocument($path);
 
         $rsr = new RemoteStorageResponse($request, 200, $documentVersion, $documentContentType);
-        if ("GET" === $request->getRequestMethod()) {
+        if ('GET' === $request->getRequestMethod()) {
             $rsr->setContent(
                 $this->remoteStorage->getDocument(
                     $path,
@@ -198,26 +197,26 @@ class RemoteStorageService extends Service
         $path = new Path($matchAll);
 
         if ($path->getUserId() !== $tokenIntrospection->getSub()) {
-            throw new ForbiddenException("path does not match authorized subject");
+            throw new ForbiddenException('path does not match authorized subject');
         }
         if (!$this->hasWriteScope($tokenIntrospection->getScope(), $path->getModuleName())) {
-            throw new ForbiddenException("path does not match authorized scope");
+            throw new ForbiddenException('path does not match authorized scope');
         }
 
         $ifMatch = $this->stripQuotes(
-            $request->getHeader("If-Match")
+            $request->getHeader('If-Match')
         );
         $ifNoneMatch = $this->stripQuotes(
-            $request->getHeader("If-None-Match")
+            $request->getHeader('If-None-Match')
         );
 
         $documentVersion = $this->remoteStorage->getVersion($path);
         if (null !== $ifMatch && !in_array($documentVersion, $ifMatch)) {
-            throw new PreconditionFailedException("version mismatch");
+            throw new PreconditionFailedException('version mismatch');
         }
 
-        if (null !== $ifNoneMatch && in_array("*", $ifNoneMatch) && null !== $documentVersion) {
-            throw new PreconditionFailedException("document already exists");
+        if (null !== $ifNoneMatch && in_array('*', $ifNoneMatch) && null !== $documentVersion) {
+            throw new PreconditionFailedException('document already exists');
         }
 
         $x = $this->remoteStorage->putDocument(
@@ -240,23 +239,23 @@ class RemoteStorageService extends Service
         $path = new Path($matchAll);
 
         if ($path->getUserId() !== $tokenIntrospection->getSub()) {
-            throw new ForbiddenException("path does not match authorized subject");
+            throw new ForbiddenException('path does not match authorized subject');
         }
         if (!$this->hasWriteScope($tokenIntrospection->getScope(), $path->getModuleName())) {
-            throw new ForbiddenException("path does not match authorized scope");
+            throw new ForbiddenException('path does not match authorized scope');
         }
 
         // need to get the version before the delete
         $documentVersion = $this->remoteStorage->getVersion($path);
         if (null === $documentVersion) {
-            throw new NotFoundException("document not found");
+            throw new NotFoundException('document not found');
         }
 
         $ifMatch = $this->stripQuotes(
-            $request->getHeader("If-Match")
+            $request->getHeader('If-Match')
         );
         if (null !== $ifMatch && !in_array($documentVersion, $ifMatch)) {
-            throw new PreconditionFailedException("version mismatch");
+            throw new PreconditionFailedException('version mismatch');
         }
 
         $x = $this->remoteStorage->deleteDocument(
@@ -277,10 +276,10 @@ class RemoteStorageService extends Service
     private function hasReadScope(Scope $i, $moduleName)
     {
         $validReadScopes = array(
-            "*:r",
-            "*:rw",
-            sprintf("%s:%s", $moduleName, "r"),
-            sprintf("%s:%s", $moduleName, "rw"),
+            '*:r',
+            '*:rw',
+            sprintf('%s:%s', $moduleName, 'r'),
+            sprintf('%s:%s', $moduleName, 'rw'),
         );
 
         foreach ($validReadScopes as $scope) {
@@ -295,8 +294,8 @@ class RemoteStorageService extends Service
     private function hasWriteScope(Scope $i, $moduleName)
     {
         $validWriteScopes = array(
-            "*:rw",
-            sprintf("%s:%s", $moduleName, "rw"),
+            '*:rw',
+            sprintf('%s:%s', $moduleName, 'rw'),
         );
 
         foreach ($validWriteScopes as $scope) {
@@ -310,30 +309,30 @@ class RemoteStorageService extends Service
 
     /**
      * ETag/If-Match/If-None-Match are always quoted, this method removes
-     * the quotes
+     * the quotes.
      */
     public function stripQuotes($versionHeader)
     {
         if (null === $versionHeader) {
-            return null;
+            return;
         }
 
         $versions = array();
 
-        if ("*" === $versionHeader) {
-            return array("*");
+        if ('*' === $versionHeader) {
+            return array('*');
         }
 
-        foreach (explode(",", $versionHeader) as $v) {
+        foreach (explode(',', $versionHeader) as $v) {
             $v = trim($v);
             $startQuote = strpos($v, '"');
             $endQuote = strrpos($v, '"');
             $length = strlen($v);
 
-            if (0 !== $startQuote || $length-1 !== $endQuote) {
-                throw new BadRequestException("version header must start and end with a double quote");
+            if (0 !== $startQuote || $length - 1 !== $endQuote) {
+                throw new BadRequestException('version header must start and end with a double quote');
             }
-            $versions[] = substr($v, 1, $length-2);
+            $versions[] = substr($v, 1, $length - 2);
         }
 
         return $versions;

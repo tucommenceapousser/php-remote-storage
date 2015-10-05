@@ -14,7 +14,6 @@
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 namespace fkooman\RemoteStorage;
 
 use fkooman\RemoteStorage\Exception\RemoteStorageException;
@@ -37,11 +36,11 @@ class RemoteStorage
     public function putDocument(Path $p, $contentType, $documentData, array $ifMatch = null, array $ifNoneMatch = null)
     {
         if (null !== $ifMatch && !in_array($this->md->getVersion($p), $ifMatch)) {
-            throw new RemoteStorageException("version mismatch");
+            throw new RemoteStorageException('version mismatch');
         }
 
-        if (null !== $ifNoneMatch && in_array("*", $ifNoneMatch) && null !== $this->md->getVersion($p)) {
-            throw new RemoteStorageException("document already exists");
+        if (null !== $ifNoneMatch && in_array('*', $ifNoneMatch) && null !== $this->md->getVersion($p)) {
+            throw new RemoteStorageException('document already exists');
         }
 
         $updatedEntities = $this->d->putDocument($p, $documentData);
@@ -54,7 +53,7 @@ class RemoteStorage
     public function deleteDocument(Path $p, array $ifMatch = null)
     {
         if (null !== $ifMatch && !in_array($this->md->getVersion($p), $ifMatch)) {
-            throw new RemoteStorageException("version mismatch");
+            throw new RemoteStorageException('version mismatch');
         }
         $deletedEntities = $this->d->deleteDocument($p);
         foreach ($deletedEntities as $d) {
@@ -84,7 +83,7 @@ class RemoteStorage
     public function getDocument(Path $p, array $ifNoneMatch = null)
     {
         if (null !== $ifNoneMatch && in_array($this->md->getVersion($p), $ifNoneMatch)) {
-            throw new RemoteStorageException("document not modified");
+            throw new RemoteStorageException('document not modified');
         }
 
         return $this->d->getDocument($p);
@@ -93,19 +92,19 @@ class RemoteStorage
     public function getFolder(Path $p, array $ifNoneMatch = null)
     {
         if (null !== $ifNoneMatch && in_array($this->md->getVersion($p), $ifNoneMatch)) {
-            throw new RemoteStorageException("folder not modified");
+            throw new RemoteStorageException('folder not modified');
         }
 
         $f = array(
-            "@context" => "http://remotestorage.io/spec/folder-description",
-            "items" => $this->d->getFolder($p),
+            '@context' => 'http://remotestorage.io/spec/folder-description',
+            'items' => $this->d->getFolder($p),
         );
-        foreach ($f["items"] as $name => $meta) {
-            $f["items"][$name]["ETag"] = $this->md->getVersion(new Path($p->getFolderPath().$name));
+        foreach ($f['items'] as $name => $meta) {
+            $f['items'][$name]['ETag'] = $this->md->getVersion(new Path($p->getFolderPath().$name));
 
             // if item is a folder we don't want Content-Type
-            if (strrpos($name, "/") !== strlen($name)-1) {
-                $f["items"][$name]["Content-Type"] = $this->md->getContentType(new Path($p->getFolderPath().$name));
+            if (strrpos($name, '/') !== strlen($name) - 1) {
+                $f['items'][$name]['Content-Type'] = $this->md->getContentType(new Path($p->getFolderPath().$name));
             }
         }
 

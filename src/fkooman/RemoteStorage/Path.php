@@ -15,28 +15,28 @@ class Path
     public function __construct($p)
     {
         if (!is_string($p)) {
-            throw new PathException("invalid path: not a string");
+            throw new PathException('invalid path: not a string');
         }
 
         // must contain at least one slash and start with it
-        if (0 !== strpos($p, "/")) {
-            throw new PathException("invalid path: does not start with /");
+        if (0 !== strpos($p, '/')) {
+            throw new PathException('invalid path: does not start with /');
         }
 
         // must not contain ".."
-        if (false !== strpos($p, "..")) {
-            throw new PathException("invalid path: contains ..");
+        if (false !== strpos($p, '..')) {
+            throw new PathException('invalid path: contains ..');
         }
 
         // must not contain "//"
-        if (false !== strpos($p, "//")) {
-            throw new PathException("invalid path: contains //");
+        if (false !== strpos($p, '//')) {
+            throw new PathException('invalid path: contains //');
         }
 
         // must at least contain a user
-        $pathParts = explode("/", $p);
+        $pathParts = explode('/', $p);
         if (count($pathParts) < 3) {
-            throw new PathException("invalid path: no user specified");
+            throw new PathException('invalid path: no user specified');
         }
 
         $this->p = $p;
@@ -50,7 +50,7 @@ class Path
 
     public function getIsPublic()
     {
-        return count($this->pathParts) > 3 && "public" === $this->pathParts[2];
+        return count($this->pathParts) > 3 && 'public' === $this->pathParts[2];
     }
 
     public function getUserId()
@@ -60,7 +60,7 @@ class Path
 
     public function getIsFolder()
     {
-        return empty($this->pathParts[count($this->pathParts)-1]);
+        return empty($this->pathParts[count($this->pathParts) - 1]);
     }
 
     public function getIsDocument()
@@ -84,7 +84,7 @@ class Path
             return $this->p;
         }
 
-        return substr($this->p, 0, strrpos($this->p, "/") + 1);
+        return substr($this->p, 0, strrpos($this->p, '/') + 1);
     }
 
     public function getFolderTreeToUserRoot()
@@ -99,8 +99,8 @@ class Path
             // remove the last "/"
             $p = substr($p, 0, strlen($p) - 1);
             // remove everything after the now last "/"
-            $p = substr($p, 0, strrpos($p, "/") + 1);
-        } while (substr_count($p, "/") > 1);
+            $p = substr($p, 0, strrpos($p, '/') + 1);
+        } while (substr_count($p, '/') > 1);
 
         return $folderTree;
     }

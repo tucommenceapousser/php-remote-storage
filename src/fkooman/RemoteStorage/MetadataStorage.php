@@ -14,7 +14,6 @@
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 namespace fkooman\RemoteStorage;
 
 use PDO;
@@ -25,7 +24,7 @@ class MetadataStorage
     private $db;
     private $prefix;
 
-    public function __construct(PDO $db, $prefix = "")
+    public function __construct(PDO $db, $prefix = '')
     {
         $this->db = $db;
         $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -33,7 +32,7 @@ class MetadataStorage
     }
 
     /**
-     * Get the version of the path which can be either a folder or document
+     * Get the version of the path which can be either a folder or document.
      *
      * @param $path The full path to the folder or document
      * @returns the version of the path, or null if path does not exist
@@ -42,18 +41,18 @@ class MetadataStorage
     {
         $stmt = $this->db->prepare(
             sprintf(
-                "SELECT version, content_type FROM %s WHERE path = :path",
-                $this->prefix."md"
+                'SELECT version, content_type FROM %s WHERE path = :path',
+                $this->prefix.'md'
             )
         );
-        $stmt->bindValue(":path", $p->getPath(), PDO::PARAM_STR);
+        $stmt->bindValue(':path', $p->getPath(), PDO::PARAM_STR);
         $stmt->execute();
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         if (false !== $result) {
             return $result;
         }
 
-        return null;
+        return;
     }
 
     public function getVersion(Path $p)
@@ -73,7 +72,7 @@ class MetadataStorage
     public function updateFolder(Path $p)
     {
         if (!$p->getIsFolder()) {
-            throw new MetadataStorageException("not a folder");
+            throw new MetadataStorageException('not a folder');
         }
 
         return $this->updateDocument($p, null);
@@ -94,28 +93,28 @@ class MetadataStorage
             $newVersion = '1:'.Utils::randomHex();
             $stmt = $this->db->prepare(
                 sprintf(
-                    "INSERT INTO %s (path, content_type, version) VALUES(:path, :content_type, :version)",
-                    $this->prefix."md"
+                    'INSERT INTO %s (path, content_type, version) VALUES(:path, :content_type, :version)',
+                    $this->prefix.'md'
                 )
             );
         } else {
-            $explodedData = explode(":", $currentVersion);
-            $newVersion = sprintf("%d:%s", $explodedData[0] + 1, Utils::randomHex());
+            $explodedData = explode(':', $currentVersion);
+            $newVersion = sprintf('%d:%s', $explodedData[0] + 1, Utils::randomHex());
             $stmt = $this->db->prepare(
                 sprintf(
-                    "UPDATE %s SET version = :version, content_type = :content_type WHERE path = :path",
-                    $this->prefix."md"
+                    'UPDATE %s SET version = :version, content_type = :content_type WHERE path = :path',
+                    $this->prefix.'md'
                 )
             );
         }
 
-        $stmt->bindValue(":path", $p->getPath(), PDO::PARAM_STR);
-        $stmt->bindValue(":content_type", $contentType, PDO::PARAM_STR);
-        $stmt->bindValue(":version", $newVersion, PDO::PARAM_STR);
+        $stmt->bindValue(':path', $p->getPath(), PDO::PARAM_STR);
+        $stmt->bindValue(':content_type', $contentType, PDO::PARAM_STR);
+        $stmt->bindValue(':version', $newVersion, PDO::PARAM_STR);
         $stmt->execute();
 
         if (1 !== $stmt->rowCount()) {
-            throw new MetadataStorageException("unable to update node");
+            throw new MetadataStorageException('unable to update node');
         }
     }
 
@@ -123,15 +122,15 @@ class MetadataStorage
     {
         $stmt = $this->db->prepare(
             sprintf(
-                "DELETE FROM %s WHERE path = :path",
-                $this->prefix."md"
+                'DELETE FROM %s WHERE path = :path',
+                $this->prefix.'md'
             )
         );
-        $stmt->bindValue(":path", $p->getPath(), PDO::PARAM_STR);
+        $stmt->bindValue(':path', $p->getPath(), PDO::PARAM_STR);
         $stmt->execute();
 
         if (1 !== $stmt->rowCount()) {
-            throw new MetadataStorageException("unable to delete node");
+            throw new MetadataStorageException('unable to delete node');
         }
     }
 
@@ -139,12 +138,12 @@ class MetadataStorage
     {
         $query = array();
         $query[] = sprintf(
-            "CREATE TABLE IF NOT EXISTS %s (
+            'CREATE TABLE IF NOT EXISTS %s (
                 path VARCHAR(255) NOT NULL,
                 content_type VARCHAR(255) DEFAULT NULL,
                 version VARCHAR(255) NOT NULL,
                 UNIQUE (path)
-            )",
+            )',
             $prefix.'md'
         );
 
@@ -163,7 +162,7 @@ class MetadataStorage
             // make sure the tables are empty
             $this->db->query(
                 sprintf(
-                    "DELETE FROM %s",
+                    'DELETE FROM %s',
                     $this->prefix.$t
                 )
             );

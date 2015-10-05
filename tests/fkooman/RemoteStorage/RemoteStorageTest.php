@@ -14,7 +14,6 @@
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 namespace fkooman\RemoteStorage;
 
 use PDO;
@@ -49,7 +48,7 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
 
     public function testPutDocument()
     {
-        $p = new Path("/admin/messages/foo/hello.txt");
+        $p = new Path('/admin/messages/foo/hello.txt');
         $this->r->putDocument($p, 'text/plain', 'Hello World!');
         $this->assertEquals('Hello World!', $this->r->getDocument($p));
         $this->assertRegexp('/1:[a-z0-9]+/i', $this->r->getVersion($p));
@@ -57,11 +56,11 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
 
     public function testPutMultipleDocuments()
     {
-        $p1 = new Path("/admin/messages/foo/hello.txt");
-        $p2 = new Path("/admin/messages/foo/bar.txt");
-        $p3 = new Path("/admin/messages/foo/");
-        $p4 = new Path("/admin/messages/");
-        $p5 = new Path("/admin/");
+        $p1 = new Path('/admin/messages/foo/hello.txt');
+        $p2 = new Path('/admin/messages/foo/bar.txt');
+        $p3 = new Path('/admin/messages/foo/');
+        $p4 = new Path('/admin/messages/');
+        $p5 = new Path('/admin/');
         $this->r->putDocument($p1, 'text/plain', 'Hello World!');
         $this->r->putDocument($p2, 'text/plain', 'Hello Foo!');
         $this->assertEquals('Hello World!', $this->r->getDocument($p1));
@@ -76,7 +75,7 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
 
     public function testDeleteDocument()
     {
-        $p = new Path("/admin/messages/foo/baz.txt");
+        $p = new Path('/admin/messages/foo/baz.txt');
         $this->r->putDocument($p, 'text/plain', 'Hello World!');
         $documentVersion = $this->r->getVersion($p);
         $this->r->deleteDocument($p, array($documentVersion));
@@ -88,17 +87,17 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
             $this->assertTrue(true);
         }
         // directory should also not be there anymore
-        $p = new Path("/admin/messages/foo/");
+        $p = new Path('/admin/messages/foo/');
         $this->assertNull($this->r->getVersion($p));
     }
 
     public function testDeleteMultipleDocuments()
     {
-        $p1 = new Path("/admin/messages/foo/baz.txt");
-        $p2 = new Path("/admin/messages/foo/bar.txt");
-        $p3 = new Path("/admin/messages/foo/");
-        $p4 = new Path("/admin/messages/");
-        $p5 = new Path("/admin/");
+        $p1 = new Path('/admin/messages/foo/baz.txt');
+        $p2 = new Path('/admin/messages/foo/bar.txt');
+        $p3 = new Path('/admin/messages/foo/');
+        $p4 = new Path('/admin/messages/');
+        $p5 = new Path('/admin/');
 
         $this->r->putDocument($p1, 'text/plain', 'Hello Baz!');
         $this->r->putDocument($p2, 'text/plain', 'Hello Bar!');
@@ -112,9 +111,9 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
 
     public function testGetFolder()
     {
-        $p1 = new Path("/admin/messages/foo/baz.txt");
-        $p2 = new Path("/admin/messages/foo/bar.txt");
-        $p3 = new Path("/admin/messages/foo/");
+        $p1 = new Path('/admin/messages/foo/baz.txt');
+        $p2 = new Path('/admin/messages/foo/bar.txt');
+        $p3 = new Path('/admin/messages/foo/');
         $this->r->putDocument($p1, 'text/plain', 'Hello Baz!');
         $this->r->putDocument($p2, 'text/plain', 'Hello Bar!');
         $this->r->putDocument($p2, 'text/plain', 'Hello Updated Bar!');
@@ -135,15 +134,15 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
 
     public function testGetFolderWithFolder()
     {
-        $p1 = new Path("/admin/messages/foo/baz.txt");
-        $p2 = new Path("/admin/messages/foo/foobar/bar.txt");
-        $p3 = new Path("/admin/messages/foo/");
+        $p1 = new Path('/admin/messages/foo/baz.txt');
+        $p2 = new Path('/admin/messages/foo/foobar/bar.txt');
+        $p3 = new Path('/admin/messages/foo/');
         $this->r->putDocument($p1, 'text/plain', 'Hello Baz!');
         $this->r->putDocument($p2, 'text/plain', 'Hello Bar!');
         $this->r->putDocument($p2, 'text/plain', 'Hello Updated Bar!');
 
         $j = new Json();
-        $folderData =  $j->decode($this->r->getFolder($p3));
+        $folderData = $j->decode($this->r->getFolder($p3));
         $this->assertEquals(2, count($folderData));
         $this->assertEquals(2, count($folderData['items']));
         $this->assertEquals('http://remotestorage.io/spec/folder-description', $folderData['@context']);
@@ -161,7 +160,7 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
      */
     public function testPutIfMatchPrecondition()
     {
-        $p1 = new Path("/admin/messages/foo/hello.txt");
+        $p1 = new Path('/admin/messages/foo/hello.txt');
         $this->r->putDocument($p1, 'text/plain', 'Hello World');
         $this->r->putDocument($p1, 'text/plain', 'Hello World', array('incorrect version'));
     }
@@ -172,7 +171,7 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
      */
     public function testDeleteIfMatchPrecondition()
     {
-        $p1 = new Path("/admin/messages/foo/hello.txt");
+        $p1 = new Path('/admin/messages/foo/hello.txt');
         $this->r->putDocument($p1, 'text/plain', 'Hello World');
         $this->r->deleteDocument($p1, array('incorrect version'));
     }
@@ -183,8 +182,8 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
      */
     public function testGetFolderIfMatch()
     {
-        $p1 = new Path("/admin/messages/foo/hello.txt");
-        $p2 = new Path("/admin/messages/foo/");
+        $p1 = new Path('/admin/messages/foo/hello.txt');
+        $p2 = new Path('/admin/messages/foo/');
         $this->r->putDocument($p1, 'text/plain', 'Hello World');
         $folderVersion = $this->r->getVersion($p2);
         $this->r->getFolder($p2, array($folderVersion));
@@ -196,7 +195,7 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
      */
     public function testGetDocumentIfMatch()
     {
-        $p1 = new Path("/admin/messages/foo/hello.txt");
+        $p1 = new Path('/admin/messages/foo/hello.txt');
         $this->r->putDocument($p1, 'text/plain', 'Hello World');
         $documentVersion = $this->r->getVersion($p1);
         $this->r->getDocument($p1, array($documentVersion));
@@ -204,8 +203,8 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
 
     public function testPutDocumentIfNoneMatchStarOkay()
     {
-        $p1 = new Path("/admin/messages/foo/hello.txt");
-        $this->r->putDocument($p1, 'text/plain', 'Hello World', null, array("*"));
+        $p1 = new Path('/admin/messages/foo/hello.txt');
+        $this->r->putDocument($p1, 'text/plain', 'Hello World', null, array('*'));
         $this->assertNotNull($this->r->getVersion($p1));
     }
 
@@ -215,9 +214,9 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
      */
     public function testPutDocumentIfNoneMatchStarFail()
     {
-        $p1 = new Path("/admin/messages/foo/hello.txt");
-        $this->r->putDocument($p1, 'text/plain', 'Hello World', null, array("*"));
+        $p1 = new Path('/admin/messages/foo/hello.txt');
+        $this->r->putDocument($p1, 'text/plain', 'Hello World', null, array('*'));
         // document already exists now, so we fail
-        $this->r->putDocument($p1, 'text/plain', 'Hello World', null, array("*"));
+        $this->r->putDocument($p1, 'text/plain', 'Hello World', null, array('*'));
     }
 }
