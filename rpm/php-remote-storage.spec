@@ -66,7 +66,7 @@ cp -pr bin/* ${RPM_BUILD_ROOT}%{_bindir}
 
 # Config
 mkdir -p ${RPM_BUILD_ROOT}%{_sysconfdir}/php-remote-storage
-cp -p config/rs.ini.defaults ${RPM_BUILD_ROOT}%{_sysconfdir}/php-remote-storage/rs.ini
+cp -p config/server.ini.example ${RPM_BUILD_ROOT}%{_sysconfdir}/php-remote-storage/server.ini
 ln -s ../../../etc/php-remote-storage ${RPM_BUILD_ROOT}%{_datadir}/php-remote-storage/config
 
 # Data

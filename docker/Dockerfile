@@ -33,7 +33,7 @@ RUN sed -i 's/allowRemoteStorageClients = false/allowRemoteStorageClients = true
 
 # Use the OAuth server introspect endpoint, as this is on the same machine
 # non TLS is fine...
-RUN sed -i 's|https://auth.example.org/introspect.php|http://localhost/php-oauth-as/introspect.php|' /etc/php-remote-storage/rs.ini
+RUN sed -i 's|https://auth.example.org/introspect.php|http://localhost/php-oauth-as/introspect.php|' /etc/php-remote-storage/server.ini
 
 # Add users to php-simple-auth
 RUN php-simple-auth-add-user admin adm1n

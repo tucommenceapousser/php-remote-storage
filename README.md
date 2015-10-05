@@ -52,9 +52,9 @@ on and RHEL 7.
     $ sudo semanage fcontext -a -t httpd_sys_rw_content_t '/var/www/php-remote-storage/data(/.*)?'
     $ sudo restorecon -R /var/www/php-remote-storage/data
     $ cd config
-    $ cp rs.ini.defaults rs.ini
+    $ cp server.ini.example server.ini
 
-Edit `rs.ini` to match the configuration. You need to at least modify the
+Edit `server.ini` to match the configuration. You need to at least modify the
 following lines, and set them to the values shown here:
 
     storageDir = "/var/www/php-remote-storage/data/storage"

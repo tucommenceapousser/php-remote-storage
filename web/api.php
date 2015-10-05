@@ -27,7 +27,7 @@ use fkooman\Http\Exception\InternalServerErrorException;
 
 try {
     $iniReader = IniReader::fromFile(
-        dirname(__DIR__).'/config/rs.ini'
+        dirname(__DIR__).'/config/server.ini'
     );
 
     $md = new MetadataStorage(

@@ -21,7 +21,7 @@ use fkooman\Ini\IniReader;
 use fkooman\RemoteStorage\MetadataStorage;
 
 try {
-    $iniReader = IniReader::fromFile(dirname(__DIR__).'/config/rs.ini');
+    $iniReader = IniReader::fromFile(dirname(__DIR__).'/config/server.ini');
 
     $pdo = new PDO(
         $iniReader->v('MetadataStorage', 'dsn'),
