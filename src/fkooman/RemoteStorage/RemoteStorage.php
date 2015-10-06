@@ -18,6 +18,7 @@ namespace fkooman\RemoteStorage;
 
 use fkooman\RemoteStorage\Exception\RemoteStorageException;
 use fkooman\Json\Json;
+use fkooman\Http\Exception\PreconditionFailedException;
 
 class RemoteStorage
 {
@@ -36,11 +37,11 @@ class RemoteStorage
     public function putDocument(Path $p, $contentType, $documentData, array $ifMatch = null, array $ifNoneMatch = null)
     {
         if (null !== $ifMatch && !in_array($this->md->getVersion($p), $ifMatch)) {
-            throw new RemoteStorageException('version mismatch');
+            throw new PreconditionFailedException('version mismatch');
         }
 
         if (null !== $ifNoneMatch && in_array('*', $ifNoneMatch) && null !== $this->md->getVersion($p)) {
-            throw new RemoteStorageException('document already exists');
+            throw new PreconditionFailedException('document already exists');
         }
 
         $updatedEntities = $this->d->putDocument($p, $documentData);
@@ -53,7 +54,7 @@ class RemoteStorage
     public function deleteDocument(Path $p, array $ifMatch = null)
     {
         if (null !== $ifMatch && !in_array($this->md->getVersion($p), $ifMatch)) {
-            throw new RemoteStorageException('version mismatch');
+            throw new PreconditionFailedException('version mismatch');
         }
         $deletedEntities = $this->d->deleteDocument($p);
         foreach ($deletedEntities as $d) {

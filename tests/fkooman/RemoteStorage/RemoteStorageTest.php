@@ -155,7 +155,18 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException fkooman\RemoteStorage\Exception\RemoteStorageException
+     * @expectedException fkooman\Http\Exception\PreconditionFailedException
+     * @expectedExceptionMessage version mismatch
+     */
+    public function testPutIfMatchNotExistingFile()
+    {
+        $p1 = new Path('/admin/messages/foo/helloz0r.txt');
+        //$this->r->putDocument($p1, 'text/plain', 'Hello World');
+        $this->r->putDocument($p1, 'text/plain', 'Hello World', array('incorrect version'));
+    }
+
+    /**
+     * @expectedException fkooman\Http\Exception\PreconditionFailedException
      * @expectedExceptionMessage version mismatch
      */
     public function testPutIfMatchPrecondition()
@@ -166,7 +177,7 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException fkooman\RemoteStorage\Exception\RemoteStorageException
+     * @expectedException fkooman\Http\Exception\PreconditionFailedException
      * @expectedExceptionMessage version mismatch
      */
     public function testDeleteIfMatchPrecondition()
@@ -209,7 +220,7 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException fkooman\RemoteStorage\Exception\RemoteStorageException
+     * @expectedException fkooman\Http\Exception\PreconditionFailedException
      * @expectedExceptionMessage document already exists
      */
     public function testPutDocumentIfNoneMatchStarFail()

@@ -23,6 +23,7 @@ use fkooman\Rest\Plugin\Bearer\TokenIntrospection;
 use fkooman\Http\Exception\NotFoundException;
 use fkooman\Http\Exception\PreconditionFailedException;
 use fkooman\Http\Exception\ForbiddenException;
+use fkooman\Http\Exception\BadRequestException;
 
 class RemoteStorageService extends Service
 {
@@ -121,7 +122,7 @@ class RemoteStorageService extends Service
         if (null === $folderVersion) {
             // folder does not exist, so we just invent this
             // ETag that will be the same for all empty folders
-            $folderVersion = '"e:7398243bf0d8b3c6c7e7ec618b3ee703"';
+            $folderVersion = 'e:7398243bf0d8b3c6c7e7ec618b3ee703';
         }
 
         $requestedVersion = $this->stripQuotes(

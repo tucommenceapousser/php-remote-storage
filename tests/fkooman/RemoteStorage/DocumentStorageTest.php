@@ -91,7 +91,7 @@ class DocumentStorageTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException fkooman\RemoteStorage\Exception\DocumentStorageException
+     * @expectedException fkooman\Http\Exception\ConflictException
      */
     public function testPutDocumentOnFolder()
     {
@@ -104,7 +104,7 @@ class DocumentStorageTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException fkooman\RemoteStorage\Exception\DocumentStorageException
+     * @expectedException fkooman\Http\Exception\ConflictException
      */
     public function testPutFolderOnDocument()
     {
