@@ -68,6 +68,25 @@ class RemoteStorageService extends Service
             }
         );
 
+        // private folder
+        $this->match(
+            array('GET', 'HEAD'),
+            '/:user/:module/',
+            function ($matchAll, Request $request, TokenIntrospection $tokenIntrospection) use ($compatThis) {
+                return $compatThis->getFolder($matchAll, $request, $tokenIntrospection);
+            }
+        );
+
+        // private folder
+        $this->match(
+            array('GET', 'HEAD'),
+            '/:user/',
+            function ($matchAll, Request $request, TokenIntrospection $tokenIntrospection) use ($compatThis) {
+                // XXX this is only allowed when the user has *:r or *:rw permissions!
+                return $compatThis->getFolder($matchAll, $request, $tokenIntrospection);
+            }
+        );
+
         // private document
         $this->match(
             array('GET', 'HEAD'),
@@ -248,6 +267,17 @@ class RemoteStorageService extends Service
 
         // need to get the version before the delete
         $documentVersion = $this->remoteStorage->getVersion($path);
+
+        $ifMatch = $this->stripQuotes(
+            $request->getHeader('If-Match')
+        );
+
+        // if document does not exist, and we have If-Match header set we should
+        // return a 412 instead of a 404
+        if (null !== $ifMatch && !in_array($documentVersion, $ifMatch)) {
+            throw new PreconditionFailedException('version mismatch');
+        }
+
         if (null === $documentVersion) {
             throw new NotFoundException('document not found');
         }
