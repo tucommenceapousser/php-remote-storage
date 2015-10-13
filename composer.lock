@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "91207b57d3a4b253be418a3ee2409c5e",
+    "hash": "9209c099d1b9bc9cc363999c1d0fae78",
     "packages": [
         {
             "name": "fkooman/ini",
@@ -364,7 +364,7 @@
     "prefer-lowest": false,
     "platform": {
         "ext-json": "*",
-        "php": ">=5.3.3"
+        "php": ">=5.4"
     },
     "platform-dev": []
 }
