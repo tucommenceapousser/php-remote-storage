@@ -16,10 +16,12 @@
  */
 namespace fkooman\RemoteStorage;
 
+require_once __DIR__.'/TestTokenValidator.php';
+
 use PDO;
 use fkooman\Http\Request;
 use fkooman\Json\Json;
-use fkooman\Rest\Plugin\Authentication\Bearer\TokenInfo;
+use fkooman\Rest\Plugin\Authentication\Bearer\BearerAuthentication;
 use PHPUnit_Framework_TestCase;
 
 class RemoteStorageServiceTest extends PHPUnit_Framework_TestCase
@@ -55,21 +57,9 @@ class RemoteStorageServiceTest extends PHPUnit_Framework_TestCase
         $document = new DocumentStorage($tempFile);
         $remoteStorage = new RemoteStorage($md, $document);
 
-        $stub = $this->getMockBuilder('fkooman\Rest\Plugin\Authentication\Bearer\BearerAuthentication')
-                     ->disableOriginalConstructor()
-                     ->getMock();
-        $stub->method('execute')->willReturn(
-            new TokenInfo(
-                array(
-                    'active' => true,
-                    'sub' => 'admin',
-                    'scope' => 'foo:rw',
-                )
-            )
-        );
-
+        $bearerAuth = new BearerAuthentication(new TestTokenValidator());
         $this->r = new RemoteStorageService($remoteStorage);
-        $this->r->getPluginRegistry()->registerDefaultPlugin($stub);
+        $this->r->getPluginRegistry()->registerDefaultPlugin($bearerAuth);
     }
 
     private function getPutRequest($urlPath, array $h = array())
@@ -85,6 +75,7 @@ class RemoteStorageServiceTest extends PHPUnit_Framework_TestCase
                     'SCRIPT_NAME' => '/index.php',
                     'PATH_INFO' => $urlPath,
                     'REQUEST_METHOD' => 'PUT',
+                    'HTTP_AUTHORIZATION' => 'Bearer test_token',
                     'HTTP_ORIGIN' => 'https://foo.bar.example.org',
                     'CONTENT_TYPE' => 'text/plain',
                 )
@@ -105,6 +96,7 @@ class RemoteStorageServiceTest extends PHPUnit_Framework_TestCase
                     'QUERY_STRING' => '',
                     'REQUEST_URI' => '/index.php'.$urlPath,
                     'SCRIPT_NAME' => '/index.php',
+                    'HTTP_AUTHORIZATION' => 'Bearer test_token',
                     'PATH_INFO' => $urlPath,
                     'REQUEST_METHOD' => 'GET',
                     'HTTP_ORIGIN' => 'https://foo.bar.example.org',
@@ -121,6 +113,7 @@ class RemoteStorageServiceTest extends PHPUnit_Framework_TestCase
                 array(
                     'SERVER_NAME' => 'www.example.org',
                     'SERVER_PORT' => 80,
+                    'HTTP_AUTHORIZATION' => 'Bearer test_token',
                     'QUERY_STRING' => '',
                     'REQUEST_URI' => '/index.php'.$urlPath,
                     'PATH_INFO' => $urlPath,
