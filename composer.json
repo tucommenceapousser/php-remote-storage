@@ -10,6 +10,7 @@
     "require": {
         "ext-json": "*",
         "ext-pdo": "*",
+        "fkooman/http": "^1.0.0",
         "fkooman/ini": "^1.0.0",
         "fkooman/io": "^1.0.0",
         "fkooman/json": "^1.0.0",
