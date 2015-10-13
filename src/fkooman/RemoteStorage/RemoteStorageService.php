@@ -36,15 +36,12 @@ class RemoteStorageService extends Service
 
         $this->remoteStorage = $remoteStorage;
 
-        // php 5.3 compatibility
-        $compatThis = &$this;
-
         // public folder
         $this->match(
             array('GET', 'HEAD'),
             '/:user/public/:module/:path+/',
-            function ($matchAll, Request $request, TokenIntrospection $tokenIntrospection) use ($compatThis) {
-                return $compatThis->getFolder($matchAll, $request, $tokenIntrospection);
+            function ($matchAll, Request $request, TokenIntrospection $tokenIntrospection) {
+                return $this->getFolder($matchAll, $request, $tokenIntrospection);
             }
         );
 
@@ -52,8 +49,8 @@ class RemoteStorageService extends Service
         $this->match(
             array('GET', 'HEAD'),
             '/:user/public/:module/:path+',
-            function ($matchAll, Request $request) use ($compatThis) {
-                return $compatThis->getDocument($matchAll, $request);
+            function ($matchAll, Request $request) {
+                return $this->getDocument($matchAll, $request);
             },
             // no Bearer token required for public file GET or HEAD
             array('fkooman\Rest\Plugin\Bearer\BearerAuthentication')
@@ -63,8 +60,8 @@ class RemoteStorageService extends Service
         $this->match(
             array('GET', 'HEAD'),
             '/:user/:module/:path+/',
-            function ($matchAll, Request $request, TokenIntrospection $tokenIntrospection) use ($compatThis) {
-                return $compatThis->getFolder($matchAll, $request, $tokenIntrospection);
+            function ($matchAll, Request $request, TokenIntrospection $tokenIntrospection) {
+                return $this->getFolder($matchAll, $request, $tokenIntrospection);
             }
         );
 
@@ -72,8 +69,8 @@ class RemoteStorageService extends Service
         $this->match(
             array('GET', 'HEAD'),
             '/:user/:module/',
-            function ($matchAll, Request $request, TokenIntrospection $tokenIntrospection) use ($compatThis) {
-                return $compatThis->getFolder($matchAll, $request, $tokenIntrospection);
+            function ($matchAll, Request $request, TokenIntrospection $tokenIntrospection) {
+                return $this->getFolder($matchAll, $request, $tokenIntrospection);
             }
         );
 
@@ -81,9 +78,9 @@ class RemoteStorageService extends Service
         $this->match(
             array('GET', 'HEAD'),
             '/:user/',
-            function ($matchAll, Request $request, TokenIntrospection $tokenIntrospection) use ($compatThis) {
+            function ($matchAll, Request $request, TokenIntrospection $tokenIntrospection) {
                 // XXX this is only allowed when the user has *:r or *:rw permissions!
-                return $compatThis->getFolder($matchAll, $request, $tokenIntrospection);
+                return $this->getFolder($matchAll, $request, $tokenIntrospection);
             }
         );
 
@@ -91,8 +88,8 @@ class RemoteStorageService extends Service
         $this->match(
             array('GET', 'HEAD'),
             '/:user/:module/:path+',
-            function ($matchAll, Request $request, TokenIntrospection $tokenIntrospection) use ($compatThis) {
-                return $compatThis->getDocument($matchAll, $request, $tokenIntrospection);
+            function ($matchAll, Request $request, TokenIntrospection $tokenIntrospection) {
+                return $this->getDocument($matchAll, $request, $tokenIntrospection);
             }
         );
 
@@ -100,8 +97,8 @@ class RemoteStorageService extends Service
         $this->match(
             'PUT',
             '/:user/:module/:path+',
-            function ($matchAll, Request $request, TokenIntrospection $tokenIntrospection) use ($compatThis) {
-                return $compatThis->putDocument($matchAll, $request, $tokenIntrospection);
+            function ($matchAll, Request $request, TokenIntrospection $tokenIntrospection) {
+                return $this->putDocument($matchAll, $request, $tokenIntrospection);
             }
         );
 
@@ -109,8 +106,8 @@ class RemoteStorageService extends Service
         $this->match(
             'DELETE',
             '/:user/:module/:path+',
-            function ($matchAll, Request $request, TokenIntrospection $tokenIntrospection) use ($compatThis) {
-                return $compatThis->deleteDocument($matchAll, $request, $tokenIntrospection);
+            function ($matchAll, Request $request, TokenIntrospection $tokenIntrospection) {
+                return $this->deleteDocument($matchAll, $request, $tokenIntrospection);
             }
         );
 
@@ -118,8 +115,8 @@ class RemoteStorageService extends Service
         $this->match(
             'OPTIONS',
             '*',
-            function ($matchAll, Request $request) use ($compatThis) {
-                return $compatThis->optionsRequest($matchAll, $request);
+            function ($matchAll, Request $request) {
+                return $this->optionsRequest($matchAll, $request);
             },
             // no Bearer token required for OPTIONS request
             array('fkooman\Rest\Plugin\Bearer\BearerAuthentication')
