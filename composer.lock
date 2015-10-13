@@ -4,8 +4,52 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "a0b8c7147494a75794731805424ca451",
+    "hash": "c9a05df1ba6281108d6325373eac82ac",
     "packages": [
+        {
+            "name": "fkooman/http",
+            "version": "1.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/fkooman/php-lib-http.git",
+                "reference": "0a94ec8a08d67055dd7e515cf327f03d53dc025b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/fkooman/php-lib-http/zipball/0a94ec8a08d67055dd7e515cf327f03d53dc025b",
+                "reference": "0a94ec8a08d67055dd7e515cf327f03d53dc025b",
+                "shasum": ""
+            },
+            "require": {
+                "ext-mbstring": "*",
+                "ext-session": "*",
+                "ext-spl": "*",
+                "fkooman/json": "^1.0.0",
+                "php": ">=5.3.0"
+            },
+            "suggest": {
+                "fkooman/rest": "Simple PHP library for writing REST services."
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "fkooman\\Http\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "François Kooman",
+                    "email": "fkooman@tuxed.net",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Simple PHP library for dealing with HTTP requests and responses.",
+            "time": "2015-10-13 16:30:51"
+        },
         {
             "name": "fkooman/ini",
             "version": "1.0.0",
@@ -85,25 +129,27 @@
         },
         {
             "name": "fkooman/json",
-            "version": "0.6.0",
+            "version": "1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/fkooman/php-lib-json.git",
-                "reference": "556209cf34cdf55f90eefffd778f93a3e9d5bb2d"
+                "reference": "f24b7ee1890b29358402defcd9581a4e969e40d7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fkooman/php-lib-json/zipball/556209cf34cdf55f90eefffd778f93a3e9d5bb2d",
-                "reference": "556209cf34cdf55f90eefffd778f93a3e9d5bb2d",
+                "url": "https://api.github.com/repos/fkooman/php-lib-json/zipball/f24b7ee1890b29358402defcd9581a4e969e40d7",
+                "reference": "f24b7ee1890b29358402defcd9581a4e969e40d7",
                 "shasum": ""
             },
             "require": {
+                "ext-json": "*",
+                "ext-spl": "*",
                 "php": ">=5.3.3"
             },
             "type": "library",
             "autoload": {
                 "psr-0": {
-                    "fkooman\\Json": "src/"
+                    "fkooman\\Json\\": "src/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -118,36 +164,35 @@
                 }
             ],
             "description": "PHP library to encode and decode JSON",
-            "time": "2014-10-22 12:49:20"
+            "time": "2015-07-13 11:58:01"
         },
         {
             "name": "fkooman/rest",
-            "version": "0.6.8",
+            "version": "1.0.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/fkooman/php-lib-rest.git",
-                "reference": "a8a74b040ccbdca2cfc2b02c2aacb92661dd3a89"
+                "reference": "ac6a7931b7cb7e4df98b378bcc7b9e4c86d5ee8e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fkooman/php-lib-rest/zipball/a8a74b040ccbdca2cfc2b02c2aacb92661dd3a89",
-                "reference": "a8a74b040ccbdca2cfc2b02c2aacb92661dd3a89",
+                "url": "https://api.github.com/repos/fkooman/php-lib-rest/zipball/ac6a7931b7cb7e4df98b378bcc7b9e4c86d5ee8e",
+                "reference": "ac6a7931b7cb7e4df98b378bcc7b9e4c86d5ee8e",
                 "shasum": ""
             },
             "require": {
-                "fkooman/json": "~0.6.0",
-                "php": ">=5.3.3"
+                "ext-pcre": "*",
+                "ext-spl": "*",
+                "fkooman/http": "^1.1.0",
+                "php": ">=5.3.0"
             },
             "suggest": {
-                "fkooman/rest-plugin-basic": "Basic Authentication plugin",
-                "fkooman/rest-plugin-bearer": "Bearer (OAuth) Authentication plugin",
-                "fkooman/rest-plugin-mellon": "Mellon (SAML) Authentication plugin"
+                "fkooman/rest-plugin-authentication": "Authentication plugin"
             },
             "type": "library",
             "autoload": {
                 "psr-0": {
-                    "fkooman\\Http": "src/",
-                    "fkooman\\Rest": "src/"
+                    "fkooman\\Rest\\": "src/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -162,31 +207,80 @@
                 }
             ],
             "description": "Simple PHP library for writing REST services.",
-            "time": "2015-02-17 20:09:02"
+            "time": "2015-10-07 11:53:32"
         },
         {
-            "name": "fkooman/rest-plugin-bearer",
-            "version": "0.2.1",
+            "name": "fkooman/rest-plugin-authentication",
+            "version": "1.0.2",
             "source": {
                 "type": "git",
-                "url": "https://github.com/fkooman/php-lib-rest-plugin-bearer.git",
-                "reference": "acb33ed1bdf2c61fd655e147e545e6493364b8a6"
+                "url": "https://github.com/fkooman/php-lib-rest-plugin-authentication.git",
+                "reference": "6722f767a2c077259bb41297ac2d2dd074657cb0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fkooman/php-lib-rest-plugin-bearer/zipball/acb33ed1bdf2c61fd655e147e545e6493364b8a6",
-                "reference": "acb33ed1bdf2c61fd655e147e545e6493364b8a6",
+                "url": "https://api.github.com/repos/fkooman/php-lib-rest-plugin-authentication/zipball/6722f767a2c077259bb41297ac2d2dd074657cb0",
+                "reference": "6722f767a2c077259bb41297ac2d2dd074657cb0",
                 "shasum": ""
             },
             "require": {
-                "fkooman/rest": "~0.6.2",
-                "guzzle/guzzle": "~3.9",
-                "php": ">=5.3.3"
+                "ext-spl": "*",
+                "fkooman/rest": "^1.0.0",
+                "php": ">=5.3.0"
+            },
+            "suggest": {
+                "fkooman/rest-plugin-authentication-basic": "Basic Authentication plugin",
+                "fkooman/rest-plugin-authentication-bearer": "Bearer (OAuth) Authentication plugin",
+                "fkooman/rest-plugin-authentication-indieauth": "IndieAuth Authentication plugin",
+                "fkooman/rest-plugin-authentication-mellon": "Mellon (SAML) Authentication plugin",
+                "fkooman/rest-plugin-authentication-tls": "TLS Client Certificate Authentication plugin"
             },
             "type": "library",
             "autoload": {
                 "psr-0": {
-                    "fkooman\\Rest\\Plugin\\Bearer": "src/"
+                    "fkooman\\Rest\\Plugin\\Authentication\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "François Kooman",
+                    "email": "fkooman@tuxed.net",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Authentication plugin for fkooman/rest",
+            "time": "2015-10-13 11:32:53"
+        },
+        {
+            "name": "fkooman/rest-plugin-authentication-bearer",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/fkooman/php-lib-rest-plugin-authentication-bearer.git",
+                "reference": "7ffdc242b1e19824cd7af61ce589c096021842e5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/fkooman/php-lib-rest-plugin-authentication-bearer/zipball/7ffdc242b1e19824cd7af61ce589c096021842e5",
+                "reference": "7ffdc242b1e19824cd7af61ce589c096021842e5",
+                "shasum": ""
+            },
+            "require": {
+                "ext-pcre": "*",
+                "ext-spl": "*",
+                "fkooman/rest": "^1.0.0",
+                "fkooman/rest-plugin-authentication": "^1.0.0",
+                "guzzlehttp/guzzle": "~5.3",
+                "php": ">=5.4"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "fkooman\\Rest\\Plugin\\Authentication\\Bearer\\": "src/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -201,73 +295,40 @@
                 }
             ],
             "description": "Bearer (OAuth) Authentication plugin for fkooman/rest",
-            "time": "2014-10-27 13:14:37"
+            "time": "2015-07-20 15:03:57"
         },
         {
-            "name": "guzzle/guzzle",
-            "version": "v3.9.3",
+            "name": "guzzlehttp/guzzle",
+            "version": "5.3.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/guzzle/guzzle3.git",
-                "reference": "0645b70d953bc1c067bbc8d5bc53194706b628d9"
+                "url": "https://github.com/guzzle/guzzle.git",
+                "reference": "f3c8c22471cb55475105c14769644a49c3262b93"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/guzzle3/zipball/0645b70d953bc1c067bbc8d5bc53194706b628d9",
-                "reference": "0645b70d953bc1c067bbc8d5bc53194706b628d9",
+                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/f3c8c22471cb55475105c14769644a49c3262b93",
+                "reference": "f3c8c22471cb55475105c14769644a49c3262b93",
                 "shasum": ""
             },
             "require": {
-                "ext-curl": "*",
-                "php": ">=5.3.3",
-                "symfony/event-dispatcher": "~2.1"
-            },
-            "replace": {
-                "guzzle/batch": "self.version",
-                "guzzle/cache": "self.version",
-                "guzzle/common": "self.version",
-                "guzzle/http": "self.version",
-                "guzzle/inflection": "self.version",
-                "guzzle/iterator": "self.version",
-                "guzzle/log": "self.version",
-                "guzzle/parser": "self.version",
-                "guzzle/plugin": "self.version",
-                "guzzle/plugin-async": "self.version",
-                "guzzle/plugin-backoff": "self.version",
-                "guzzle/plugin-cache": "self.version",
-                "guzzle/plugin-cookie": "self.version",
-                "guzzle/plugin-curlauth": "self.version",
-                "guzzle/plugin-error-response": "self.version",
-                "guzzle/plugin-history": "self.version",
-                "guzzle/plugin-log": "self.version",
-                "guzzle/plugin-md5": "self.version",
-                "guzzle/plugin-mock": "self.version",
-                "guzzle/plugin-oauth": "self.version",
-                "guzzle/service": "self.version",
-                "guzzle/stream": "self.version"
+                "guzzlehttp/ringphp": "^1.1",
+                "php": ">=5.4.0"
             },
             "require-dev": {
-                "doctrine/cache": "~1.3",
-                "monolog/monolog": "~1.0",
-                "phpunit/phpunit": "3.7.*",
-                "psr/log": "~1.0",
-                "symfony/class-loader": "~2.1",
-                "zendframework/zend-cache": "2.*,<2.3",
-                "zendframework/zend-log": "2.*,<2.3"
-            },
-            "suggest": {
-                "guzzlehttp/guzzle": "Guzzle 5 has moved to a new package name. The package you have installed, Guzzle 3, is deprecated."
+                "ext-curl": "*",
+                "phpunit/phpunit": "^4.0",
+                "psr/log": "^1.0"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "3.9-dev"
+                    "dev-master": "5.0-dev"
                 }
             },
             "autoload": {
-                "psr-0": {
-                    "Guzzle": "src/",
-                    "Guzzle\\Tests": "tests/"
+                "psr-4": {
+                    "GuzzleHttp\\": "src/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -279,13 +340,9 @@
                     "name": "Michael Dowling",
                     "email": "mtdowling@gmail.com",
                     "homepage": "https://github.com/mtdowling"
-                },
-                {
-                    "name": "Guzzle Community",
-                    "homepage": "https://github.com/guzzle/guzzle/contributors"
                 }
             ],
-            "description": "PHP HTTP client. This library is deprecated in favor of https://packagist.org/packages/guzzlehttp/guzzle",
+            "description": "Guzzle is a PHP HTTP client library and framework for building RESTful web service clients",
             "homepage": "http://guzzlephp.org/",
             "keywords": [
                 "client",
@@ -296,46 +353,43 @@
                 "rest",
                 "web service"
             ],
-            "time": "2015-03-18 18:23:50"
+            "time": "2015-05-20 03:47:55"
         },
         {
-            "name": "symfony/event-dispatcher",
-            "version": "v2.7.5",
+            "name": "guzzlehttp/ringphp",
+            "version": "1.1.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/symfony/event-dispatcher.git",
-                "reference": "ae4dcc2a8d3de98bd794167a3ccda1311597c5d9"
+                "url": "https://github.com/guzzle/RingPHP.git",
+                "reference": "dbbb91d7f6c191e5e405e900e3102ac7f261bc0b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/event-dispatcher/zipball/ae4dcc2a8d3de98bd794167a3ccda1311597c5d9",
-                "reference": "ae4dcc2a8d3de98bd794167a3ccda1311597c5d9",
+                "url": "https://api.github.com/repos/guzzle/RingPHP/zipball/dbbb91d7f6c191e5e405e900e3102ac7f261bc0b",
+                "reference": "dbbb91d7f6c191e5e405e900e3102ac7f261bc0b",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.9"
+                "guzzlehttp/streams": "~3.0",
+                "php": ">=5.4.0",
+                "react/promise": "~2.0"
             },
             "require-dev": {
-                "psr/log": "~1.0",
-                "symfony/config": "~2.0,>=2.0.5",
-                "symfony/dependency-injection": "~2.6",
-                "symfony/expression-language": "~2.6",
-                "symfony/phpunit-bridge": "~2.7",
-                "symfony/stopwatch": "~2.3"
+                "ext-curl": "*",
+                "phpunit/phpunit": "~4.0"
             },
             "suggest": {
-                "symfony/dependency-injection": "",
-                "symfony/http-kernel": ""
+                "ext-curl": "Guzzle will use specific adapters if cURL is present"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.7-dev"
+                    "dev-master": "1.1-dev"
                 }
             },
             "autoload": {
                 "psr-4": {
-                    "Symfony\\Component\\EventDispatcher\\": ""
+                    "GuzzleHttp\\Ring\\": "src/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -344,17 +398,107 @@
             ],
             "authors": [
                 {
-                    "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
-                },
-                {
-                    "name": "Symfony Community",
-                    "homepage": "https://symfony.com/contributors"
+                    "name": "Michael Dowling",
+                    "email": "mtdowling@gmail.com",
+                    "homepage": "https://github.com/mtdowling"
                 }
             ],
-            "description": "Symfony EventDispatcher Component",
-            "homepage": "https://symfony.com",
-            "time": "2015-09-22 13:49:29"
+            "description": "Provides a simple API and specification that abstracts away the details of HTTP into a single PHP function.",
+            "time": "2015-05-20 03:37:09"
+        },
+        {
+            "name": "guzzlehttp/streams",
+            "version": "3.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/guzzle/streams.git",
+                "reference": "47aaa48e27dae43d39fc1cea0ccf0d84ac1a2ba5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/guzzle/streams/zipball/47aaa48e27dae43d39fc1cea0ccf0d84ac1a2ba5",
+                "reference": "47aaa48e27dae43d39fc1cea0ccf0d84ac1a2ba5",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "GuzzleHttp\\Stream\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Michael Dowling",
+                    "email": "mtdowling@gmail.com",
+                    "homepage": "https://github.com/mtdowling"
+                }
+            ],
+            "description": "Provides a simple abstraction over streams of data",
+            "homepage": "http://guzzlephp.org/",
+            "keywords": [
+                "Guzzle",
+                "stream"
+            ],
+            "time": "2014-10-12 19:18:40"
+        },
+        {
+            "name": "react/promise",
+            "version": "v2.2.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/reactphp/promise.git",
+                "reference": "3b6fca09c7d56321057fa8867c8dbe1abf648627"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/reactphp/promise/zipball/3b6fca09c7d56321057fa8867c8dbe1abf648627",
+                "reference": "3b6fca09c7d56321057fa8867c8dbe1abf648627",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "React\\Promise\\": "src/"
+                },
+                "files": [
+                    "src/functions_include.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jan Sorgalla",
+                    "email": "jsorgalla@gmail.com"
+                }
+            ],
+            "description": "A lightweight implementation of CommonJS Promises/A for PHP",
+            "time": "2015-07-03 13:48:55"
         }
     ],
     "packages-dev": [],

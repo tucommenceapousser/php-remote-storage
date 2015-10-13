@@ -28,19 +28,19 @@ class RemoteStorageResponse extends Response
         $contentType = 'application/ld+json'
     ) {
         parent::__construct($statusCode);
-        if ('GET' === $request->getRequestMethod()) {
+        if ('GET' === $request->getMethod()) {
             $this->setHeader('Expires', 0);
         }
         if (null !== $request->getHeader('Origin')) {
             $this->setHeader('Access-Control-Allow-Origin', $request->getHeader('Origin'));
-        } elseif (in_array($request->getRequestMethod(), array('GET', 'HEAD', 'OPTIONS'))) {
+        } elseif (in_array($request->getMethod(), array('GET', 'HEAD', 'OPTIONS'))) {
             $this->setHeader('Access-Control-Allow-Origin', '*');
         }
         if (null !== $entityVersion) {
             $this->setHeader('ETag', sprintf('"%s"', $entityVersion));
         }
         if (null !== $contentType) {
-            $this->setContentType($contentType);
+            $this->setHeader('Content-Type', $contentType);
         }
         // this is needed for all responses...
         $this->setHeader(
@@ -49,7 +49,7 @@ class RemoteStorageResponse extends Response
         );
 
         // this is only needed for OPTIONS requests
-        if ('OPTIONS' === $request->getRequestMethod()) {
+        if ('OPTIONS' === $request->getMethod()) {
             $this->setHeader(
                 'Access-Control-Allow-Methods',
                 'GET, PUT, DELETE, HEAD, OPTIONS'

@@ -11,9 +11,9 @@
         "ext-json": "*",
         "fkooman/ini": "^1.0.0",
         "fkooman/io": "^1.0.0",
-        "fkooman/json": "~0.6.0",
-        "fkooman/rest": "~0.6.2",
-        "fkooman/rest-plugin-bearer": "~0.2.1",
+        "fkooman/json": "^1.0.0",
+        "fkooman/rest": "^1.0.0",
+        "fkooman/rest-plugin-authentication-bearer": "^1.0.0",
         "php": ">=5.4"
     }
 }

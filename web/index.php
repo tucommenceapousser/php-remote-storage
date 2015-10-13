@@ -17,45 +17,42 @@
 require_once dirname(__DIR__).'/vendor/autoload.php';
 
 use fkooman\Ini\IniReader;
-use fkooman\Rest\Plugin\Bearer\BearerAuthentication;
+use fkooman\Rest\Plugin\Authentication\Bearer\BearerAuthentication;
+use fkooman\Rest\Plugin\Authentication\Bearer\IntrospectionUserPassValidator;
+use fkooman\Rest\Plugin\Authentication\AuthenticationPlugin;
 use fkooman\RemoteStorage\RemoteStorage;
 use fkooman\RemoteStorage\RemoteStorageService;
 use fkooman\RemoteStorage\MetadataStorage;
 use fkooman\RemoteStorage\DocumentStorage;
-use fkooman\Http\Exception\HttpException;
-use fkooman\Http\Exception\InternalServerErrorException;
 
-try {
-    $iniReader = IniReader::fromFile(
-        dirname(__DIR__).'/config/server.ini'
-    );
+$iniReader = IniReader::fromFile(
+    dirname(__DIR__).'/config/server.ini'
+);
 
-    $md = new MetadataStorage(
-        new PDO(
-            $iniReader->v('MetadataStorage', 'dsn'),
-            $iniReader->v('MetadataStorage', 'username', false),
-            $iniReader->v('MetadataStorage', 'password', false)
-        )
-    );
+$md = new MetadataStorage(
+    new PDO(
+        $iniReader->v('MetadataStorage', 'dsn'),
+        $iniReader->v('MetadataStorage', 'username', false),
+        $iniReader->v('MetadataStorage', 'password', false)
+    )
+);
 
-    $document = new DocumentStorage(
-        $iniReader->v('storageDir')
-    );
+$document = new DocumentStorage(
+    $iniReader->v('storageDir')
+);
 
-    $bearerAuthentication = new BearerAuthentication($iniReader->v('tokenIntrospectionUri'), 'remoteStorage');
+$remoteStorage = new RemoteStorage($md, $document);
 
-    $remoteStorage = new RemoteStorage($md, $document);
-    $remoteStorageService = new RemoteStorageService($remoteStorage);
-    $remoteStorageService->registerBeforeEachMatchPlugin($bearerAuthentication);
-    $remoteStorageService->run()->sendResponse();
-} catch (Exception $e) {
-    if ($e instanceof HttpException) {
-        $response = $e->getJsonResponse();
-    } else {
-        // we catch all other (unexpected) exceptions and return a 500
-        $e = new InternalServerErrorException($e->getMessage());
-        $response = $e->getJsonResponse();
-    }
-    // FIXME: add CORS
-    $response->sendResponse();
-}
+$bearerAuth = new BearerAuthentication(
+    new IntrospectionUserPassValidator(
+        $iniReader->v('tokenIntrospectionUri'),
+        'foo',
+        'bar'
+    )
+);
+
+$service = new RemoteStorageService($remoteStorage);
+$authenticationPlugin = new AuthenticationPlugin();
+$authenticationPlugin->register($bearerAuth, 'token');
+$service->getPluginRegistry()->registerDefaultPlugin($authenticationPlugin);
+$service->run()->send();

@@ -19,7 +19,7 @@ namespace fkooman\RemoteStorage;
 use PDO;
 use fkooman\Http\Request;
 use fkooman\Json\Json;
-use fkooman\Rest\Plugin\Bearer\TokenIntrospection;
+use fkooman\Rest\Plugin\Authentication\Bearer\TokenInfo;
 use PHPUnit_Framework_TestCase;
 
 class RemoteStorageServiceTest extends PHPUnit_Framework_TestCase
@@ -28,12 +28,22 @@ class RemoteStorageServiceTest extends PHPUnit_Framework_TestCase
 
     public function setUp()
     {
+        // Create a stub for the SomeClass class.
+        $ioStub = $this->getMockBuilder('fkooman\IO\IO')
+                     ->getMock();
+
+        // Configure the stub.
+        $ioStub->method('getRandom')
+             ->will($this->onConsecutiveCalls(2, 3, 5, 7));
+
         $md = new MetadataStorage(
             new PDO(
                 $GLOBALS['DB_DSN'],
                 $GLOBALS['DB_USER'],
                 $GLOBALS['DB_PASSWD']
-            )
+            ),
+            '',
+            $ioStub
         );
         $md->initDatabase();
 
@@ -45,12 +55,11 @@ class RemoteStorageServiceTest extends PHPUnit_Framework_TestCase
         $document = new DocumentStorage($tempFile);
         $remoteStorage = new RemoteStorage($md, $document);
 
-        $stub = $this->getMockBuilder('fkooman\Rest\Plugin\Bearer\BearerAuthentication')
-                     //->setMockClassName('fkooman\Rest\Plugin\Bearer\BearerAuthentication')
+        $stub = $this->getMockBuilder('fkooman\Rest\Plugin\Authentication\Bearer\BearerAuthentication')
                      ->disableOriginalConstructor()
                      ->getMock();
         $stub->method('execute')->willReturn(
-            new TokenIntrospection(
+            new TokenInfo(
                 array(
                     'active' => true,
                     'sub' => 'admin',
@@ -60,18 +69,67 @@ class RemoteStorageServiceTest extends PHPUnit_Framework_TestCase
         );
 
         $this->r = new RemoteStorageService($remoteStorage);
-        $this->r->registerBeforeEachMatchPlugin($stub);
+        $this->r->getPluginRegistry()->registerDefaultPlugin($stub);
     }
 
-    /**
-     * Method to create a new request object to set some default headers.
-     */
-    private function newRequest($requestMethod)
+    private function getPutRequest($urlPath, array $h = array())
     {
-        $request = new Request('https://www.example.org', $requestMethod);
-        $request->setHeader('Origin', 'https://foo.bar.example.org');
+        return new Request(
+            array_merge(
+                $h,
+                array(
+                    'SERVER_NAME' => 'www.example.org',
+                    'SERVER_PORT' => 80,
+                    'QUERY_STRING' => '',
+                    'REQUEST_URI' => '/index.php'.$urlPath,
+                    'SCRIPT_NAME' => '/index.php',
+                    'PATH_INFO' => $urlPath,
+                    'REQUEST_METHOD' => 'PUT',
+                    'HTTP_ORIGIN' => 'https://foo.bar.example.org',
+                    'CONTENT_TYPE' => 'text/plain',
+                )
+            ),
+            null,
+            'Hello World!'
+        );
+    }
 
-        return $request;
+    private function getGetRequest($urlPath, array $h = array())
+    {
+        return new Request(
+            array_merge(
+                $h,
+                array(
+                    'SERVER_NAME' => 'www.example.org',
+                    'SERVER_PORT' => 80,
+                    'QUERY_STRING' => '',
+                    'REQUEST_URI' => '/index.php'.$urlPath,
+                    'SCRIPT_NAME' => '/index.php',
+                    'PATH_INFO' => $urlPath,
+                    'REQUEST_METHOD' => 'GET',
+                    'HTTP_ORIGIN' => 'https://foo.bar.example.org',
+                )
+            )
+        );
+    }
+
+    private function getDeleteRequest($urlPath, array $h = array())
+    {
+        return new Request(
+            array_merge(
+                $h,
+                array(
+                    'SERVER_NAME' => 'www.example.org',
+                    'SERVER_PORT' => 80,
+                    'QUERY_STRING' => '',
+                    'REQUEST_URI' => '/index.php'.$urlPath,
+                    'PATH_INFO' => $urlPath,
+                    'SCRIPT_NAME' => '/index.php',
+                    'REQUEST_METHOD' => 'DELETE',
+                    'HTTP_ORIGIN' => 'https://foo.bar.example.org',
+                )
+            )
+        );
     }
 
     public function testStripQuotes()
@@ -84,191 +142,295 @@ class RemoteStorageServiceTest extends PHPUnit_Framework_TestCase
 
     public function testPutDocument()
     {
-        $request = $this->newRequest('PUT');
-        $request->setPathInfo('/admin/foo/bar/baz.txt');
-        $request->setContentType('text/plain');
-        $request->setContent('Hello World!');
-
+        $request = $this->getPutRequest('/admin/foo/bar/baz.txt');
         $response = $this->r->run($request);
 
-        $this->assertEquals('application/json', $response->getContentType());
-        $this->assertEquals('https://foo.bar.example.org', $response->getHeader('Access-Control-Allow-Origin'));
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertRegexp('/1:[a-z0-9]+/i', $response->getHeader('ETag'));
+        $this->assertSame(
+            array(
+                'HTTP/1.1 200 OK',
+                'Content-Type: application/json',
+                'Access-Control-Allow-Origin: https://foo.bar.example.org',
+                'Etag: "1:2"',
+                'Access-Control-Expose-Headers: ETag, Content-Length',
+                'Content-Length: 0',
+                '',
+                null,
+            ),
+            $response->toArray()
+        );
     }
 
     public function testGetDocument()
     {
-        $request = $this->newRequest('PUT');
-        $request->setPathInfo('/admin/foo/bar/baz.txt');
-        $request->setContentType('text/plain');
-        $request->setContent('Hello World!');
+        $request = $this->getPutRequest('/admin/foo/bar/baz.txt');
         $response = $this->r->run($request);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertSame(
+            array(
+                'HTTP/1.1 200 OK',
+                'Content-Type: application/json',
+                'Access-Control-Allow-Origin: https://foo.bar.example.org',
+                'Etag: "1:2"',
+                'Access-Control-Expose-Headers: ETag, Content-Length',
+                'Content-Length: 0',
+                '',
+                null,
+            ),
+            $response->toArray()
+        );
 
-        $request = $this->newRequest('GET');
-        $request->setPathInfo('/admin/foo/bar/baz.txt');
+        $request = $this->getGetRequest('/admin/foo/bar/baz.txt');
         $response = $this->r->run($request);
-        $this->assertEquals('text/plain', $response->getContentType());
-        $this->assertEquals('Hello World!', $response->getContent());
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertRegexp('/1:[a-z0-9]+/i', $response->getHeader('ETag'));
+
+        $this->assertSame(
+            array(
+                'HTTP/1.1 200 OK',
+                'Content-Type: text/plain',
+                'Expires: 0',
+                'Access-Control-Allow-Origin: https://foo.bar.example.org',
+                'Etag: "1:2"',
+                'Access-Control-Expose-Headers: ETag, Content-Length',
+                'Content-Length: 12',
+                '',
+                'Hello World!',
+            ),
+            $response->toArray()
+        );
     }
 
-    /**
-     * @expectedException fkooman\Http\Exception\NotFoundException
-     * @expectedExceptionMessage document not found
-     */
     public function testGetNonExistingDocument()
     {
-        $request = $this->newRequest('GET');
-        $request->setPathInfo('/admin/foo/bar/baz.txt');
-        $this->r->run($request);
+        $request = $this->getGetRequest('/admin/foo/bar/baz.txt');
+        $response = $this->r->run($request);
+        $this->assertSame(
+            array(
+                'HTTP/1.1 404 Not Found',
+                'Content-Type: application/json',
+                'Content-Length: 30',
+                '',
+                '{"error":"document not found"}',
+            ),
+            $response->toArray()
+        );
     }
 
     public function testDeleteDocument()
     {
-        $request = $this->newRequest('PUT');
-        $request->setPathInfo('/admin/foo/bar/baz.txt');
-        $request->setContentType('text/plain');
-        $request->setContent('Hello World!');
+        $request = $this->getPutRequest('/admin/foo/bar/baz.txt');
         $response = $this->r->run($request);
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals('https://foo.bar.example.org', $response->getHeader('Access-Control-Allow-Origin'));
+        $this->assertSame(
+            array(
+                'HTTP/1.1 200 OK',
+                'Content-Type: application/json',
+                'Access-Control-Allow-Origin: https://foo.bar.example.org',
+                'Etag: "1:2"',
+                'Access-Control-Expose-Headers: ETag, Content-Length',
+                'Content-Length: 0',
+                '',
+                null,
+            ),
+            $response->toArray()
+        );
 
-        $request = $this->newRequest('DELETE');
-        $request->setPathInfo('/admin/foo/bar/baz.txt');
+        $request = $this->getDeleteRequest('/admin/foo/bar/baz.txt');
         $response = $this->r->run($request);
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals('https://foo.bar.example.org', $response->getHeader('Access-Control-Allow-Origin'));
-        $this->assertRegexp('/1:[a-z0-9]+/i', $response->getHeader('ETag'));
+        $this->assertSame(
+            array(
+                'HTTP/1.1 200 OK',
+                'Content-Type: application/json',
+                'Access-Control-Allow-Origin: https://foo.bar.example.org',
+                'Etag: "1:2"',
+                'Access-Control-Expose-Headers: ETag, Content-Length',
+                'Content-Length: 0',
+                '',
+                null,
+            ),
+            $response->toArray()
+        );
     }
 
-    /**
-     * @expectedException fkooman\Http\Exception\NotFoundException
-     * @expectedExceptionMessage document not found
-     */
     public function testDeleteNonExistingDocument()
     {
-        $request = $this->newRequest('DELETE');
-        $request->setPathInfo('/admin/foo/bar/baz.txt');
-        $this->r->run($request);
+        $request = $this->getDeleteRequest('/admin/foo/bar/baz.txt');
+        $response = $this->r->run($request);
+        $this->assertSame(
+            array(
+                'HTTP/1.1 404 Not Found',
+                'Content-Type: application/json',
+                'Content-Length: 30',
+                '',
+                '{"error":"document not found"}',
+            ),
+            $response->toArray()
+        );
     }
 
     public function testGetNonExistingFolder()
     {
-        $request = $this->newRequest('GET');
-        $request->setPathInfo('/admin/foo/bar/');
+        $request = $this->getGetRequest('/admin/foo/bar/');
         $response = $this->r->run($request);
-        $this->assertEquals('application/ld+json', $response->getContentType());
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertRegexp('/e:[a-z0-9]+/i', $response->getHeader('ETag'));
-        $this->assertEquals(
+        $this->assertSame(
             array(
-                '@context' => 'http://remotestorage.io/spec/folder-description',
-                'items' => array(),
+                'HTTP/1.1 200 OK',
+                'Content-Type: application/ld+json',
+                'Expires: 0',
+                'Access-Control-Allow-Origin: https://foo.bar.example.org',
+                'Etag: "e:404"',
+                'Access-Control-Expose-Headers: ETag, Content-Length',
+                'Content-Length: 77',
+                '',
+                '{"@context":"http:\/\/remotestorage.io\/spec\/folder-description","items":{}}',
             ),
-            Json::decode($response->getContent())
+            $response->toArray()
         );
     }
 
     public function testGetFolder()
     {
-        $request = $this->newRequest('PUT');
-        $request->setPathInfo('/admin/foo/bar/baz.txt');
-        $request->setContentType('text/plain');
-        $request->setContent('Hello World!');
+        $request = $this->getPutRequest('/admin/foo/bar/baz.txt');
         $response = $this->r->run($request);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertSame(
+            array(
+                'HTTP/1.1 200 OK',
+                'Content-Type: application/json',
+                'Access-Control-Allow-Origin: https://foo.bar.example.org',
+                'Etag: "1:2"',
+                'Access-Control-Expose-Headers: ETag, Content-Length',
+                'Content-Length: 0',
+                '',
+                null,
+            ),
+            $response->toArray()
+        );
 
-        $request = $this->newRequest('GET');
-        $request->setPathInfo('/admin/foo/bar/');
+        $request = $this->getGetRequest('/admin/foo/bar/');
         $response = $this->r->run($request);
-        $this->assertEquals('application/ld+json', $response->getContentType());
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertRegexp('/1:[a-z0-9]+/i', $response->getHeader('ETag'));
-        $folderData = Json::decode($response->getContent());
-        $this->assertEquals(2, count($folderData));
-        $this->assertEquals(1, count($folderData['items']));
-        $this->assertEquals('http://remotestorage.io/spec/folder-description', $folderData['@context']);
-        $this->assertRegexp('/1:[a-z0-9]+/i', $folderData['items']['baz.txt']['ETag']);
-        $this->assertEquals('text/plain', $folderData['items']['baz.txt']['Content-Type']);
-        $this->assertEquals(12, $folderData['items']['baz.txt']['Content-Length']);
+        $this->assertSame(
+            array(
+                'HTTP/1.1 200 OK',
+                'Content-Type: application/ld+json',
+                'Expires: 0',
+                'Access-Control-Allow-Origin: https://foo.bar.example.org',
+                'Etag: "1:7"',
+                'Access-Control-Expose-Headers: ETag, Content-Length',
+                'Content-Length: 150',
+                '',
+                '{"@context":"http:\/\/remotestorage.io\/spec\/folder-description","items":{"baz.txt":{"Content-Length":12,"ETag":"1:2","Content-Type":"text\/plain"}}}',
+            ),
+            $response->toArray()
+        );
     }
 
     public function testGetSameVersionDocument()
     {
-        $request = $this->newRequest('PUT');
-        $request->setPathInfo('/admin/foo/bar/baz.txt');
-        $request->setContentType('text/plain');
-        $request->setContent('Hello World!');
+        $request = $this->getPutRequest('/admin/foo/bar/baz.txt');
         $response = $this->r->run($request);
-        $this->assertEquals(200, $response->getStatusCode());
-        $documentVersion = $response->getHeader('ETag');
-        $this->assertNotNull($documentVersion);
+        $this->assertSame(
+            array(
+                'HTTP/1.1 200 OK',
+                'Content-Type: application/json',
+                'Access-Control-Allow-Origin: https://foo.bar.example.org',
+                'Etag: "1:2"',
+                'Access-Control-Expose-Headers: ETag, Content-Length',
+                'Content-Length: 0',
+                '',
+                null,
+            ),
+            $response->toArray()
+        );
 
-        $request = $this->newRequest('GET');
-        $request->setPathInfo('/admin/foo/bar/baz.txt');
-        $request->setHeader('If-None-Match', $documentVersion);
+        $request = $this->getGetRequest(
+            '/admin/foo/bar/baz.txt',
+            array(
+                'If-None-Match' => '"1:2"',
+            )
+        );
         $response = $this->r->run($request);
-        $this->assertEquals(304, $response->getStatusCode());
+        $this->assertSame(
+            array(
+                'HTTP/1.1 304 Not Modified',
+                'Content-Type: text/plain',
+                'Expires: 0',
+                'Access-Control-Allow-Origin: https://foo.bar.example.org',
+                'Etag: "1:2"',
+                'Access-Control-Expose-Headers: ETag, Content-Length',
+                '',
+                '',
+            ),
+            $response->toArray()
+        );
     }
 
     public function testGetSameVersionFolder()
     {
-        $request = $this->newRequest('PUT');
-        $request->setPathInfo('/admin/foo/bar/baz.txt');
-        $request->setContentType('text/plain');
-        $request->setContent('Hello World!');
+        $request = $this->getPutRequest('/admin/foo/bar/baz.txt');
         $response = $this->r->run($request);
-
-        $request = $this->newRequest('GET');
-        $request->setPathInfo('/admin/foo/bar/');
+        $request = $this->getGetRequest(
+            '/admin/foo/bar/',
+            array(
+                'If-None-Match' => '"1:7"',
+            )
+        );
         $response = $this->r->run($request);
-        $folderVersion = $response->getHeader('ETag');
-
-        $request = $this->newRequest('GET');
-        $request->setPathInfo('/admin/foo/bar/');
-        $request->setHeader('If-None-Match', $folderVersion);
-        $response = $this->r->run($request);
-        $this->assertEquals(304, $response->getStatusCode());
+        $this->assertSame(
+            array(
+                'HTTP/1.1 304 Not Modified',
+                'Content-Type: application/ld+json',
+                'Expires: 0',
+                'Access-Control-Allow-Origin: https://foo.bar.example.org',
+                'Etag: "1:7"',
+                'Access-Control-Expose-Headers: ETag, Content-Length',
+                '',
+                '',
+            ),
+            $response->toArray()
+        );
     }
 
-    /**
-     * @expectedException fkooman\Http\Exception\PreconditionFailedException
-     * @expectedExceptionMessage version mismatch
-     */
     public function testPutNonMatchingVersion()
     {
-        $request = $this->newRequest('PUT');
-        $request->setPathInfo('/admin/foo/bar/baz.txt');
-        $request->setContentType('text/plain');
-        $request->setContent('Hello World!');
+        $request = $this->getPutRequest('/admin/foo/bar/baz.txt');
         $response = $this->r->run($request);
 
-        $request = $this->newRequest('PUT');
-        $request->setPathInfo('/admin/foo/bar/baz.txt');
-        $request->setHeader('If-Match', '"non-matching-version"');
-        $request->setContentType('text/plain');
-        $request->setContent('Hello New World!');
-        $this->r->run($request);
+        $request = $this->getPutRequest(
+            '/admin/foo/bar/baz.txt',
+            array(
+                'If-Match' => '"non-matching-version"',
+            )
+        );
+        $response = $this->r->run($request);
+        $this->assertSame(
+            array(
+                'HTTP/1.1 412 Precondition Failed',
+                'Content-Type: application/json',
+                'Content-Length: 28',
+                '',
+                '{"error":"version mismatch"}',
+            ),
+            $response->toArray()
+        );
     }
 
-    /**
-     * @expectedException fkooman\Http\Exception\PreconditionFailedException
-     * @expectedExceptionMessage version mismatch
-     */
     public function testDeleteNonMatchingVersion()
     {
-        $request = $this->newRequest('PUT');
-        $request->setPathInfo('/admin/foo/bar/baz.txt');
-        $request->setContentType('text/plain');
-        $request->setContent('Hello World!');
+        $request = $this->getPutRequest('/admin/foo/bar/baz.txt');
         $response = $this->r->run($request);
 
-        $request = $this->newRequest('DELETE');
-        $request->setPathInfo('/admin/foo/bar/baz.txt');
-        $request->setHeader('If-Match', '"non-matching-version"');
-        $this->r->run($request);
+        $request = $this->getDeleteRequest(
+            '/admin/foo/bar/baz.txt',
+            array(
+                'If-Match' => '"non-matching-version"',
+            )
+        );
+        $response = $this->r->run($request);
+        $this->assertSame(
+            array(
+                'HTTP/1.1 412 Precondition Failed',
+                'Content-Type: application/json',
+                'Content-Length: 28',
+                '',
+                '{"error":"version mismatch"}',
+            ),
+            $response->toArray()
+        );
     }
 }

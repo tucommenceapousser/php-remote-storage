@@ -18,8 +18,8 @@ namespace fkooman\RemoteStorage;
 
 use fkooman\Http\Request;
 use fkooman\Rest\Service;
-use fkooman\Rest\Plugin\Bearer\Scope;
-use fkooman\Rest\Plugin\Bearer\TokenIntrospection;
+use fkooman\Rest\Plugin\Authentication\Bearer\Scope;
+use fkooman\Rest\Plugin\Authentication\Bearer\TokenInfo;
 use fkooman\Http\Exception\NotFoundException;
 use fkooman\Http\Exception\PreconditionFailedException;
 use fkooman\Http\Exception\ForbiddenException;
@@ -27,110 +27,67 @@ use fkooman\Http\Exception\BadRequestException;
 
 class RemoteStorageService extends Service
 {
-    /** @var fkooman\RemoteStorage\RemoteStorage */
+    /** @var RemoteStorage */
     private $remoteStorage;
 
     public function __construct(RemoteStorage $remoteStorage)
     {
         parent::__construct();
-
         $this->remoteStorage = $remoteStorage;
 
-        // public folder
-        $this->match(
-            array('GET', 'HEAD'),
-            '/:user/public/:module/:path+/',
-            function ($matchAll, Request $request, TokenIntrospection $tokenIntrospection) {
-                return $this->getFolder($matchAll, $request, $tokenIntrospection);
-            }
-        );
-
-        // public document
-        $this->match(
-            array('GET', 'HEAD'),
-            '/:user/public/:module/:path+',
-            function ($matchAll, Request $request) {
-                return $this->getDocument($matchAll, $request);
-            },
-            // no Bearer token required for public file GET or HEAD
-            array('fkooman\Rest\Plugin\Bearer\BearerAuthentication')
-        );
-
-        // private folder
-        $this->match(
-            array('GET', 'HEAD'),
-            '/:user/:module/:path+/',
-            function ($matchAll, Request $request, TokenIntrospection $tokenIntrospection) {
-                return $this->getFolder($matchAll, $request, $tokenIntrospection);
-            }
-        );
-
-        // private folder
-        $this->match(
-            array('GET', 'HEAD'),
-            '/:user/:module/',
-            function ($matchAll, Request $request, TokenIntrospection $tokenIntrospection) {
-                return $this->getFolder($matchAll, $request, $tokenIntrospection);
-            }
-        );
-
-        // private folder
-        $this->match(
-            array('GET', 'HEAD'),
-            '/:user/',
-            function ($matchAll, Request $request, TokenIntrospection $tokenIntrospection) {
-                // XXX this is only allowed when the user has *:r or *:rw permissions!
-                return $this->getFolder($matchAll, $request, $tokenIntrospection);
-            }
-        );
-
-        // private document
-        $this->match(
-            array('GET', 'HEAD'),
-            '/:user/:module/:path+',
-            function ($matchAll, Request $request, TokenIntrospection $tokenIntrospection) {
-                return $this->getDocument($matchAll, $request, $tokenIntrospection);
+        $this->addRoute(
+            ['GET', 'HEAD'],
+            '*',
+            function (Request $request, TokenInfo $tokenInfo) {
+                return $this->getObject($request, $tokenInfo);
             }
         );
 
         // put a document
-        $this->match(
-            'PUT',
-            '/:user/:module/:path+',
-            function ($matchAll, Request $request, TokenIntrospection $tokenIntrospection) {
-                return $this->putDocument($matchAll, $request, $tokenIntrospection);
+        $this->put(
+            '*',
+            function (Request $request, TokenInfo $tokenInfo) {
+                return $this->putDocument($request, $tokenInfo);
             }
         );
 
         // delete a document
-        $this->match(
-            'DELETE',
-            '/:user/:module/:path+',
-            function ($matchAll, Request $request, TokenIntrospection $tokenIntrospection) {
-                return $this->deleteDocument($matchAll, $request, $tokenIntrospection);
+        $this->delete(
+            '*',
+            function (Request $request, TokenInfo $tokenInfo) {
+                return $this->deleteDocument($request, $tokenInfo);
             }
         );
 
         // options request
-        $this->match(
-            'OPTIONS',
+        $this->options(
             '*',
-            function ($matchAll, Request $request) {
-                return $this->optionsRequest($matchAll, $request);
+            function (Request $request) {
+                return $this->optionsRequest($request);
             },
-            // no Bearer token required for OPTIONS request
-            array('fkooman\Rest\Plugin\Bearer\BearerAuthentication')
+            array(
+                'fkooman\Rest\Plugin\Authentication\AuthenticationPlugin' => array('enabled' => false),
+            )
         );
     }
 
-    public function getFolder($matchAll, Request $request, TokenIntrospection $tokenIntrospection)
+    public function getObject(Request $request, TokenInfo $tokenInfo)
     {
-        $path = new Path($matchAll);
+        $path = new Path($request->getUrl()->getPathInfo());
 
-        if ($path->getUserId() !== $tokenIntrospection->getSub()) {
+        if ($path->getIsFolder()) {
+            return $this->getFolder($path, $request, $tokenInfo);
+        }
+
+        return $this->getDocument($path, $request, $tokenInfo);
+    }
+
+    public function getFolder(Path $path, Request $request, TokenInfo $tokenInfo)
+    {
+        if ($path->getUserId() !== $tokenInfo->getUserId()) {
             throw new ForbiddenException('path does not match authorized subject');
         }
-        if (!$this->hasReadScope($tokenIntrospection->getScope(), $path->getModuleName())) {
+        if (!$this->hasReadScope($tokenInfo->getScope(), $path->getModuleName())) {
             throw new ForbiddenException('path does not match authorized scope');
         }
 
@@ -138,7 +95,7 @@ class RemoteStorageService extends Service
         if (null === $folderVersion) {
             // folder does not exist, so we just invent this
             // ETag that will be the same for all empty folders
-            $folderVersion = 'e:7398243bf0d8b3c6c7e7ec618b3ee703';
+            $folderVersion = 'e:404';
         }
 
         $requestedVersion = $this->stripQuotes(
@@ -152,8 +109,8 @@ class RemoteStorageService extends Service
         }
 
         $rsr = new RemoteStorageResponse($request, 200, $folderVersion);
-        if ('GET' === $request->getRequestMethod()) {
-            $rsr->setContent(
+        if ('GET' === $request->getMethod()) {
+            $rsr->setBody(
                 $this->remoteStorage->getFolder(
                     $path,
                     $this->stripQuotes(
@@ -166,15 +123,13 @@ class RemoteStorageService extends Service
         return $rsr;
     }
 
-    public function getDocument($matchAll, Request $request, TokenIntrospection $tokenIntrospection = null)
+    public function getDocument(Path $path, Request $request, TokenInfo $tokenInfo = null)
     {
-        $path = new Path($matchAll);
-
-        if (null !== $tokenIntrospection) {
-            if ($path->getUserId() !== $tokenIntrospection->getSub()) {
+        if (null !== $tokenInfo) {
+            if ($path->getUserId() !== $tokenInfo->getUserId()) {
                 throw new ForbiddenException('path does not match authorized subject');
             }
-            if (!$this->hasReadScope($tokenIntrospection->getScope(), $path->getModuleName())) {
+            if (!$this->hasReadScope($tokenInfo->getScope(), $path->getModuleName())) {
                 throw new ForbiddenException('path does not match authorized scope');
             }
         }
@@ -197,8 +152,8 @@ class RemoteStorageService extends Service
         $documentContent = $this->remoteStorage->getDocument($path);
 
         $rsr = new RemoteStorageResponse($request, 200, $documentVersion, $documentContentType);
-        if ('GET' === $request->getRequestMethod()) {
-            $rsr->setContent(
+        if ('GET' === $request->getMethod()) {
+            $rsr->setBody(
                 $this->remoteStorage->getDocument(
                     $path,
                     $requestedVersion
@@ -209,14 +164,14 @@ class RemoteStorageService extends Service
         return $rsr;
     }
 
-    public function putDocument($matchAll, Request $request, TokenIntrospection $tokenIntrospection)
+    public function putDocument(Request $request, TokenInfo $tokenInfo)
     {
-        $path = new Path($matchAll);
+        $path = new Path($request->getUrl()->getPathInfo());
 
-        if ($path->getUserId() !== $tokenIntrospection->getSub()) {
+        if ($path->getUserId() !== $tokenInfo->getUserId()) {
             throw new ForbiddenException('path does not match authorized subject');
         }
-        if (!$this->hasWriteScope($tokenIntrospection->getScope(), $path->getModuleName())) {
+        if (!$this->hasWriteScope($tokenInfo->getScope(), $path->getModuleName())) {
             throw new ForbiddenException('path does not match authorized scope');
         }
 
@@ -238,27 +193,27 @@ class RemoteStorageService extends Service
 
         $x = $this->remoteStorage->putDocument(
             $path,
-            $request->getContentType(),
-            $request->getContent(),
+            $request->getHeader('Content-Type'),
+            $request->getBody(),
             $ifMatch,
             $ifNoneMatch
         );
         // we have to get the version again after the PUT
         $documentVersion = $this->remoteStorage->getVersion($path);
         $rsr = new RemoteStorageResponse($request, 200, $documentVersion, 'application/json');
-        $rsr->setContent($x);
+        $rsr->setBody($x);
 
         return $rsr;
     }
 
-    public function deleteDocument($matchAll, Request $request, TokenIntrospection $tokenIntrospection)
+    public function deleteDocument(Request $request, TokenInfo $tokenInfo)
     {
-        $path = new Path($matchAll);
+        $path = new Path($request->getUrl()->getPathInfo());
 
-        if ($path->getUserId() !== $tokenIntrospection->getSub()) {
+        if ($path->getUserId() !== $tokenInfo->getUserId()) {
             throw new ForbiddenException('path does not match authorized subject');
         }
-        if (!$this->hasWriteScope($tokenIntrospection->getScope(), $path->getModuleName())) {
+        if (!$this->hasWriteScope($tokenInfo->getScope(), $path->getModuleName())) {
             throw new ForbiddenException('path does not match authorized scope');
         }
 
@@ -291,12 +246,12 @@ class RemoteStorageService extends Service
             $ifMatch
         );
         $rsr = new RemoteStorageResponse($request, 200, $documentVersion, 'application/json');
-        $rsr->setContent($x);
+        $rsr->setBody($x);
 
         return $rsr;
     }
 
-    public function optionsRequest($matchAll, Request $request)
+    public function optionsRequest(Request $request)
     {
         return new RemoteStorageResponse($request, 200, null, null);
     }
