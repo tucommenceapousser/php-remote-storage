@@ -9,6 +9,7 @@
     "name": "fkooman/remote-storage",
     "require": {
         "ext-json": "*",
+        "ext-pdo": "*",
         "fkooman/ini": "^1.0.0",
         "fkooman/io": "^1.0.0",
         "fkooman/json": "^1.0.0",
