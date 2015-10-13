@@ -27,7 +27,7 @@ class MetadataStorage
 
     /** @var string */
     private $prefix;
-    
+
     /** @var \fkooman\IO\IO */
     private $io;
 
