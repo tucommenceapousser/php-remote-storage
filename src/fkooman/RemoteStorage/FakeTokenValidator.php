@@ -29,6 +29,14 @@ class FakeTokenValidator implements ValidatorInterface
                         'scope' => '*:rw',
                     )
                 );
+            case 'read_only_token':
+                return new TokenInfo(
+                    array(
+                        'active' => true,
+                        'username' => 'demo',
+                        'scope' => 'api-test:r',
+                    )
+                );
             default:
                 return new TokenInfo(
                     array(
