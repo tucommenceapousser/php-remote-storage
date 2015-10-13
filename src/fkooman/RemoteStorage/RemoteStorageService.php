@@ -24,6 +24,7 @@ use fkooman\Http\Exception\NotFoundException;
 use fkooman\Http\Exception\PreconditionFailedException;
 use fkooman\Http\Exception\ForbiddenException;
 use fkooman\Http\Exception\BadRequestException;
+use fkooman\Http\Exception\UnauthorizedException;
 
 class RemoteStorageService extends Service
 {
@@ -38,9 +39,14 @@ class RemoteStorageService extends Service
         $this->addRoute(
             ['GET', 'HEAD'],
             '*',
-            function (Request $request, TokenInfo $tokenInfo) {
+            function (Request $request, TokenInfo $tokenInfo = null) {
                 return $this->getObject($request, $tokenInfo);
-            }
+            },
+            array(
+                'fkooman\Rest\Plugin\Authentication\AuthenticationPlugin' => array(
+                    'require' => false,
+                ),
+            )
         );
 
         // put a document
@@ -71,9 +77,21 @@ class RemoteStorageService extends Service
         );
     }
 
-    public function getObject(Request $request, TokenInfo $tokenInfo)
+    public function getObject(Request $request, $tokenInfo)
     {
         $path = new Path($request->getUrl()->getPathInfo());
+
+        // allow requests to public files (GET|HEAD) without authentication
+        if ($path->getIsPublic() && $path->getIsDocument()) {
+            return $this->getDocument($path, $request, $tokenInfo);
+        }
+
+        // past this point we MUST be authenticated
+        if (null === $tokenInfo) {
+            $e = new UnauthorizedException('unauthorized', 'must authenticate to view folder listing');
+            $e->addScheme('Bearer');
+            throw $e;
+        }
 
         if ($path->getIsFolder()) {
             return $this->getFolder($path, $request, $tokenInfo);
