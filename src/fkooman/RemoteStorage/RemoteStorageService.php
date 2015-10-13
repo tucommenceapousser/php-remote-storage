@@ -149,8 +149,6 @@ class RemoteStorageService extends Service
             }
         }
 
-        $documentContent = $this->remoteStorage->getDocument($path);
-
         $rsr = new RemoteStorageResponse($request, 200, $documentVersion, $documentContentType);
         if ('GET' === $request->getMethod()) {
             $rsr->setBody(

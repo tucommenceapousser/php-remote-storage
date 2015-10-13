@@ -61,11 +61,4 @@ class RemoteStorageResponse extends Response
             );
         }
     }
-
-    // XXX because it seems this is no longer done automatically, we add Content-Length header here...
-    public function sendResponse()
-    {
-        $this->setHeader('Content-Length', strlen($this->getContent()));
-        parent::sendResponse();
-    }
 }

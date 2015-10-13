@@ -22,8 +22,13 @@ use fkooman\RemoteStorage\Exception\MetadataStorageException;
 
 class MetadataStorage
 {
+    /** @var PDO */
     private $db;
+
+    /** @var string */
     private $prefix;
+    
+    /** @var \fkooman\IO\IO */
     private $io;
 
     public function __construct(PDO $db, $prefix = '', IO $io = null)

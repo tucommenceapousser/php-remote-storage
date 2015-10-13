@@ -22,10 +22,10 @@ use fkooman\Http\Exception\PreconditionFailedException;
 
 class RemoteStorage
 {
-    /** @var fkooman\RemoteStorage\MetadataStorage */
+    /** @var MetadataStorage */
     private $md;
 
-    /** @var fkooman\RemoteStorage\DocumentStorage */
+    /** @var DocumentStorage */
     private $d;
 
     public function __construct(MetadataStorage $md, DocumentStorage $d)
