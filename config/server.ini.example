@@ -3,10 +3,6 @@
 ; the full path to the directory containing the files and the metadata
 storageDir = "/var/lib/php-remote-storage/storage"
 
-; the full absolute URI to the token introspection endpoint of the OAuth 
-; server
-tokenIntrospectionUri = 'https://auth.example.org/introspect.php'
-
 [MetadataStorage]
 dsn = "sqlite:/var/lib/php-remote-storage/metadata.sqlite"
 ;dsn = "mysql:host=localhost;dbname=rs"

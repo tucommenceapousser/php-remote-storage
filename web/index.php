@@ -18,7 +18,7 @@ require_once dirname(__DIR__).'/vendor/autoload.php';
 
 use fkooman\Ini\IniReader;
 use fkooman\Rest\Plugin\Authentication\Bearer\BearerAuthentication;
-use fkooman\Rest\Plugin\Authentication\Bearer\IntrospectionUserPassValidator;
+use fkooman\RemoteStorage\FakeTokenValidator;
 use fkooman\Rest\Plugin\Authentication\AuthenticationPlugin;
 use fkooman\RemoteStorage\RemoteStorage;
 use fkooman\RemoteStorage\RemoteStorageService;
@@ -43,13 +43,7 @@ $document = new DocumentStorage(
 
 $remoteStorage = new RemoteStorage($md, $document);
 
-$bearerAuth = new BearerAuthentication(
-    new IntrospectionUserPassValidator(
-        $iniReader->v('tokenIntrospectionUri'),
-        'foo',
-        'bar'
-    )
-);
+$bearerAuth = new BearerAuthentication(new FakeTokenValidator());
 
 $service = new RemoteStorageService($remoteStorage);
 $authenticationPlugin = new AuthenticationPlugin();
