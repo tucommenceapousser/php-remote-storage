@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>OAuth</title>
+</head>
+<body>
+    <div id="container">
+        <p>user_id: {{ user_id|e }}</p>
+        <p>client_id: {{ client_id|e }}</p>
+        <p>redirect_uri: {{ redirect_uri|e }}</p>
+        <p>scope: {{ scope|e }}</p>
+
+        <form method="post" action="{{ request_url|e }}">
+            <button type="submit" name="approval" value="no">Reject</button>
+            <button type="submit" name="approval" value="yes">Approve</button>
+        </form>
+    </div> <!-- /container -->
+</body>
+</html>
