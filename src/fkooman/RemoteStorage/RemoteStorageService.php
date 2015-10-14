@@ -33,9 +33,9 @@ class RemoteStorageService extends OAuthService
     /** @var RemoteStorage */
     private $remoteStorage;
 
-    public function __construct(OAuthServer $server, RemoteStorage $remoteStorage, AuthenticationPluginInterface $userAuth, AuthenticationPluginInterface $apiAuth)
+    public function __construct(OAuthServer $server, RemoteStorage $remoteStorage, AuthenticationPluginInterface $userAuth, AuthenticationPluginInterface $apiAuth, array $opt = array())
     {
-        parent::__construct($server, $userAuth, $apiAuth);
+        parent::__construct($server, $userAuth, $apiAuth, $opt);
         $this->remoteStorage = $remoteStorage;
 
         $this->addRoute(

@@ -88,5 +88,15 @@ $server = new OAuthServer(
     $pdoCodeTokenStorage                // ...tokens
 );
 
-$service = new RemoteStorageService($server, $remoteStorage, $userAuth, $apiAuth);
+$service = new RemoteStorageService(
+    $server,
+    $remoteStorage,
+    $userAuth,
+    $apiAuth,
+    array(
+        'disable_token_endpoint',
+        'disable_introspect_endpoint',
+    )
+);
+
 $service->run()->send();
