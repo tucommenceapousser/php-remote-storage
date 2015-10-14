@@ -17,7 +17,8 @@
 namespace fkooman\RemoteStorage;
 
 use fkooman\Http\Request;
-use fkooman\Rest\Service;
+use fkooman\OAuth\OAuthServer;
+use fkooman\OAuth\OAuthService;
 use fkooman\Rest\Plugin\Authentication\Bearer\Scope;
 use fkooman\Rest\Plugin\Authentication\Bearer\TokenInfo;
 use fkooman\Http\Exception\NotFoundException;
@@ -25,15 +26,16 @@ use fkooman\Http\Exception\PreconditionFailedException;
 use fkooman\Http\Exception\ForbiddenException;
 use fkooman\Http\Exception\BadRequestException;
 use fkooman\Http\Exception\UnauthorizedException;
+use fkooman\Rest\Plugin\Authentication\AuthenticationPluginInterface;
 
-class RemoteStorageService extends Service
+class RemoteStorageService extends OAuthService
 {
     /** @var RemoteStorage */
     private $remoteStorage;
 
-    public function __construct(RemoteStorage $remoteStorage)
+    public function __construct(OAuthServer $server, RemoteStorage $remoteStorage, AuthenticationPluginInterface $userAuth, AuthenticationPluginInterface $apiAuth)
     {
-        parent::__construct();
+        parent::__construct($server, $userAuth, $apiAuth);
         $this->remoteStorage = $remoteStorage;
 
         $this->addRoute(
@@ -44,6 +46,7 @@ class RemoteStorageService extends Service
             },
             array(
                 'fkooman\Rest\Plugin\Authentication\AuthenticationPlugin' => array(
+                    'activate' => array('api'),
                     'require' => false,
                 ),
             )
@@ -54,7 +57,12 @@ class RemoteStorageService extends Service
             '*',
             function (Request $request, TokenInfo $tokenInfo) {
                 return $this->putDocument($request, $tokenInfo);
-            }
+            },
+            array(
+                'fkooman\Rest\Plugin\Authentication\AuthenticationPlugin' => array(
+                    'activate' => array('api'),
+                ),
+            )
         );
 
         // delete a document
@@ -62,7 +70,13 @@ class RemoteStorageService extends Service
             '*',
             function (Request $request, TokenInfo $tokenInfo) {
                 return $this->deleteDocument($request, $tokenInfo);
-            }
+            },
+            array(
+                'fkooman\Rest\Plugin\Authentication\AuthenticationPlugin' => array(
+                    'activate' => array('api'),
+                ),
+            )
+
         );
 
         // options request

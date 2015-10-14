@@ -1,6 +1,6 @@
 <?php
 
-namespace fkooman\RemoteStorage;
+namespace fkooman\RemoteStorage\Test;
 
 use fkooman\Rest\Plugin\Authentication\Bearer\ValidatorInterface;
 use fkooman\Rest\Plugin\Authentication\Bearer\TokenInfo;

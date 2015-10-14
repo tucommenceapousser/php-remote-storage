@@ -19,6 +19,7 @@ require_once dirname(__DIR__).'/vendor/autoload.php';
 
 use fkooman\Ini\IniReader;
 use fkooman\RemoteStorage\MetadataStorage;
+use fkooman\OAuth\Storage\PdoCodeTokenStorage;
 
 try {
     $iniReader = IniReader::fromFile(dirname(__DIR__).'/config/server.ini');
@@ -31,6 +32,15 @@ try {
 
     $metadataStorage = new MetadataStorage($pdo);
     $metadataStorage->initDatabase();
+
+    $pdo = new PDO(
+        $iniReader->v('Db', 'dsn'),
+        $iniReader->v('Db', 'username', false),
+        $iniReader->v('Db', 'password', false)
+    );
+
+    $pdoCodeTokenStorage = new PdoCodeTokenStorage($pdo);
+    $pdoCodeTokenStorage->initDatabase();
 } catch (Exception $e) {
     echo $e->getMessage().PHP_EOL;
     exit(1);

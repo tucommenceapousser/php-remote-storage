@@ -16,13 +16,23 @@
  */
 namespace fkooman\RemoteStorage;
 
-require_once __DIR__.'/TestTokenValidator.php';
+require_once __DIR__.'/Test/TestTokenValidator.php';
+require_once __DIR__.'/Test/TestTemplateManager.php';
+require_once __DIR__.'/Test/TestAuthorizationCode.php';
+require_once __DIR__.'/Test/TestAccessToken.php';
 
 use PDO;
 use fkooman\Http\Request;
 use fkooman\Json\Json;
 use fkooman\Rest\Plugin\Authentication\Bearer\BearerAuthentication;
+use fkooman\Rest\Plugin\Authentication\Basic\BasicAuthentication;
 use PHPUnit_Framework_TestCase;
+use fkooman\OAuth\OAuthServer;
+use fkooman\OAuth\Storage\UnregisteredClientStorage;
+use fkooman\RemoteStorage\Test\TestTokenValidator;
+use fkooman\RemoteStorage\Test\TestTemplateManager;
+use fkooman\RemoteStorage\Test\TestAuthorizationCode;
+use fkooman\RemoteStorage\Test\TestAccessToken;
 
 class RemoteStorageServiceTest extends PHPUnit_Framework_TestCase
 {
@@ -57,9 +67,27 @@ class RemoteStorageServiceTest extends PHPUnit_Framework_TestCase
         $document = new DocumentStorage($tempFile);
         $remoteStorage = new RemoteStorage($md, $document);
 
-        $bearerAuth = new BearerAuthentication(new TestTokenValidator());
-        $this->r = new RemoteStorageService($remoteStorage);
-        $this->r->getPluginRegistry()->registerDefaultPlugin($bearerAuth);
+        $server = new OAuthServer(
+            new TestTemplateManager(),
+            new UnregisteredClientStorage(),
+            new RemoteStorageResourceServer(),
+            new TestAuthorizationCode(),
+            new TestAccessToken()
+        );
+
+        $userAuth = new BasicAuthentication(
+            function ($userId) {
+                if ('foo' === $userId) {
+                    return '$2y$10$DcG2jZ.V1XC7vMA0O1R5leI8advDzgcpkiHaPcP7/SsvHmNOGwRRK';
+                }
+
+                return false;
+            },
+            array('realm' => 'remoteStorage')
+        );
+
+        $apiAuth = new BearerAuthentication(new TestTokenValidator());
+        $this->r = new RemoteStorageService($server, $remoteStorage, $userAuth, $apiAuth);
     }
 
     private function getPutRequest($urlPath, array $h = array())
