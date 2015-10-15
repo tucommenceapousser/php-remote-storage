@@ -18,7 +18,8 @@ require_once dirname(__DIR__).'/vendor/autoload.php';
 
 use fkooman\Ini\IniReader;
 use fkooman\Rest\Plugin\Authentication\Bearer\BearerAuthentication;
-use fkooman\RemoteStorage\FakeTokenValidator;
+use fkooman\RemoteStorage\ApiTestTokenValidator;
+use fkooman\RemoteStorage\DbTokenValidator;
 use fkooman\RemoteStorage\RemoteStorage;
 use fkooman\RemoteStorage\RemoteStorageResourceServer;
 use fkooman\RemoteStorage\RemoteStorageService;
@@ -49,19 +50,15 @@ $document = new DocumentStorage(
 $remoteStorage = new RemoteStorage($md, $document);
 
 $userAuth = new BasicAuthentication(
-    function ($userId) {
-        if ('foo' === $userId) {
-            return '$2y$10$DcG2jZ.V1XC7vMA0O1R5leI8advDzgcpkiHaPcP7/SsvHmNOGwRRK';
+    function ($userId) use ($iniReader) {
+        $userList = $iniReader->v('BasicAuthentication');
+        if (!array_key_exists($userId, $userList)) {
+            return false;
         }
 
-        return false;
+        return $userList[$userId];
     },
-    array('realm' => 'remoteStorage')
-);
-
-// fake api auth for now
-$apiAuth = new BearerAuthentication(
-    new FakeTokenValidator()
+    array('realm' => 'OAuth AS')
 );
 
 $templateManager = new TwigTemplateManager(
@@ -74,9 +71,9 @@ $templateManager = new TwigTemplateManager(
 
 // DB
 $db = new PDO(
-    $iniReader->v('Db', 'dsn'),
-    $iniReader->v('Db', 'username', false),
-    $iniReader->v('Db', 'password', false)
+    $iniReader->v('TokenStorage', 'dsn'),
+    $iniReader->v('TokenStorage', 'username', false),
+    $iniReader->v('TokenStorage', 'password', false)
 );
 $pdoCodeTokenStorage = new PdoCodeTokenStorage($db);
 
@@ -86,6 +83,12 @@ $server = new OAuthServer(
     new RemoteStorageResourceServer(),  // we only have one resource server
     $pdoCodeTokenStorage,               // we do not have codes, only...
     $pdoCodeTokenStorage                // ...tokens
+);
+
+// fake api auth for now
+$apiAuth = new BearerAuthentication(
+    //new ApiTestTokenValidator()       // this is the one for api-test-suite
+    new DbTokenValidator($db)
 );
 
 $service = new RemoteStorageService(

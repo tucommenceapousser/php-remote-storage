@@ -5,7 +5,7 @@ namespace fkooman\RemoteStorage;
 use fkooman\Rest\Plugin\Authentication\Bearer\ValidatorInterface;
 use fkooman\Rest\Plugin\Authentication\Bearer\TokenInfo;
 
-class FakeTokenValidator implements ValidatorInterface
+class ApiTestTokenValidator implements ValidatorInterface
 {
     /**
      * @return TokenInfo

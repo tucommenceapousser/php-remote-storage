@@ -1,10 +1,23 @@
-; This is the Remote Storage Server configuration
-
-; the full path to the directory containing the files and the metadata
+; full path to file storage folder
 storageDir = "/var/lib/php-remote-storage/storage"
 
+[BasicAuthentication]
+; foo:bar
+foo = "$2y$10$sWzE0MjAP13srnNI/Pg8SuBM6LVmq8/hnznJwkQRF00Obe321PqGq"
+; bar:baz
+bar = "$2y$10$KLzVp/YwKAhI0asdeUHJmOARFglUZc4ccWTPJKqQEIxYXbtmLkBlm"
+
+; PDO configuration for metadata storage
 [MetadataStorage]
 dsn = "sqlite:/var/lib/php-remote-storage/metadata.sqlite"
+;dsn = "mysql:host=localhost;dbname=rs"
+;username = "rs"
+;password = "s3cr3t"
+;dsn = "pgsql:host=localhost;port=5432;dbname=XYZ;user=ABC;password=DEF"
+
+; PDO configuration for OAuth token storage
+[TokenStorage]
+dsn = "sqlite:/var/lib/php-remote-storage/token.sqlite"
 ;dsn = "mysql:host=localhost;dbname=rs"
 ;username = "rs"
 ;password = "s3cr3t"
