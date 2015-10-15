@@ -8,6 +8,14 @@
 </head>
 <body>
     <div id="container">
+
+        {% if not has_state %}
+            <div class="warning">
+                The client does not use the <code>state</code> parameter to 
+                avoid CSRF!        
+            </div>
+        {% endif %}
+
         <p>user_id: {{ user_id|e }}</p>
         <p>client_id: {{ client_id|e }}</p>
         <p>redirect_uri: {{ redirect_uri|e }}</p>

@@ -49,7 +49,7 @@ class DbTokenValidator implements ValidatorInterface
                 'client_id' => $result['client_id'],
                 'scope' => $result['scope'],
                 'token_type' => 'bearer',
-                'iat' => $result['issued_at'],
+                'iat' => intval($result['issued_at']),
                 'sub' => $result['user_id'],
             )
         );

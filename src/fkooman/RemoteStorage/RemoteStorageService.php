@@ -27,6 +27,8 @@ use fkooman\Http\Exception\ForbiddenException;
 use fkooman\Http\Exception\BadRequestException;
 use fkooman\Http\Exception\UnauthorizedException;
 use fkooman\Rest\Plugin\Authentication\AuthenticationPluginInterface;
+use fkooman\Http\Response;
+use InvalidArgumentException;
 
 class RemoteStorageService extends OAuthService
 {
@@ -136,11 +138,18 @@ class RemoteStorageService extends OAuthService
 
         if (null !== $requestedVersion) {
             if (in_array($folderVersion, $requestedVersion)) {
-                return new RemoteStorageResponse($request, 304, $folderVersion);
+                //return new RemoteStorageResponse($request, 304, $folderVersion);
+                $response = new Response(304, 'application/ld+json');
+                $response->setHeader('ETag', '"'.$folderVersion.'"');
+
+                return $response;
             }
         }
 
-        $rsr = new RemoteStorageResponse($request, 200, $folderVersion);
+#        $rsr = new RemoteStorageResponse($request, 200, $folderVersion);
+        $rsr = new Response(200, 'application/ld+json');
+        $rsr->setHeader('ETag', '"'.$folderVersion.'"');
+
         if ('GET' === $request->getMethod()) {
             $rsr->setBody(
                 $this->remoteStorage->getFolder(
@@ -177,11 +186,19 @@ class RemoteStorageService extends OAuthService
 
         if (null !== $requestedVersion) {
             if (in_array($documentVersion, $requestedVersion)) {
-                return new RemoteStorageResponse($request, 304, $documentVersion, $documentContentType);
+                //return new RemoteStorageResponse($request, 304, $documentVersion, $documentContentType);
+
+                $response = new Response(304, $documentContentType);
+                $response->setHeader('ETag', '"'.$documentVersion.'"');
+
+                return $response;
             }
         }
 
-        $rsr = new RemoteStorageResponse($request, 200, $documentVersion, $documentContentType);
+        // $rsr = new RemoteStorageResponse($request, 200, $documentVersion, $documentContentType);
+        $rsr = new Response(200, $documentContentType);
+        $rsr->setHeader('ETag', '"'.$documentVersion.'"');
+
         if ('GET' === $request->getMethod()) {
             $rsr->setBody(
                 $this->remoteStorage->getDocument(
@@ -230,7 +247,10 @@ class RemoteStorageService extends OAuthService
         );
         // we have to get the version again after the PUT
         $documentVersion = $this->remoteStorage->getVersion($path);
-        $rsr = new RemoteStorageResponse($request, 200, $documentVersion, 'application/json');
+
+        //$rsr = new RemoteStorageResponse($request, 200, $documentVersion, 'application/json');
+        $rsr = new Response();
+        $rsr->setHeader('ETag', '"'.$documentVersion.'"');
         $rsr->setBody($x);
 
         return $rsr;
@@ -275,7 +295,9 @@ class RemoteStorageService extends OAuthService
             $path,
             $ifMatch
         );
-        $rsr = new RemoteStorageResponse($request, 200, $documentVersion, 'application/json');
+        //$rsr = new RemoteStorageResponse($request, 200, $documentVersion, 'application/json');
+        $rsr = new Response();
+        $rsr->setHeader('ETag', '"'.$documentVersion.'"');
         $rsr->setBody($x);
 
         return $rsr;
@@ -283,7 +305,8 @@ class RemoteStorageService extends OAuthService
 
     public function optionsRequest(Request $request)
     {
-        return new RemoteStorageResponse($request, 200, null, null);
+        //return new RemoteStorageResponse($request, 200, null, null);
+        return new Response();
     }
 
     private function hasReadScope(Scope $i, $moduleName)
@@ -349,5 +372,45 @@ class RemoteStorageService extends OAuthService
         }
 
         return $versions;
+    }
+
+    public function run(Request $request = null)
+    {
+        if (null === $request) {
+            throw new InvalidArgumentException('must provide Request object');
+        }
+
+        $response = parent::run($request);
+
+        if ('GET' === $request->getMethod()) {
+            $response->setHeader('Expires', 0);
+        }
+
+        // CORS
+        if (null !== $request->getHeader('Origin')) {
+            $response->setHeader('Access-Control-Allow-Origin', $request->getHeader('Origin'));
+        } elseif (in_array($request->getMethod(), array('GET', 'HEAD', 'OPTIONS'))) {
+            $response->setHeader('Access-Control-Allow-Origin', '"*"');
+        }
+
+        $response->setHeader(
+            'Access-Control-Expose-Headers',
+            'ETag, Content-Length'
+        );
+
+        // this is only needed for OPTIONS requests
+        if ('OPTIONS' === $request->getMethod()) {
+            $response->setHeader(
+                'Access-Control-Allow-Methods',
+                'GET, PUT, DELETE, HEAD, OPTIONS'
+            );
+            // FIXME: are Origin and X-Requested-With really needed?
+            $response->setHeader(
+                'Access-Control-Allow-Headers',
+                'Authorization, Content-Length, Content-Type, Origin, X-Requested-With, If-Match, If-None-Match'
+            );
+        }
+
+        return $response;
     }
 }

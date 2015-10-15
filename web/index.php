@@ -30,6 +30,7 @@ use fkooman\OAuth\OAuthServer;
 use fkooman\OAuth\Storage\UnregisteredClientStorage;
 use fkooman\OAuth\Storage\PdoCodeTokenStorage;
 use fkooman\Rest\Plugin\Authentication\Basic\BasicAuthentication;
+use fkooman\Http\Request;
 
 $iniReader = IniReader::fromFile(
     dirname(__DIR__).'/config/server.ini'
@@ -102,4 +103,5 @@ $service = new RemoteStorageService(
     )
 );
 
-$service->run()->send();
+$request = new Request($_SERVER);
+$service->run($request)->send();
