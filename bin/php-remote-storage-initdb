@@ -34,9 +34,9 @@ try {
     $metadataStorage->initDatabase();
 
     $pdo = new PDO(
-        $iniReader->v('Db', 'dsn'),
-        $iniReader->v('Db', 'username', false),
-        $iniReader->v('Db', 'password', false)
+        $iniReader->v('TokenStorage', 'dsn'),
+        $iniReader->v('TokenStorage', 'username', false),
+        $iniReader->v('TokenStorage', 'password', false)
     );
 
     $pdoCodeTokenStorage = new PdoCodeTokenStorage($pdo);
