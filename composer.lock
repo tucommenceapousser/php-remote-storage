@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "1ef070b76e6cdb0e248e755823164808",
+    "hash": "4edca1ddf2a6f20d5af266dfef069336",
     "packages": [
         {
             "name": "fkooman/http",
@@ -168,16 +168,16 @@
         },
         {
             "name": "fkooman/oauth",
-            "version": "dev-master",
+            "version": "2.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/fkooman/php-lib-oauth.git",
-                "reference": "f494efcf8293d75930bd5272fbe263bbf428f7a0"
+                "reference": "21e7b3d6550197d48484643f75f244bd6185a991"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fkooman/php-lib-oauth/zipball/f494efcf8293d75930bd5272fbe263bbf428f7a0",
-                "reference": "f494efcf8293d75930bd5272fbe263bbf428f7a0",
+                "url": "https://api.github.com/repos/fkooman/php-lib-oauth/zipball/21e7b3d6550197d48484643f75f244bd6185a991",
+                "reference": "21e7b3d6550197d48484643f75f244bd6185a991",
                 "shasum": ""
             },
             "require": {
@@ -213,7 +213,7 @@
                 }
             ],
             "description": "OAuth 2.0 Server Library",
-            "time": "2015-10-15 18:57:26"
+            "time": "2015-10-15 20:34:55"
         },
         {
             "name": "fkooman/rest",
@@ -771,9 +771,7 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "fkooman/oauth": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
