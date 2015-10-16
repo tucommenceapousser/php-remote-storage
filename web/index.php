@@ -89,7 +89,8 @@ $server = new OAuthServer(
 // fake api auth for now
 $apiAuth = new BearerAuthentication(
     //new ApiTestTokenValidator()       // this is the one for api-test-suite
-    new DbTokenValidator($db)
+    new DbTokenValidator($db),
+    array('realm' => 'remoteStorage API')
 );
 
 $service = new RemoteStorageService(

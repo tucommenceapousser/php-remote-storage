@@ -4,26 +4,33 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" type="text/css" href="css/normalize.css">
+  <link rel="stylesheet" type="text/css" href="css/style.css">
   <title>OAuth</title>
 </head>
 <body>
     <div id="container">
 
+        <a class="header" href="."><h1>remoteStorage API</h1></a>
+
         {% if not has_state %}
-            <div class="warning">
+            <p class="warn">
                 The client does not use the <code>state</code> parameter to 
-                avoid CSRF!        
-            </div>
+                avoid CSRF! This is <a href="https://github.com/remotestorage/remotestorage.js/issues/900#issuecomment-148698435">probably</a> secure in case of 
+                <a href="https://github.com/remotestorage/remotestorage.js">remotestorage.js</a>.
+            </p>
         {% endif %}
 
-        <p>user_id: {{ user_id|e }}</p>
-        <p>client_id: {{ client_id|e }}</p>
-        <p>redirect_uri: {{ redirect_uri|e }}</p>
-        <p>scope: {{ scope|e }}</p>
+        <table>
+            <tr><th>User ID</th><td><code>{{ user_id|e }}</code></td></tr>
+            <tr><th>Client ID</th><td><code>{{ client_id|e }}</code></td></tr>
+            <tr><th>Redirect URI</th><td><code>{{ redirect_uri|e }}</code></td></tr>
+            <tr><th>Scope</th><td><code>{{ scope|e }}</code></td></tr>
+        </table>
 
         <form method="post" action="{{ request_url|e }}">
-            <button type="submit" name="approval" value="no">Reject</button>
-            <button type="submit" name="approval" value="yes">Approve</button>
+            <button class="warn" type="submit" name="approval" value="no">Reject</button>
+            <button class="info" type="submit" name="approval" value="yes">Approve</button>
         </form>
     </div> <!-- /container -->
 </body>

@@ -29,6 +29,7 @@ use fkooman\Http\Exception\UnauthorizedException;
 use fkooman\Rest\Plugin\Authentication\AuthenticationPluginInterface;
 use fkooman\Http\Response;
 use InvalidArgumentException;
+use fkooman\RemoteStorage\Exception\PathException;
 
 class RemoteStorageService extends OAuthService
 {
@@ -105,7 +106,7 @@ class RemoteStorageService extends OAuthService
         // past this point we MUST be authenticated
         if (null === $tokenInfo) {
             $e = new UnauthorizedException('unauthorized', 'must authenticate to view folder listing');
-            $e->addScheme('Bearer');
+            $e->addScheme('Bearer', array('realm' => 'remoteStorage API'));
             throw $e;
         }
 
@@ -380,7 +381,13 @@ class RemoteStorageService extends OAuthService
             throw new InvalidArgumentException('must provide Request object');
         }
 
-        $response = parent::run($request);
+        $response = null;
+        try {
+            $response = parent::run($request);
+        } catch (PathException $e) {
+            $e = new BadRequestException($e->getMessage());
+            $response = $e->getJsonResponse();
+        }
 
         if ('GET' === $request->getMethod()) {
             $response->setHeader('Expires', 0);
