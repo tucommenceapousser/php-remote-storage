@@ -65,6 +65,9 @@ class RemoteStorageService extends OAuthService
                 'fkooman\Rest\Plugin\Authentication\AuthenticationPlugin' => array(
                     'activate' => array('api'),
                 ),
+                'fkooman\Rest\Plugin\ReferrerCheck\ReferrerCheckPlugin' => array(
+                    'enabled' => false,
+                ),
             )
         );
 
@@ -78,8 +81,10 @@ class RemoteStorageService extends OAuthService
                 'fkooman\Rest\Plugin\Authentication\AuthenticationPlugin' => array(
                     'activate' => array('api'),
                 ),
+                'fkooman\Rest\Plugin\ReferrerCheck\ReferrerCheckPlugin' => array(
+                    'enabled' => false,
+                ),
             )
-
         );
 
         // options request
