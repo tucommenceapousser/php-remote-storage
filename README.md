@@ -8,9 +8,7 @@ implementing `draft-dejong-remotestorage-03.txt`.
 # Development Requirements
 On Fedora >= 22:
 
-    $ sudo dnf -y install php-pdo php-openssl httpd'
-
-You also need to download [Composer](https://getcomposer.org/).
+    $ sudo dnf -y install php-pdo php-openssl mod_ssl httpd composer git'
 
 # Development Installation
 *NOTE*: in the `chown` line you need to use your own user account name!
@@ -20,7 +18,7 @@ You also need to download [Composer](https://getcomposer.org/).
     $ sudo chown fkooman.fkooman php-remote-storage
     $ git clone https://github.com/fkooman/php-remote-storage.git
     $ cd php-remote-storage
-    $ /path/to/composer.phar install
+    $ composer.phar install
     $ mkdir -p data/storage
     $ sudo chown -R apache.apache data
     $ sudo semanage fcontext -a -t httpd_sys_rw_content_t '/var/www/php-remote-storage/data(/.*)?'
@@ -28,15 +26,20 @@ You also need to download [Composer](https://getcomposer.org/).
     $ cd config
     $ cp server.ini.example server.ini
 
-Edit `server.ini` to match the configuration. You need to at least modify the
-following lines, and set them to the values shown here:
+Edit `config/server.ini` to match the configuration. You need to at least 
+modify the following lines, and set them to the values shown here:
 
     storageDir = "/var/www/php-remote-storage/data/storage"
+   
+    [MetadataStorage]
     dsn = "sqlite:/var/www/php-remote-storage/data/metadata.sqlite"
+
+    [TokenStorage]
+    dsn = "sqlite:/var/lib/php-remote-storage/token.sqlite"
 
 Now you can initialize the metadata database:
 
-    $ sudo -u apache bin/php-remote-storage-initdb 
+    $ sudo -u apache bin/php-remote-storage-init
 
 Copy paste the contents of the Apache section (see below) in the file 
 `/etc/httpd/conf.d/php-remote-storage.conf`.
