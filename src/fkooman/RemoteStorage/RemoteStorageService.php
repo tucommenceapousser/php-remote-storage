@@ -152,7 +152,6 @@ class RemoteStorageService extends OAuthService
             }
         }
 
-#        $rsr = new RemoteStorageResponse($request, 200, $folderVersion);
         $rsr = new Response(200, 'application/ld+json');
         $rsr->setHeader('ETag', '"'.$folderVersion.'"');
 
@@ -192,8 +191,6 @@ class RemoteStorageService extends OAuthService
 
         if (null !== $requestedVersion) {
             if (in_array($documentVersion, $requestedVersion)) {
-                //return new RemoteStorageResponse($request, 304, $documentVersion, $documentContentType);
-
                 $response = new Response(304, $documentContentType);
                 $response->setHeader('ETag', '"'.$documentVersion.'"');
 
@@ -201,7 +198,6 @@ class RemoteStorageService extends OAuthService
             }
         }
 
-        // $rsr = new RemoteStorageResponse($request, 200, $documentVersion, $documentContentType);
         $rsr = new Response(200, $documentContentType);
         $rsr->setHeader('ETag', '"'.$documentVersion.'"');
 
@@ -254,7 +250,6 @@ class RemoteStorageService extends OAuthService
         // we have to get the version again after the PUT
         $documentVersion = $this->remoteStorage->getVersion($path);
 
-        //$rsr = new RemoteStorageResponse($request, 200, $documentVersion, 'application/json');
         $rsr = new Response();
         $rsr->setHeader('ETag', '"'.$documentVersion.'"');
         $rsr->setBody($x);
@@ -301,7 +296,6 @@ class RemoteStorageService extends OAuthService
             $path,
             $ifMatch
         );
-        //$rsr = new RemoteStorageResponse($request, 200, $documentVersion, 'application/json');
         $rsr = new Response();
         $rsr->setHeader('ETag', '"'.$documentVersion.'"');
         $rsr->setBody($x);
@@ -311,7 +305,6 @@ class RemoteStorageService extends OAuthService
 
     public function optionsRequest(Request $request)
     {
-        //return new RemoteStorageResponse($request, 200, null, null);
         return new Response();
     }
 
