@@ -21,6 +21,13 @@ p.warn a {
     color: #000;
 }
 
+button {
+    padding: 0.4em;
+    background-color: #ddd;
+    border: 1px solid #bbb;
+    color: #000; 
+}
+
 button.info {
     background-color: #063;
     border: 1px solid #041;
