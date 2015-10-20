@@ -40,18 +40,8 @@ Now you can initialize the database:
 
     $ sudo -u apache bin/php-remote-storage-init
 
-Copy paste the contents of the Apache section (see below) in the file 
-`/etc/httpd/conf.d/php-remote-storage.conf`.
-
-    $ sudo systemctl restart httpd
-
-If you ever remove the software, you can also remove the SELinux context:
-
-    $ sudo semanage fcontext -d -t httpd_sys_rw_content_t '/var/www/php-remote-storage/data(/.*)?'
-
-# Apache
-This is the Apache configuration you use for development. Place it in 
-`/etc/httpd/conf.d/php-remote-storage.conf` and don't forget to restart Apache:
+Copy paste the contents below in the file 
+`/etc/httpd/conf.d/php-remote-storage.conf`:
 
     Alias /php-remote-storage /var/www/php-remote-storage/web
 
@@ -68,6 +58,14 @@ This is the Apache configuration you use for development. Place it in
 
         SetEnvIfNoCase ^Authorization$ "(.+)" HTTP_AUTHORIZATION=$1
     </Directory>
+
+Now restart Apache:
+
+    $ sudo systemctl restart httpd
+
+If you ever remove the software, you can also remove the SELinux context:
+
+    $ sudo semanage fcontext -d -t httpd_sys_rw_content_t '/var/www/php-remote-storage/data(/.*)?'
 
 # Tests
 You can run the included unit tests using PHPunit:
