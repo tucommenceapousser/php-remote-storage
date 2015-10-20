@@ -71,7 +71,7 @@ If you ever remove the software, you can also remove the SELinux context:
 You can run the included unit tests using PHPunit:
 
     $ cd /var/www/php-remote-storage
-    $ phpunit --verbose
+    $ phpunit
 
 # Contributing
 You can send a pull request, ideally after first discussing a new feature or
