@@ -63,9 +63,54 @@ Now restart Apache:
 
     $ sudo systemctl restart httpd
 
+There are two default accounts available, `foo:bar` and `bar:baz`. You can
+use them to login to the embedded OAuth server. The supported accounts and
+their password can be changed in the configuration file as well.
+
 If you ever remove the software, you can also remove the SELinux context:
 
     $ sudo semanage fcontext -d -t httpd_sys_rw_content_t '/var/www/php-remote-storage/data(/.*)?'
+
+# WebFinger
+In order to use this server you need to point a user's WebFinger information to 
+this particular server.
+
+You can use [php-webfinger](https://github.com/fkooman/php-webfinger) for this
+if you want. It has example configuration files for remoteStorage. or use a 
+static file at `https://example.org/.well-known/webfinger`. To work with this 
+server, the following is an example indicating support for the `-03` and `-05` 
+version of the specification:
+
+    $ curl -k https://storage.tuxed.net/.well-known/webfinger?resource=acct:foo@storage.tuxed.net | python -mjson.tool
+    {
+        "links": [
+            {
+                "href": "https://storage.tuxed.net/php-remote-storage/foo",
+                "properties": {
+                    "http://remotestorage.io/spec/version": "draft-dejong-remotestorage-03",
+                    "http://tools.ietf.org/html/rfc2616#section-14.16": false,
+                    "http://tools.ietf.org/html/rfc6749#section-4.2": "https://storage.tuxed.net/php-remote-storage/authorize?login_hint=foo",
+                    "http://tools.ietf.org/html/rfc6750#section-2.3": false
+                },
+                "rel": "remotestorage"
+            },
+            {
+                "href": "https://storage.tuxed.net/php-remote-storage/foo",
+                "properties": {
+                    "http://remotestorage.io/spec/version": "draft-dejong-remotestorage-05",
+                    "http://remotestorage.io/spec/web-authoring": null,
+                    "http://tools.ietf.org/html/rfc6749#section-4.2": "https://storage.tuxed.net/php-remote-storage/authorize?login_hint=foo",
+                    "http://tools.ietf.org/html/rfc6750#section-2.3": null,
+                    "http://tools.ietf.org/html/rfc7233": null
+                },
+                "rel": "http://tools.ietf.org/id/draft-dejong-remotestorage"
+            }
+        ],
+        "subject": "acct:foo@storage.tuxed.net"
+    }
+
+This WebFinger service is located at the same server as the storage server, but
+that is not a requirement.
 
 # Tests
 You can run the included unit tests using PHPunit:
