@@ -3,12 +3,12 @@
 
 # Introduction
 This is a remoteStorage server implementation written in PHP. It aims at 
-implementing `draft-dejong-remotestorage-03.txt`.
+implementing `draft-dejong-remotestorage-03.txt` and higher.
 
 # Development Requirements
 On Fedora >= 22:
 
-    $ sudo dnf -y install php-pdo php-openssl mod_ssl httpd composer git'
+    $ sudo dnf -y install php php-pdo php-openssl mod_ssl httpd composer git php-phpunit-PHPUnit
 
 # Development Installation
 *NOTE*: in the `chown` line you need to use your own user account name!
@@ -18,13 +18,12 @@ On Fedora >= 22:
     $ sudo chown fkooman.fkooman php-remote-storage
     $ git clone https://github.com/fkooman/php-remote-storage.git
     $ cd php-remote-storage
-    $ composer.phar install
+    $ composer install
     $ mkdir -p data/storage
     $ sudo chown -R apache.apache data
     $ sudo semanage fcontext -a -t httpd_sys_rw_content_t '/var/www/php-remote-storage/data(/.*)?'
     $ sudo restorecon -R /var/www/php-remote-storage/data
-    $ cd config
-    $ cp server.ini.example server.ini
+    $ cp config/server.ini.example config/server.ini
 
 Edit `config/server.ini` to match the configuration. You need to at least 
 modify the following lines, and set them to the values shown here:
@@ -35,9 +34,9 @@ modify the following lines, and set them to the values shown here:
     dsn = "sqlite:/var/www/php-remote-storage/data/metadata.sqlite"
 
     [TokenStorage]
-    dsn = "sqlite:/var/lib/php-remote-storage/token.sqlite"
+    dsn = "sqlite:/var/www/php-remote-storage/token.sqlite"
 
-Now you can initialize the metadata database:
+Now you can initialize the database:
 
     $ sudo -u apache bin/php-remote-storage-init
 
@@ -69,6 +68,17 @@ This is the Apache configuration you use for development. Place it in
 
         SetEnvIfNoCase ^Authorization$ "(.+)" HTTP_AUTHORIZATION=$1
     </Directory>
+
+# Tests
+You can run the included unit tests using PHPunit:
+
+    $ cd /var/www/php-remote-storage
+    $ phpunit --verbose
+
+# Contributing
+You can send a pull request, ideally after first discussing a new feature or
+fix. Please make sure there is an accompanying unit test for your feature or 
+fix. I know the current test coverage is not perfect, but trying to improve :)
 
 # License
 Licensed under the GNU Affero General Public License as published by the Free
