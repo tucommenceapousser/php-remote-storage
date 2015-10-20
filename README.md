@@ -8,7 +8,7 @@ implementing `draft-dejong-remotestorage-03.txt` and higher.
 # Development Requirements
 On Fedora >= 22:
 
-    $ sudo dnf -y install php php-pdo php-openssl mod_ssl httpd composer git php-phpunit-PHPUnit
+    $ sudo dnf -y install php php-pdo mod_ssl httpd composer git php-phpunit-PHPUnit
 
 # Development Installation
 *NOTE*: in the `chown` line you need to use your own user account name!
