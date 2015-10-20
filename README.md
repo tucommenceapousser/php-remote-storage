@@ -118,6 +118,53 @@ You can run the included unit tests using PHPunit:
     $ cd /var/www/php-remote-storage
     $ phpunit
 
+# remoteStorage API test suite
+
+Some extra dependencies are needed to run the API test suite:
+
+    $ sudo dnf -y install rubygem-bundler ruby-devel gcc-c++
+
+Now install the test suite:
+
+    $ mkdir $HOME/Projects
+    $ cd $HOME/Projects
+    $ git clone https://github.com/remotestorage/api-test-suite.git
+    $ cd api-test-suite
+    $ bundler install
+
+You need to modify the configuration a bit to work with php-remote-storage:
+
+    $ cp config.yml.example config.yml
+
+Edit the `config.yml` file, e.g.:
+
+    storage_base_url: http://localhost/php-remote-storage/demo
+    storage_base_url_other: http://localhost/php-remote-storage/bar
+    category: api-test
+    token: token
+    read_only_token: read_only_token
+    root_token: root_token
+
+Now, the Bearer token validation of php-remote-storage needs to be modified,
+this will be configurable soon instead of a hack in the source. Modify
+`/var/www/php-remote-storage/web/index.php` from:
+
+    $apiAuth = new BearerAuthentication(
+        new DbTokenValidator($db),
+        array('realm' => 'remoteStorage API')
+    );
+
+To:
+
+    $apiAuth = new BearerAuthentication(
+        new fkooman\RemoteStorage\ApiTestTokenValidator(),
+        array('realm' => 'remoteStorage API')
+    );
+
+Now you can run the test suite and all should be fine:
+
+    $ rake test
+
 # Contributing
 You can send a pull request, ideally after first discussing a new feature or
 fix. Please make sure there is an accompanying unit test for your feature or 

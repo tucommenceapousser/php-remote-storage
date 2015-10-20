@@ -18,7 +18,6 @@ require_once dirname(__DIR__).'/vendor/autoload.php';
 
 use fkooman\Ini\IniReader;
 use fkooman\Rest\Plugin\Authentication\Bearer\BearerAuthentication;
-use fkooman\RemoteStorage\ApiTestTokenValidator;
 use fkooman\RemoteStorage\DbTokenValidator;
 use fkooman\RemoteStorage\RemoteStorage;
 use fkooman\RemoteStorage\RemoteStorageResourceServer;
@@ -86,9 +85,7 @@ $server = new OAuthServer(
     $pdoCodeTokenStorage                // ...tokens
 );
 
-// fake api auth for now
 $apiAuth = new BearerAuthentication(
-    //new ApiTestTokenValidator()       // this is the one for api-test-suite
     new DbTokenValidator($db),
     array('realm' => 'remoteStorage API')
 );
