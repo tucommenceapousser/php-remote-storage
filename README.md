@@ -34,7 +34,7 @@ modify the following lines, and set them to the values shown here:
     dsn = "sqlite:/var/www/php-remote-storage/data/metadata.sqlite"
 
     [TokenStorage]
-    dsn = "sqlite:/var/www/php-remote-storage/token.sqlite"
+    dsn = "sqlite:/var/www/php-remote-storage/data/token.sqlite"
 
 Now you can initialize the database:
 
