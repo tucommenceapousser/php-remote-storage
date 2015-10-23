@@ -30,17 +30,37 @@ use fkooman\Rest\Plugin\Authentication\AuthenticationPluginInterface;
 use fkooman\Http\Response;
 use InvalidArgumentException;
 use fkooman\RemoteStorage\Exception\PathException;
+use fkooman\Tpl\TemplateManagerInterface;
 
 class RemoteStorageService extends OAuthService
 {
+    /** @var \fkooman\Tpl\TemplateManagerInterface */
+    private $templateManager;
+
     /** @var RemoteStorage */
     private $remoteStorage;
 
-    public function __construct(OAuthServer $server, RemoteStorage $remoteStorage, AuthenticationPluginInterface $userAuth, AuthenticationPluginInterface $apiAuth, array $opt = array())
+    public function __construct(TemplateManagerInterface $templateManager, OAuthServer $server, RemoteStorage $remoteStorage, AuthenticationPluginInterface $userAuth, AuthenticationPluginInterface $apiAuth, array $opt = array())
     {
-        parent::__construct($server, $userAuth, $apiAuth, $opt);
+        $this->templateManager = $templateManager;
         $this->remoteStorage = $remoteStorage;
-
+        parent::__construct($server, $userAuth, $apiAuth, $opt);
+  
+        $this->get(
+            '/',
+            function(Request $request) {
+                return $this->templateManager->render(
+                    'indexPage',
+                    array()
+                );
+            },
+            array(
+                'fkooman\Rest\Plugin\Authentication\AuthenticationPlugin' => array(
+                    'enabled' => false
+                ),
+            )
+        );
+            
         $this->addRoute(
             ['GET', 'HEAD'],
             '*',
@@ -387,6 +407,7 @@ class RemoteStorageService extends OAuthService
             $response = $e->getJsonResponse();
         }
 
+        // XXX Expires should only be for successful GET??
         if ('GET' === $request->getMethod()) {
             $response->setHeader('Expires', 0);
         }
@@ -399,7 +420,7 @@ class RemoteStorageService extends OAuthService
         }
 
         $response->setHeader(
-            'Access-Control-Expose-Headers',
+            'Access-Control-Expose-Headers', 
             'ETag, Content-Length'
         );
 

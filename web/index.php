@@ -94,6 +94,7 @@ $apiAuth = new BearerAuthentication(
 );
 
 $service = new RemoteStorageService(
+    $templateManager,
     $server,
     $remoteStorage,
     $userAuth,
