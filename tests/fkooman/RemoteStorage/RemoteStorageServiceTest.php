@@ -87,7 +87,7 @@ class RemoteStorageServiceTest extends PHPUnit_Framework_TestCase
         );
 
         $apiAuth = new BearerAuthentication(new TestTokenValidator());
-        $this->r = new RemoteStorageService($server, $remoteStorage, $userAuth, $apiAuth);
+        $this->r = new RemoteStorageService(new TestTemplateManager(), $server, $remoteStorage, $userAuth, $apiAuth);
     }
 
     private function getPutRequest($urlPath, array $h = array())

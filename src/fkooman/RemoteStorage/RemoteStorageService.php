@@ -45,10 +45,10 @@ class RemoteStorageService extends OAuthService
         $this->templateManager = $templateManager;
         $this->remoteStorage = $remoteStorage;
         parent::__construct($server, $userAuth, $apiAuth, $opt);
-  
+
         $this->get(
             '/',
-            function(Request $request) {
+            function (Request $request) {
                 return $this->templateManager->render(
                     'indexPage',
                     array()
@@ -56,11 +56,11 @@ class RemoteStorageService extends OAuthService
             },
             array(
                 'fkooman\Rest\Plugin\Authentication\AuthenticationPlugin' => array(
-                    'enabled' => false
+                    'enabled' => false,
                 ),
             )
         );
-            
+
         $this->addRoute(
             ['GET', 'HEAD'],
             '*',
@@ -420,7 +420,7 @@ class RemoteStorageService extends OAuthService
         }
 
         $response->setHeader(
-            'Access-Control-Expose-Headers', 
+            'Access-Control-Expose-Headers',
             'ETag, Content-Length'
         );
 
