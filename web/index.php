@@ -35,19 +35,11 @@ $iniReader = IniReader::fromFile(
     dirname(__DIR__).'/config/server.ini'
 );
 
-$md = new MetadataStorage(
-    new PDO(
-        $iniReader->v('MetadataStorage', 'dsn'),
-        $iniReader->v('MetadataStorage', 'username', false),
-        $iniReader->v('MetadataStorage', 'password', false)
-    )
+$db = new PDO(
+    $iniReader->v('Db', 'dsn'),
+    $iniReader->v('Db', 'username', false),
+    $iniReader->v('Db', 'password', false)
 );
-
-$document = new DocumentStorage(
-    $iniReader->v('storageDir')
-);
-
-$remoteStorage = new RemoteStorage($md, $document);
 
 $templateManager = new TwigTemplateManager(
     array(
@@ -56,6 +48,22 @@ $templateManager = new TwigTemplateManager(
     ),
     null
 );
+
+$pdoCodeTokenStorage = new PdoCodeTokenStorage($db);
+
+$server = new OAuthServer(
+    $templateManager,
+    new UnregisteredClientStorage(),    // we do not have client registration
+    new RemoteStorageResourceServer(),  // we only have one resource server
+    $pdoCodeTokenStorage,               // we do not have codes, only...
+    $pdoCodeTokenStorage                // ...tokens
+);
+
+$md = new MetadataStorage($db);
+$document = new DocumentStorage(
+    $iniReader->v('storageDir')
+);
+$remoteStorage = new RemoteStorage($md, $document);
 
 $userAuth = new FormAuthentication(
     function ($userId) use ($iniReader) {
@@ -68,22 +76,6 @@ $userAuth = new FormAuthentication(
     },
     $templateManager,
     array('realm' => 'OAuth AS')
-);
-
-// DB
-$db = new PDO(
-    $iniReader->v('TokenStorage', 'dsn'),
-    $iniReader->v('TokenStorage', 'username', false),
-    $iniReader->v('TokenStorage', 'password', false)
-);
-$pdoCodeTokenStorage = new PdoCodeTokenStorage($db);
-
-$server = new OAuthServer(
-    $templateManager,
-    new UnregisteredClientStorage(),    // we do not have client registration
-    new RemoteStorageResourceServer(),  // we only have one resource server
-    $pdoCodeTokenStorage,               // we do not have codes, only...
-    $pdoCodeTokenStorage                // ...tokens
 );
 
 $apiAuth = new BearerAuthentication(

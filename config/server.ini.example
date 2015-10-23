@@ -7,17 +7,9 @@ foo = "$2y$10$sWzE0MjAP13srnNI/Pg8SuBM6LVmq8/hnznJwkQRF00Obe321PqGq"
 ; bar:baz
 bar = "$2y$10$KLzVp/YwKAhI0asdeUHJmOARFglUZc4ccWTPJKqQEIxYXbtmLkBlm"
 
-; PDO configuration for metadata storage
-[MetadataStorage]
-dsn = "sqlite:/var/lib/php-remote-storage/metadata.sqlite"
-;dsn = "mysql:host=localhost;dbname=rs"
-;username = "rs"
-;password = "s3cr3t"
-;dsn = "pgsql:host=localhost;port=5432;dbname=XYZ;user=ABC;password=DEF"
-
-; PDO configuration for OAuth token storage
-[TokenStorage]
-dsn = "sqlite:/var/lib/php-remote-storage/token.sqlite"
+; Database configuration for file metadata and OAuth tokens
+[Db]
+dsn = "sqlite:/var/lib/php-remote-storage/rs.sqlite"
 ;dsn = "mysql:host=localhost;dbname=rs"
 ;username = "rs"
 ;password = "s3cr3t"

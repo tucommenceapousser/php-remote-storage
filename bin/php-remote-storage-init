@@ -24,22 +24,16 @@ use fkooman\OAuth\Storage\PdoCodeTokenStorage;
 try {
     $iniReader = IniReader::fromFile(dirname(__DIR__).'/config/server.ini');
 
-    $pdo = new PDO(
-        $iniReader->v('MetadataStorage', 'dsn'),
-        $iniReader->v('MetadataStorage', 'username', false),
-        $iniReader->v('MetadataStorage', 'password', false)
+    $db = new PDO(
+        $iniReader->v('Db', 'dsn'),
+        $iniReader->v('Db', 'username', false),
+        $iniReader->v('Db', 'password', false)
     );
 
-    $metadataStorage = new MetadataStorage($pdo);
+    $metadataStorage = new MetadataStorage($db);
     $metadataStorage->initDatabase();
 
-    $pdo = new PDO(
-        $iniReader->v('TokenStorage', 'dsn'),
-        $iniReader->v('TokenStorage', 'username', false),
-        $iniReader->v('TokenStorage', 'password', false)
-    );
-
-    $pdoCodeTokenStorage = new PdoCodeTokenStorage($pdo);
+    $pdoCodeTokenStorage = new PdoCodeTokenStorage($db);
     $pdoCodeTokenStorage->initDatabase();
 } catch (Exception $e) {
     echo $e->getMessage().PHP_EOL;

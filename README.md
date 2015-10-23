@@ -30,11 +30,8 @@ modify the following lines, and set them to the values shown here:
 
     storageDir = "/var/www/php-remote-storage/data/storage"
    
-    [MetadataStorage]
-    dsn = "sqlite:/var/www/php-remote-storage/data/metadata.sqlite"
-
-    [TokenStorage]
-    dsn = "sqlite:/var/www/php-remote-storage/data/token.sqlite"
+    [Db]
+    dsn = "sqlite:/var/www/php-remote-storage/data/rs.sqlite"
 
 Now you can initialize the database:
 
