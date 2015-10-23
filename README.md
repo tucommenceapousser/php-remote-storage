@@ -65,7 +65,12 @@ Now restart Apache:
 
 There are two default accounts available, `foo:bar` and `bar:baz`. You can
 use them to login to the embedded OAuth server. The supported accounts and
-their password can be changed in the configuration file as well.
+their password can be changed in the configuration file as well. To generate 
+hashes you can use the included script:
+
+    $ php bin/php-remote-storage-password-hash s3cr3t
+
+Use the output of this script in `config/server.ini`.
 
 If you ever remove the software, you can also remove the SELinux context:
 
