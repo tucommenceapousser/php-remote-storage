@@ -15,6 +15,7 @@
             <h1>remoteStorage</h1>
         </div>
 
+<!--
         {% if not has_state %}
             <p class="warning">
                 The client does not use the <code>state</code> parameter to 
@@ -22,6 +23,8 @@
                 <a href="https://github.com/remotestorage/remotestorage.js">remotestorage.js</a>.
             </p>
         {% endif %}
+-->
+        <p>An application wants to have access to your remoteStorage account:</p>
 
         <table>
             <tr><th>User ID</th><td><code>{{ user_id|e }}</code></td></tr>
@@ -32,7 +35,7 @@
 
         <form method="post" action="{{ request_url|e }}">
             <button class="error" type="submit" name="approval" value="no">Reject</button>
-            <button class="info"  type="submit" name="approval" value="yes">Approve</button>
+            <button class="info"  type="submit" name="approval" value="yes" autofocus>Approve</button>
         </form>
     </div> <!-- /container -->
 </body>
