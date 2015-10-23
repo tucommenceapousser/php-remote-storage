@@ -1,23 +1,27 @@
 body {
-    padding: 0.25em;
-    background-color: #fff;
-}
-
-div#container {
-    text-align: justify;
     max-width: 600px;
     margin: 0 auto;
-    line-height: 1.5;
 }
 
-p.warn {
+div.header {
+}
+
+div.header img {
+    height: 3em;
+}
+
+div.header h1 {
+    display: inline;
+}
+
+p.warning {
     background-color: #fc0;
     border: 1px solid #da0;
     color: #000;
     padding: 1em;
 }
 
-p.warn a {
+a {
     color: #000;
 }
 
@@ -34,17 +38,38 @@ button.info {
     color: #fff; 
 }
 
-button.warn {
+button.warning {
     background-color: #fc0;
     border: 1px solid #da0;
     color: #000; 
 }
 
-a.header {
-    text-decoration: none;
-    color: #000;
+button.error {
+    background-color: #c00;
+    border: 1px solid #a00;
+    color: #fff;
 }
 
-table td {
+table {
+    width: 100%;
+    margin: 1em 0;
+}
+
+th {
+    text-align: left;
+}
+
+td {
     padding: 0.5em;
 }
+
+p {
+    text-align: justify;
+}
+
+input[type="text"], input[type="password"] {
+    padding: 0.5em;
+    display: block;
+    margin: 0.5em 0;
+}
+    

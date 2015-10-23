@@ -10,13 +10,15 @@
 </head>
 <body>
     <div id="container">
-
-        <a class="header" href="."><h1>remoteStorage API</h1></a>
+        <div class="header">
+            <a href="https://remotestorage.io/"><img src="img/rs.svg" alt="remoteStorage"></a>
+            <h1>remoteStorage</h1>
+        </div>
 
         {% if not has_state %}
-            <p class="warn">
+            <p class="warning">
                 The client does not use the <code>state</code> parameter to 
-                avoid CSRF! This is <a href="https://github.com/remotestorage/remotestorage.js/issues/900#issuecomment-148698435">probably</a> secure in case of 
+                avoid CSRF! This is <a href="https://github.com/remotestorage/remotestorage.js/issues/900">probably</a> secure in case of 
                 <a href="https://github.com/remotestorage/remotestorage.js">remotestorage.js</a>.
             </p>
         {% endif %}
@@ -29,8 +31,8 @@
         </table>
 
         <form method="post" action="{{ request_url|e }}">
-            <button class="warn" type="submit" name="approval" value="no">Reject</button>
-            <button class="info" type="submit" name="approval" value="yes">Approve</button>
+            <button class="error" type="submit" name="approval" value="no">Reject</button>
+            <button class="info"  type="submit" name="approval" value="yes">Approve</button>
         </form>
     </div> <!-- /container -->
 </body>

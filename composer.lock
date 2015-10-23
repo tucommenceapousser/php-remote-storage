@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "19081d9d0b878121957779aad05917b2",
+    "hash": "f8a1cdcd5fde0893dcd83594140c3329",
     "packages": [
         {
             "name": "fkooman/http",
@@ -388,16 +388,16 @@
         },
         {
             "name": "fkooman/rest-plugin-authentication-form",
-            "version": "dev-master",
+            "version": "1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/fkooman/php-lib-rest-plugin-authentication-form.git",
-                "reference": "b6391ca0d5cf8211c0d58d96cbffa1b21434e7b5"
+                "reference": "2e7604098300958d2cbd294cf46c41ea1a42b5f5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fkooman/php-lib-rest-plugin-authentication-form/zipball/b6391ca0d5cf8211c0d58d96cbffa1b21434e7b5",
-                "reference": "b6391ca0d5cf8211c0d58d96cbffa1b21434e7b5",
+                "url": "https://api.github.com/repos/fkooman/php-lib-rest-plugin-authentication-form/zipball/2e7604098300958d2cbd294cf46c41ea1a42b5f5",
+                "reference": "2e7604098300958d2cbd294cf46c41ea1a42b5f5",
                 "shasum": ""
             },
             "require": {
@@ -408,7 +408,7 @@
                 "fkooman/rest-plugin-authentication": "^1.0.0",
                 "fkooman/tpl": "^2.0.0",
                 "ircmaxell/password-compat": "~1.0",
-                "php": ">=5.3.0"
+                "php": ">=5.4"
             },
             "require-dev": {
                 "fkooman/json": "^1.0.0"
@@ -431,7 +431,7 @@
                 }
             ],
             "description": "HTML Form Authentication plugin for fkooman/rest",
-            "time": "2015-10-23 08:57:14"
+            "time": "2015-10-23 10:58:52"
         },
         {
             "name": "fkooman/tpl",
@@ -818,9 +818,7 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "fkooman/rest-plugin-authentication-form": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
