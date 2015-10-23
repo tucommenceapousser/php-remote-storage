@@ -10,13 +10,15 @@
     "require": {
         "ext-json": "*",
         "ext-pdo": "*",
+        "ext-spl": "*",
         "fkooman/http": "^1.0.0",
         "fkooman/ini": "^1.0.0",
         "fkooman/io": "^1.0.0",
         "fkooman/json": "^1.0.0",
         "fkooman/oauth": "^2.0.0",
-        "fkooman/rest": "^1.0.0",
+        "fkooman/rest-plugin-authentication": "^1.0.0",
         "fkooman/rest-plugin-authentication-bearer": "^1.0.0",
+        "fkooman/rest-plugin-authentication-form": "dev-master",
         "fkooman/tpl-twig": "^1.0.0",
         "php": ">=5.4"
     }

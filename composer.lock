@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "4edca1ddf2a6f20d5af266dfef069336",
+    "hash": "19081d9d0b878121957779aad05917b2",
     "packages": [
         {
             "name": "fkooman/http",
@@ -385,6 +385,53 @@
             ],
             "description": "Bearer (OAuth) Authentication plugin for fkooman/rest",
             "time": "2015-07-20 15:03:57"
+        },
+        {
+            "name": "fkooman/rest-plugin-authentication-form",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/fkooman/php-lib-rest-plugin-authentication-form.git",
+                "reference": "b6391ca0d5cf8211c0d58d96cbffa1b21434e7b5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/fkooman/php-lib-rest-plugin-authentication-form/zipball/b6391ca0d5cf8211c0d58d96cbffa1b21434e7b5",
+                "reference": "b6391ca0d5cf8211c0d58d96cbffa1b21434e7b5",
+                "shasum": ""
+            },
+            "require": {
+                "ext-filter": "*",
+                "ext-spl": "*",
+                "fkooman/http": "^1.1.0",
+                "fkooman/rest": "^1.0.1",
+                "fkooman/rest-plugin-authentication": "^1.0.0",
+                "fkooman/tpl": "^2.0.0",
+                "ircmaxell/password-compat": "~1.0",
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "fkooman/json": "^1.0.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "fkooman\\Rest\\Plugin\\Authentication\\Form\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "François Kooman",
+                    "email": "fkooman@tuxed.net",
+                    "role": "Developer"
+                }
+            ],
+            "description": "HTML Form Authentication plugin for fkooman/rest",
+            "time": "2015-10-23 08:57:14"
         },
         {
             "name": "fkooman/tpl",
@@ -771,12 +818,15 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "fkooman/rest-plugin-authentication-form": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
         "ext-json": "*",
         "ext-pdo": "*",
+        "ext-spl": "*",
         "php": ">=5.4"
     },
     "platform-dev": []

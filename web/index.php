@@ -28,7 +28,7 @@ use fkooman\Tpl\Twig\TwigTemplateManager;
 use fkooman\OAuth\OAuthServer;
 use fkooman\OAuth\Storage\UnregisteredClientStorage;
 use fkooman\OAuth\Storage\PdoCodeTokenStorage;
-use fkooman\Rest\Plugin\Authentication\Basic\BasicAuthentication;
+use fkooman\Rest\Plugin\Authentication\Form\FormAuthentication;
 use fkooman\Http\Request;
 
 $iniReader = IniReader::fromFile(
@@ -49,24 +49,25 @@ $document = new DocumentStorage(
 
 $remoteStorage = new RemoteStorage($md, $document);
 
-$userAuth = new BasicAuthentication(
-    function ($userId) use ($iniReader) {
-        $userList = $iniReader->v('BasicAuthentication');
-        if (!array_key_exists($userId, $userList)) {
-            return false;
-        }
-
-        return $userList[$userId];
-    },
-    array('realm' => 'OAuth AS')
-);
-
 $templateManager = new TwigTemplateManager(
     array(
         dirname(__DIR__).'/views',
         dirname(__DIR__).'/config/views',
     ),
     null
+);
+
+$userAuth = new FormAuthentication(
+    function ($userId) use ($iniReader) {
+        $userList = $iniReader->v('Users');
+        if (!array_key_exists($userId, $userList)) {
+            return false;
+        }
+
+        return $userList[$userId];
+    },
+    $templateManager,
+    array('realm' => 'OAuth AS')
 );
 
 // DB
@@ -87,7 +88,9 @@ $server = new OAuthServer(
 
 $apiAuth = new BearerAuthentication(
     new DbTokenValidator($db),
-    array('realm' => 'remoteStorage API')
+    array(
+        'realm' => 'remoteStorage API',
+    )
 );
 
 $service = new RemoteStorageService(

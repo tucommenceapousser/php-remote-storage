@@ -51,6 +51,14 @@ class ApiTestTokenValidator implements ValidatorInterface
                         'scope' => 'api-test:r',
                     )
                 );
+            case '12345':
+                return new TokenInfo(
+                    array(
+                        'active' => true,
+                        'username' => 'foo',
+                        'scope' => 'foo:rw bar:r',
+                    )
+                );
             default:
                 return new TokenInfo(
                     array(

@@ -1,7 +1,7 @@
 ; full path to file storage folder
 storageDir = "/var/lib/php-remote-storage/storage"
 
-[BasicAuthentication]
+[Users]
 ; foo:bar
 foo = "$2y$10$sWzE0MjAP13srnNI/Pg8SuBM6LVmq8/hnznJwkQRF00Obe321PqGq"
 ; bar:baz
