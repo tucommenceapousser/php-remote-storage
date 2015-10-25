@@ -27,10 +27,10 @@
         <p>An application wants to have access to your remoteStorage account:</p>
 
         <table>
-            <tr><th>User ID</th><td><code>{{ user_id|e }}</code></td></tr>
-            <tr><th>Client ID</th><td><code>{{ client_id|e }}</code></td></tr>
+<!--            <tr><th>User ID</th><td><code>{{ user_id|e }}</code></td></tr> -->
+<!--            <tr><th>Client ID</th><td><code>{{ client_id|e }}</code></td></tr> -->
             <tr><th>Redirect URI</th><td><code>{{ redirect_uri|e }}</code></td></tr>
-            <tr><th>Scope</th><td><code>{{ scope|e }}</code></td></tr>
+            <tr><th>Permissions</th><td><code>{{ scope|e }}</code></td></tr>
         </table>
 
         <form method="post" action="{{ request_url|e }}">

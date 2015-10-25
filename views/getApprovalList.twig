@@ -15,22 +15,22 @@
             <h1>remoteStorage</h1>
         </div>
 
-        <p>This is a list of applications you approved:</p>
+        <p>This is a list of applications you approved. If you revoke the
+        permission the application can no longer use the issued tokens and
+        has to ask your permission again!</p>
 
         <table>
-            <tr><th>Client ID</th><th>Scope</th></tr>
+            <tr><th>Redirect URI</th><th>Permissions</th><th></th></tr>
             {% for approval in approvalList %}
             <tr>
-                <td><code>{{ approval.getClientId|e }}</code></td>
+                <td><code>{{ approval.getRedirectUri|e }}</code></td>
                 <td><code>{{ approval.getScope|e }}</code></td>
-<!--
                 <td>
-                    <form method="post">
+                    <form method="post" action="?client_id={{ approval.getClientId|e }}&redirect_uri={{ approval.getRedirectUri|e }}&response_type={{ approval.getResponseType|e }}&scope={{ approval.getScope|e }}">
                         <input type="hidden" name="_METHOD" value="DELETE">
                         <button type="submit" class="error">Revoke</button>
                     </form>
                 </td>
--->
             </tr>
             {% endfor %}
         </table>

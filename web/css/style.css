@@ -55,12 +55,12 @@ table {
     margin: 1em 0;
 }
 
-th {
-    text-align: left;
+td, th {
+    padding: 0.5em 0;
 }
 
-td {
-    padding: 0.5em;
+th {
+    text-align: left;
 }
 
 p {
@@ -72,4 +72,3 @@ input[type="text"], input[type="password"] {
     display: block;
     margin: 0.5em 0;
 }
-    
