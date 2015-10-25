@@ -11,13 +11,15 @@
 <body>
     <div id="container">
         <div class="header">
-            <a href="https://remotestorage.io/"><img src="../img/rs.svg" alt="remoteStorage"></a>
-            <h1>remoteStorage</h1>
+            <a href="../"><img src="../img/rs.svg" alt="remoteStorage"></a>
+            <!-- <h1>remoteStorage</h1> -->
         </div>
 
-        <p>This is a list of applications you approved. If you revoke the
-        permission the application can no longer use the issued tokens and
-        has to ask your permission again!</p>
+        <p>
+        This is a list of applications you gave access to your <a href="https://remotestorage.io/">remoteStorage</a>
+        data. If you revoke the access, the application can no longer use the 
+        issued tokens and has to ask your permission again!
+        </p>
 
         {% if not approvalList %}
             <p class="plain">No permissions granted yet! You need to use an application first :-)</p>

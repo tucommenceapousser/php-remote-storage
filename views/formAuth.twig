@@ -11,11 +11,11 @@
 <body>
     <div id="container">
         <div class="header">
-            <a href="https://remotestorage.io/"><img src="../img/rs.svg" alt="remoteStorage"></a>
-            <h1>remoteStorage</h1>
+            <a href="../"><img src="../img/rs.svg" alt="remoteStorage"></a>
+            <!-- <h1>remoteStorage</h1> -->
         </div>
 
-        <p>Please sign in with your username and password.</p>
+        <p>Please sign in with your username and password to your <a href="https://remotestorage.io/">remoteStorage</a> account.</p>
         <form method="post" action="../_auth/form/verify">
             {% if login_hint %}
                 <input type="text"     name="userName" placeholder="Username" value="{{ login_hint|e }}" required>
