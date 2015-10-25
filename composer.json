@@ -15,11 +15,14 @@
         "fkooman/ini": "^1.0.0",
         "fkooman/io": "^1.0.0",
         "fkooman/json": "^1.0.0",
-        "fkooman/oauth": "^2.0.0",
+        "fkooman/oauth": "dev-master",
         "fkooman/rest-plugin-authentication": "^1.0.0",
         "fkooman/rest-plugin-authentication-bearer": "^1.0.0",
         "fkooman/rest-plugin-authentication-form": "^1.0.0",
         "fkooman/tpl-twig": "^1.0.0",
         "php": ">=5.4"
+    },
+    "require-dev": {
+        "fkooman/rest-plugin-authentication-basic": "^1.0.0"
     }
 }

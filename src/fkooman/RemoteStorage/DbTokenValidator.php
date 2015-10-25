@@ -43,7 +43,7 @@ class DbTokenValidator implements ValidatorInterface
         $stmt = $this->db->prepare(
             sprintf(
                 'SELECT client_id, user_id, issued_at, scope FROM %s WHERE token = :token',
-                $this->prefix.'access_tokens'
+                $this->prefix.'access_token'
             )
         );
         $stmt->bindValue(':token', $bearerToken, PDO::PARAM_STR);

@@ -16,35 +16,45 @@
  */
 namespace fkooman\RemoteStorage;
 
-use fkooman\Http\Request;
-use fkooman\OAuth\OAuthServer;
-use fkooman\OAuth\OAuthService;
-use fkooman\Rest\Plugin\Authentication\Bearer\Scope;
-use fkooman\Rest\Plugin\Authentication\Bearer\TokenInfo;
+use fkooman\Http\Exception\BadRequestException;
+use fkooman\Http\Exception\ForbiddenException;
 use fkooman\Http\Exception\NotFoundException;
 use fkooman\Http\Exception\PreconditionFailedException;
-use fkooman\Http\Exception\ForbiddenException;
-use fkooman\Http\Exception\BadRequestException;
 use fkooman\Http\Exception\UnauthorizedException;
-use fkooman\Rest\Plugin\Authentication\AuthenticationPluginInterface;
+use fkooman\Http\Request;
 use fkooman\Http\Response;
-use InvalidArgumentException;
+use fkooman\IO\IO;
+use fkooman\OAuth\AccessTokenStorageInterface;
+use fkooman\OAuth\ApprovalStorageInterface;
+use fkooman\OAuth\AuthorizationCodeStorageInterface;
+use fkooman\OAuth\ClientStorageInterface;
+use fkooman\OAuth\OAuthService;
+use fkooman\OAuth\ResourceServerStorageInterface;
 use fkooman\RemoteStorage\Exception\PathException;
+use fkooman\Rest\Plugin\Authentication\Bearer\Scope;
+use fkooman\Rest\Plugin\Authentication\Bearer\TokenInfo;
 use fkooman\Tpl\TemplateManagerInterface;
+use InvalidArgumentException;
 
 class RemoteStorageService extends OAuthService
 {
-    /** @var \fkooman\Tpl\TemplateManagerInterface */
-    private $templateManager;
-
     /** @var RemoteStorage */
     private $remoteStorage;
 
-    public function __construct(TemplateManagerInterface $templateManager, OAuthServer $server, RemoteStorage $remoteStorage, AuthenticationPluginInterface $userAuth, AuthenticationPluginInterface $apiAuth, array $opt = array())
+    public function __construct(RemoteStorage $remoteStorage, TemplateManagerInterface $templateManager, ClientStorageInterface $clientStorage, ResourceServerStorageInterface $resourceServerStorage, ApprovalStorageInterface $approvalStorage, AuthorizationCodeStorageInterface $authorizationCodeStorage, AccessTokenStorageInterface $accessTokenStorage, array $options = array(), IO $io = null)
     {
-        $this->templateManager = $templateManager;
         $this->remoteStorage = $remoteStorage;
-        parent::__construct($server, $userAuth, $apiAuth, $opt);
+
+        parent::__construct(
+            $templateManager,
+            $clientStorage,
+            $resourceServerStorage,
+            $approvalStorage,
+            $authorizationCodeStorage,
+            $accessTokenStorage,
+            $options,
+            $io
+        );
 
         $this->get(
             '/',

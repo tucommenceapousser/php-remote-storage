@@ -18,6 +18,7 @@ namespace fkooman\RemoteStorage;
 
 require_once __DIR__.'/Test/TestTokenValidator.php';
 require_once __DIR__.'/Test/TestTemplateManager.php';
+require_once __DIR__.'/Test/TestApproval.php';
 require_once __DIR__.'/Test/TestAuthorizationCode.php';
 require_once __DIR__.'/Test/TestAccessToken.php';
 
@@ -27,12 +28,13 @@ use fkooman\Json\Json;
 use fkooman\Rest\Plugin\Authentication\Bearer\BearerAuthentication;
 use fkooman\Rest\Plugin\Authentication\Basic\BasicAuthentication;
 use PHPUnit_Framework_TestCase;
-use fkooman\OAuth\OAuthServer;
 use fkooman\OAuth\Storage\UnregisteredClientStorage;
+use fkooman\RemoteStorage\Test\TestApproval;
 use fkooman\RemoteStorage\Test\TestTokenValidator;
 use fkooman\RemoteStorage\Test\TestTemplateManager;
 use fkooman\RemoteStorage\Test\TestAuthorizationCode;
 use fkooman\RemoteStorage\Test\TestAccessToken;
+use fkooman\Rest\Plugin\Authentication\AuthenticationPlugin;
 
 class RemoteStorageServiceTest extends PHPUnit_Framework_TestCase
 {
@@ -40,11 +42,8 @@ class RemoteStorageServiceTest extends PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        // Create a stub for the SomeClass class.
         $ioStub = $this->getMockBuilder('fkooman\IO\IO')
                      ->getMock();
-
-        // Configure the stub.
         $ioStub->method('getRandom')
              ->will($this->onConsecutiveCalls(2, 3, 5, 7));
 
@@ -67,14 +66,6 @@ class RemoteStorageServiceTest extends PHPUnit_Framework_TestCase
         $document = new DocumentStorage($tempFile);
         $remoteStorage = new RemoteStorage($md, $document);
 
-        $server = new OAuthServer(
-            new TestTemplateManager(),
-            new UnregisteredClientStorage(),
-            new RemoteStorageResourceServer(),
-            new TestAuthorizationCode(),
-            new TestAccessToken()
-        );
-
         $userAuth = new BasicAuthentication(
             function ($userId) {
                 if ('foo' === $userId) {
@@ -87,7 +78,23 @@ class RemoteStorageServiceTest extends PHPUnit_Framework_TestCase
         );
 
         $apiAuth = new BearerAuthentication(new TestTokenValidator());
-        $this->r = new RemoteStorageService(new TestTemplateManager(), $server, $remoteStorage, $userAuth, $apiAuth);
+
+        $authenticationPlugin = new AuthenticationPlugin();
+        $authenticationPlugin->register($userAuth, 'user');
+        $authenticationPlugin->register($apiAuth, 'api');
+
+        $this->r = new RemoteStorageService(
+            $remoteStorage,
+            new TestTemplateManager(),
+            new UnregisteredClientStorage(),
+            new RemoteStorageResourceServer(),
+            new TestApproval(),
+            new TestAuthorizationCode(),
+            new TestAccessToken(),
+            array(),
+            $ioStub
+        );
+        $this->r->getPluginRegistry()->registerDefaultPlugin($authenticationPlugin);
     }
 
     private function getPutRequest($urlPath, array $h = array())
