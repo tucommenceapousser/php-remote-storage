@@ -19,21 +19,25 @@
         permission the application can no longer use the issued tokens and
         has to ask your permission again!</p>
 
-        <table>
-            <tr><th>Redirect URI</th><th>Permissions</th><th></th></tr>
-            {% for approval in approvalList %}
-            <tr>
-                <td><code>{{ approval.getRedirectUri|e }}</code></td>
-                <td><code>{{ approval.getScope|e }}</code></td>
-                <td>
-                    <form method="post" action="?client_id={{ approval.getClientId|e }}&redirect_uri={{ approval.getRedirectUri|e }}&response_type={{ approval.getResponseType|e }}&scope={{ approval.getScope|e }}">
-                        <input type="hidden" name="_METHOD" value="DELETE">
-                        <button type="submit" class="error">Revoke</button>
-                    </form>
-                </td>
-            </tr>
-            {% endfor %}
-        </table>
+        {% if not approvalList %}
+            <p class="plain">No permissions granted yet! You need to use an application first :-)</p>
+        {% else %}
+            <table>
+                <tr><th>Redirect URI</th><th>Permissions</th><th></th></tr>
+                {% for approval in approvalList %}
+                <tr>
+                    <td><code>{{ approval.getRedirectUri|e }}</code></td>
+                    <td><code>{{ approval.getScope|e }}</code></td>
+                    <td>
+                        <form method="post" action="?client_id={{ approval.getClientId|e }}&redirect_uri={{ approval.getRedirectUri|e }}&response_type={{ approval.getResponseType|e }}&scope={{ approval.getScope|e }}">
+                            <input type="hidden" name="_METHOD" value="DELETE">
+                            <button type="submit" class="error">Revoke</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+        {% endif %}
     </div> <!-- /container -->
 </body>
 </html>
