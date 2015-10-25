@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" type="text/css" href="css/normalize.css">
+  <link rel="stylesheet" type="text/css" href="css/style.css">
+  <title>OAuth</title>
+</head>
+<body>
+    <div id="container">
+        <div class="header">
+            <a href="https://remotestorage.io/"><img src="img/rs.svg" alt="remoteStorage"></a>
+            <h1>remoteStorage</h1>
+        </div>
+
+        <p>This is a list of applications you approved:</p>
+
+        <table>
+            <tr><th>Client ID</th><th>Scope</th></tr>
+            {% for approval in approvalList %}
+            <tr>
+                <td><code>{{ approval.getClientId|e }}</code></td>
+                <td><code>{{ approval.getScope|e }}</code></td>
+<!--
+                <td>
+                    <form method="post">
+                        <input type="hidden" name="_METHOD" value="DELETE">
+                        <button type="submit" class="error">Revoke</button>
+                    </form>
+                </td>
+-->
+            </tr>
+            {% endfor %}
+        </table>
+    </div> <!-- /container -->
+</body>
+</html>

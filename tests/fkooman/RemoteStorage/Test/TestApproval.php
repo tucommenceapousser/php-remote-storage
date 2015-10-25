@@ -36,4 +36,11 @@ class TestApproval implements ApprovalStorageInterface
     {
         return true;
     }
+
+    public function getApprovalList($userId)
+    {
+        return array(
+            new Approval('foo', 'bar', 'read'),
+        );
+    }
 }
