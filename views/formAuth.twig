@@ -4,19 +4,19 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <link rel="stylesheet" type="text/css" href="css/normalize.css">
-  <link rel="stylesheet" type="text/css" href="css/style.css">
+  <link rel="stylesheet" type="text/css" href="../css/normalize.css">
+  <link rel="stylesheet" type="text/css" href="../css/style.css">
   <title>OAuth</title>
 </head>
 <body>
     <div id="container">
         <div class="header">
-            <a href="https://remotestorage.io/"><img src="img/rs.svg" alt="remoteStorage"></a>
+            <a href="https://remotestorage.io/"><img src="../img/rs.svg" alt="remoteStorage"></a>
             <h1>remoteStorage</h1>
         </div>
 
         <p>Please sign in with your username and password.</p>
-        <form method="post" action="_auth/form/verify">
+        <form method="post" action="../_auth/form/verify">
             {% if login_hint %}
                 <input type="text"     name="userName" placeholder="Username" value="{{ login_hint|e }}" required>
                 <input type="password" name="userPass" placeholder="Password" autofocus required>
