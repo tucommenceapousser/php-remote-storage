@@ -12,21 +12,24 @@
     <div id="container">
         <div class="header">
             <a href="../"><img src="../img/rs.svg" alt="remoteStorage"></a>
-            <!-- <h1>remoteStorage</h1> -->
         </div>
+
+        <p>
+            You are logged in as <strong>{{ user_id|e }}</strong>.
+        </p>
 
         <p>
         This is a list of applications you gave access to your <a href="https://remotestorage.io/">remoteStorage</a>
         data. If you revoke the access, the application can no longer use the 
         issued tokens and has to ask your permission again!
         </p>
-
-        {% if not approvalList %}
+        
+        {% if not approval_list %}
             <p class="plain">No permissions granted yet! You need to use an application first :-)</p>
         {% else %}
             <table>
                 <tr><th>Redirect URI</th><th>Permissions</th><th></th></tr>
-                {% for approval in approvalList %}
+                {% for approval in approval_list %}
                 <tr>
                     <td><code>{{ approval.getRedirectUri|e }}</code></td>
                     <td><code>{{ approval.getScope|e }}</code></td>
@@ -46,6 +49,7 @@
             <button type="submit" class="warning">Logout</button>
         </form> 
 -->
+
     </div> <!-- /container -->
 </body>
 </html>

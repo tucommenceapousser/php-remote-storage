@@ -12,7 +12,6 @@
     <div id="container">
         <div class="header">
             <a href="../"><img src="../img/rs.svg" alt="remoteStorage"></a>
-            <!-- <h1>remoteStorage</h1> -->
         </div>
 
 <!--
@@ -24,11 +23,13 @@
             </p>
         {% endif %}
 -->
-        <p>An application wants to access your <a href="https://remotestorage.io/">remoteStorage</a> data:</p>
+        <p>An application wants to access your <a href="https://remotestorage.io/">remoteStorage</a> data.</p>
+
+        <p>
+            You are logged in as <strong>{{ user_id|e }}</strong>.
+        </p>
 
         <table>
-<!--            <tr><th>User ID</th><td><code>{{ user_id|e }}</code></td></tr> -->
-<!--            <tr><th>Client ID</th><td><code>{{ client_id|e }}</code></td></tr> -->
             <tr><th>Redirect URI</th><td><code>{{ redirect_uri|e }}</code></td></tr>
             <tr><th>Permissions</th><td><code>{{ scope|e }}</code></td></tr>
         </table>
