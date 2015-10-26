@@ -18,7 +18,9 @@ require_once dirname(__DIR__).'/vendor/autoload.php';
 
 use fkooman\Http\Request;
 use fkooman\Ini\IniReader;
-use fkooman\OAuth\Storage\PdoApprovalCodeTokenStorage;
+use fkooman\OAuth\Storage\PdoAccessTokenStorage;
+use fkooman\OAuth\Storage\PdoAuthorizationCodeStorage;
+use fkooman\OAuth\Storage\PdoApprovalStorage;
 use fkooman\OAuth\Storage\UnregisteredClientStorage;
 use fkooman\RemoteStorage\DbTokenValidator;
 use fkooman\RemoteStorage\DocumentStorage;
@@ -49,7 +51,9 @@ $templateManager = new TwigTemplateManager(
     null
 );
 
-$pdoApprovalCodeTokenStorage = new PdoApprovalCodeTokenStorage($db);
+$approvalStorage = new PdoApprovalStorage($db);
+$authorizationCodeStorage = new PdoAuthorizationCodeStorage($db);
+$accessTokenStorage = new PdoAccessTokenStorage($db);
 
 $md = new MetadataStorage($db);
 $document = new DocumentStorage(
@@ -88,9 +92,9 @@ $service = new RemoteStorageService(
     $templateManager,
     new UnregisteredClientStorage(),
     new RemoteStorageResourceServer(),
-    $pdoApprovalCodeTokenStorage,
-    $pdoApprovalCodeTokenStorage,
-    $pdoApprovalCodeTokenStorage,
+    $approvalStorage,
+    $authorizationCodeStorage,
+    $accessTokenStorage,
     array(
         'disable_token_endpoint' => true,
         'disable_introspect_endpoint' => true,
