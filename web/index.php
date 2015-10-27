@@ -99,6 +99,7 @@ $service = new RemoteStorageService(
         'disable_token_endpoint' => true,
         'disable_introspect_endpoint' => true,
         'route_prefix' => '/_oauth',
+        'require_state' => false,
     )
 );
 $service->getPluginRegistry()->registerDefaultPlugin($authenticationPlugin);
