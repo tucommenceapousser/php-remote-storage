@@ -23,11 +23,18 @@
             </p>
         {% endif %}
 -->
-        <p>An application wants to access your <a href="https://remotestorage.io/">remoteStorage</a> data.</p>
-
         <p>
-            You are logged in as <strong>{{ user_id|e }}</strong>.
+            You are currently logged in as <strong>{{ user_id|e }}</strong>.
         </p>
+
+        <!-- switch user -->
+<!--        <form method="post" action="../_auth/form/logout">
+            <input type="hidden" name="redirect_to" value ="{{ request_url|e }}">
+            <button type="submit">Switch User</button>
+        </form> -->
+
+
+        <p>An application wants to access your <a href="https://remotestorage.io/">remoteStorage</a> data.</p>
 
         <table>
             <tr><th>Redirect URI</th><td><code>{{ redirect_uri|e }}</code></td></tr>

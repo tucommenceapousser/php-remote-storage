@@ -15,9 +15,16 @@
         </div>
 
         <p>
-            You are logged in as <strong>{{ user_id|e }}</strong>.
+            You are currently logged in as <strong>{{ user_id|e }}</strong>.
         </p>
 
+        <!-- logout -->
+        <form method="post" action="../_auth/form/logout">
+            <!-- <input type="hidden" name="redirect_to" value ="{{ request_url|e }}"> -->
+            <button type="submit">Logout</button>
+        </form>
+
+        <h2>Applications</h2>    
         <p>
         This is a list of applications you gave access to your <a href="https://remotestorage.io/">remoteStorage</a>
         data. If you revoke the access, the application can no longer use the 
@@ -43,13 +50,6 @@
                 {% endfor %}
             </table>
         {% endif %}
-
-<!--
-        <form method="post" action="../_auth/form/logout">
-            <button type="submit" class="warning">Logout</button>
-        </form> 
--->
-
     </div> <!-- /container -->
 </body>
 </html>

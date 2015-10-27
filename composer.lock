@@ -173,12 +173,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/fkooman/php-lib-oauth.git",
-                "reference": "49130d8cdba94c3384124195d8d4f0d3a4036940"
+                "reference": "2ecc09279e48dbd5fdb886865b7cd8bfb84b5999"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fkooman/php-lib-oauth/zipball/49130d8cdba94c3384124195d8d4f0d3a4036940",
-                "reference": "49130d8cdba94c3384124195d8d4f0d3a4036940",
+                "url": "https://api.github.com/repos/fkooman/php-lib-oauth/zipball/2ecc09279e48dbd5fdb886865b7cd8bfb84b5999",
+                "reference": "2ecc09279e48dbd5fdb886865b7cd8bfb84b5999",
                 "shasum": ""
             },
             "require": {
@@ -215,7 +215,7 @@
                 }
             ],
             "description": "OAuth 2.0 Server Library",
-            "time": "2015-10-26 19:25:07"
+            "time": "2015-10-27 11:44:25"
         },
         {
             "name": "fkooman/rest",
@@ -350,16 +350,16 @@
         },
         {
             "name": "fkooman/rest-plugin-authentication-form",
-            "version": "1.0.0",
+            "version": "1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/fkooman/php-lib-rest-plugin-authentication-form.git",
-                "reference": "2e7604098300958d2cbd294cf46c41ea1a42b5f5"
+                "reference": "1580ac4ff6d0a8d9f093475926bb7cf925637ada"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fkooman/php-lib-rest-plugin-authentication-form/zipball/2e7604098300958d2cbd294cf46c41ea1a42b5f5",
-                "reference": "2e7604098300958d2cbd294cf46c41ea1a42b5f5",
+                "url": "https://api.github.com/repos/fkooman/php-lib-rest-plugin-authentication-form/zipball/1580ac4ff6d0a8d9f093475926bb7cf925637ada",
+                "reference": "1580ac4ff6d0a8d9f093475926bb7cf925637ada",
                 "shasum": ""
             },
             "require": {
@@ -393,7 +393,7 @@
                 }
             ],
             "description": "HTML Form Authentication plugin for fkooman/rest",
-            "time": "2015-10-23 10:58:52"
+            "time": "2015-10-27 11:41:18"
         },
         {
             "name": "fkooman/tpl",

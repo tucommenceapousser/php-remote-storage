@@ -2,6 +2,7 @@ body {
     max-width: 600px;
     margin: 1em auto;
     line-height: 1.4em;
+    padding: 0.3em;
 }
 
 div.header {
@@ -34,10 +35,11 @@ a {
 }
 
 button {
-    padding: 0.4em;
     background-color: #ddd;
     border: 1px solid #bbb;
-    color: #000; 
+    color: #000;
+    height: 2em;
+    line-height: 2em;
 }
 
 button.info {
