@@ -14,25 +14,15 @@
             <a href="../"><img src="../img/rs.svg" alt="remoteStorage"></a>
         </div>
 
-<!--
-        {% if not has_state %}
-            <p class="warning">
-                The client does not use the <code>state</code> parameter to 
-                avoid CSRF! This is <a href="https://github.com/remotestorage/remotestorage.js/issues/900">probably</a> secure in case of 
-                <a href="https://github.com/remotestorage/remotestorage.js">remotestorage.js</a>.
-            </p>
-        {% endif %}
--->
         <p>
             You are currently logged in as <strong>{{ user_id|e }}</strong>.
         </p>
 
         <!-- switch user -->
-<!--        <form method="post" action="../_auth/form/logout">
+        <form method="post" action="../_auth/form/logout">
             <input type="hidden" name="redirect_to" value ="{{ request_url|e }}">
             <button type="submit">Switch User</button>
-        </form> -->
-
+        </form>
 
         <p>An application wants to access your <a href="https://remotestorage.io/">remoteStorage</a> data.</p>
 
