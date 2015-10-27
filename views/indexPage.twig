@@ -4,14 +4,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <link rel="stylesheet" type="text/css" href="css/normalize.css">
-  <link rel="stylesheet" type="text/css" href="css/style.css">
+  <link rel="stylesheet" type="text/css" href="{{ rootFolder|e }}css/normalize.css">
+  <link rel="stylesheet" type="text/css" href="{{ rootFolder|e }}css/style.css">
   <title>remoteStorage</title>
 </head>
 <body>
     <div id="container">
         <div class="header">
-            <a href="."><img src="img/rs.svg" alt="remoteStorage"></a>
+            <a href="{{ rootFolder|e }}"><img src="{{ rootFolder|e }}img/rs.svg" alt="remoteStorage"></a>
         </div>
 
         <p>
@@ -33,7 +33,7 @@
         </ul>
        
         <p>
-            <a href="_oauth/approvals">Manage</a> your application permissions.
+            <a href="{{ rootFolder|e }}_approvals">Manage</a> your application permissions.
         </p>
 
     </div> <!-- /container -->

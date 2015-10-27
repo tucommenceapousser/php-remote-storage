@@ -47,15 +47,13 @@ class RemoteStorageServiceTest extends PHPUnit_Framework_TestCase
         $ioStub->method('getRandom')
              ->will($this->onConsecutiveCalls(2, 3, 5, 7));
 
-        $md = new MetadataStorage(
-            new PDO(
-                $GLOBALS['DB_DSN'],
-                $GLOBALS['DB_USER'],
-                $GLOBALS['DB_PASSWD']
-            ),
-            '',
-            $ioStub
+        $db = new PDO(
+            $GLOBALS['DB_DSN'],
+            $GLOBALS['DB_USER'],
+            $GLOBALS['DB_PASSWD']
         );
+
+        $md = new MetadataStorage($db, '', $ioStub);
         $md->initDatabase();
 
         $tempFile = tempnam(sys_get_temp_dir(), '');
@@ -65,6 +63,8 @@ class RemoteStorageServiceTest extends PHPUnit_Framework_TestCase
         mkdir($tempFile);
         $document = new DocumentStorage($tempFile);
         $remoteStorage = new RemoteStorage($md, $document);
+
+        $approvalManagementStorage = new ApprovalManagementStorage($db);
 
         $userAuth = new BasicAuthentication(
             function ($userId) {
@@ -85,6 +85,7 @@ class RemoteStorageServiceTest extends PHPUnit_Framework_TestCase
 
         $this->r = new RemoteStorageService(
             $remoteStorage,
+            $approvalManagementStorage,
             new TestTemplateManager(),
             new UnregisteredClientStorage(),
             new RemoteStorageResourceServer(),

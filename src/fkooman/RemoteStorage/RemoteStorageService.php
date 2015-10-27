@@ -35,15 +35,22 @@ use fkooman\Rest\Plugin\Authentication\Bearer\Scope;
 use fkooman\Rest\Plugin\Authentication\Bearer\TokenInfo;
 use fkooman\Tpl\TemplateManagerInterface;
 use InvalidArgumentException;
+use fkooman\Rest\Plugin\Authentication\UserInfoInterface;
+use fkooman\OAuth\Approval;
+use fkooman\Http\RedirectResponse;
 
 class RemoteStorageService extends OAuthService
 {
     /** @var RemoteStorage */
     private $remoteStorage;
 
-    public function __construct(RemoteStorage $remoteStorage, TemplateManagerInterface $templateManager, ClientStorageInterface $clientStorage, ResourceServerStorageInterface $resourceServerStorage, ApprovalStorageInterface $approvalStorage, AuthorizationCodeStorageInterface $authorizationCodeStorage, AccessTokenStorageInterface $accessTokenStorage, array $options = array(), IO $io = null)
+    /** @var ApprovalManagementStorage */
+    private $approvalManagementStorage;
+
+    public function __construct(RemoteStorage $remoteStorage, ApprovalManagementStorage $approvalManagementStorage, TemplateManagerInterface $templateManager, ClientStorageInterface $clientStorage, ResourceServerStorageInterface $resourceServerStorage, ApprovalStorageInterface $approvalStorage, AuthorizationCodeStorageInterface $authorizationCodeStorage, AccessTokenStorageInterface $accessTokenStorage, array $options = array(), IO $io = null)
     {
         $this->remoteStorage = $remoteStorage;
+        $this->approvalManagementStorage = $approvalManagementStorage;
 
         parent::__construct(
             $templateManager,
@@ -54,6 +61,50 @@ class RemoteStorageService extends OAuthService
             $accessTokenStorage,
             $options,
             $io
+        );
+
+        $this->get(
+            '/_approvals',
+            function (Request $request, UserInfoInterface $userInfo) {
+                $approvalList = $this->approvalManagementStorage->getApprovalList($userInfo->getUserId());
+
+                return $this->templateManager->render(
+                    'getApprovalList',
+                    array(
+                        'approval_list' => $approvalList,
+                        'user_id' => $userInfo->getUserId(),
+                        'request_url' => $request->getUrl()->toString(),
+                    )
+                );
+            },
+            array(
+                'fkooman\Rest\Plugin\Authentication\AuthenticationPlugin' => array(
+                    'activate' => array('user'),
+                ),
+            )
+        );
+
+        $this->delete(
+            '/_approvals',
+            function (Request $request, UserInfoInterface $userInfo) {
+                $deleteApprovalRequest = RequestValidation::validateDeleteApprovalRequest($request);
+
+                $approval = new Approval(
+                    $userInfo->getUserId(),
+                    $deleteApprovalRequest['client_id'],
+                    $deleteApprovalRequest['redirect_uri'],
+                    $deleteApprovalRequest['response_type'],
+                    $deleteApprovalRequest['scope']
+                );
+                $this->approvalManagementStorage->deleteApproval($approval);
+
+                return new RedirectResponse($request->getUrl()->getRootUrl().'_approvals', 302);
+            },
+            array(
+                'fkooman\Rest\Plugin\Authentication\AuthenticationPlugin' => array(
+                    'activate' => array('user'),
+                ),
+            )
         );
 
         $this->get(

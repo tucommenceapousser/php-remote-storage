@@ -28,6 +28,7 @@ use fkooman\RemoteStorage\MetadataStorage;
 use fkooman\RemoteStorage\RemoteStorage;
 use fkooman\RemoteStorage\RemoteStorageResourceServer;
 use fkooman\RemoteStorage\RemoteStorageService;
+use fkooman\RemoteStorage\ApprovalManagementStorage;
 use fkooman\Rest\Plugin\Authentication\AuthenticationPlugin;
 use fkooman\Rest\Plugin\Authentication\Bearer\BearerAuthentication;
 use fkooman\Rest\Plugin\Authentication\Form\FormAuthentication;
@@ -43,12 +44,19 @@ $db = new PDO(
     $iniReader->v('Db', 'password', false)
 );
 
+$request = new Request($_SERVER);
+
 $templateManager = new TwigTemplateManager(
     array(
         dirname(__DIR__).'/views',
         dirname(__DIR__).'/config/views',
     ),
     null
+);
+$templateManager->setDefault(
+    array(
+        'rootFolder' => $request->getUrl()->getRoot(),
+    )
 );
 
 $approvalStorage = new PdoApprovalStorage($db);
@@ -89,6 +97,7 @@ $authenticationPlugin->register($apiAuth, 'api');
 
 $service = new RemoteStorageService(
     $remoteStorage,
+    new ApprovalManagementStorage($db),
     $templateManager,
     new UnregisteredClientStorage(),
     new RemoteStorageResourceServer(),
@@ -104,5 +113,4 @@ $service = new RemoteStorageService(
 );
 $service->getPluginRegistry()->registerDefaultPlugin($authenticationPlugin);
 
-$request = new Request($_SERVER);
 $service->run($request)->send();
