@@ -36,6 +36,7 @@ class ApprovalManagementStorage
 
     public function deleteApproval(Approval $approval)
     {
+        // delete approvals
         $stmt = $this->db->prepare(
             sprintf(
                 'DELETE FROM %s WHERE user_id = :user_id AND client_id = :client_id AND redirect_uri = :redirect_uri AND response_type = :response_type AND scope = :scope',
@@ -46,6 +47,18 @@ class ApprovalManagementStorage
         $stmt->bindValue(':client_id', $approval->getClientId(), PDO::PARAM_STR);
         $stmt->bindValue(':redirect_uri', $approval->getRedirectUri(), PDO::PARAM_STR);
         $stmt->bindValue(':response_type', $approval->getResponseType(), PDO::PARAM_STR);
+        $stmt->bindValue(':scope', $approval->getScope(), PDO::PARAM_STR);
+        $stmt->execute();
+
+        // delete access tokens as well
+        $stmt = $this->db->prepare(
+            sprintf(
+                'DELETE FROM %s WHERE user_id = :user_id AND client_id = :client_id AND scope = :scope',
+                $this->dbPrefix.'access_token'
+            )
+        );
+        $stmt->bindValue(':user_id', $approval->getUserId(), PDO::PARAM_STR);
+        $stmt->bindValue(':client_id', $approval->getClientId(), PDO::PARAM_STR);
         $stmt->bindValue(':scope', $approval->getScope(), PDO::PARAM_STR);
         $stmt->execute();
 
