@@ -18,6 +18,8 @@
         <p>An application wants to access your <a href="https://remotestorage.io/">remoteStorage</a> data.</p>
 
         <table>
+            <tr><th>Client ID</th><td><code>{{ client_id|e }}</code></td></tr>
+
             <tr><th>Redirect URI</th><td><code>{{ redirect_uri|e }}</code></td></tr>
             <tr><th>Permissions</th><td><code>{{ scope|e }}</code></td></tr>
         </table>
