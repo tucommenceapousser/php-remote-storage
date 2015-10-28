@@ -1,19 +1,10 @@
 <!DOCTYPE html>
 
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <link rel="stylesheet" type="text/css" href="{{ rootFolder|e }}css/normalize.css">
-  <link rel="stylesheet" type="text/css" href="{{ rootFolder|e }}css/style.css">
-  <title>OAuth</title>
-</head>
+{% include 'head.twig' %}
 <body>
     <div id="container">
-        <div class="header">
-            <a href="{{ rootFolder|e }}"><img src="{{ rootFolder|e }}img/rs.svg" alt="remoteStorage"></a>
-        </div>
-
+        {% include 'header.twig' %}
         <p>
             You are currently logged in as <strong>{{ user_id|e }}</strong>.
         </p>

@@ -1,19 +1,17 @@
 body {
-    max-width: 600px;
+    max-width: 650px;
     margin: 1em auto;
     line-height: 1.4em;
     padding: 0.3em;
-}
-
-div.header {
+    color: #444;
 }
 
 div.header img {
     height: 3em;
 }
 
-div.header h1 {
-    display: inline;
+p {
+    text-align: justify;
 }
 
 p.warning {
@@ -71,10 +69,6 @@ td, th {
 
 th {
     text-align: left;
-}
-
-p {
-    text-align: justify;
 }
 
 input[type="text"], input[type="password"] {
