@@ -9,16 +9,16 @@
     "packages": [
         {
             "name": "fkooman/http",
-            "version": "1.1.2",
+            "version": "1.1.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/fkooman/php-lib-http.git",
-                "reference": "1c97abc9f3e7057e29133800ca4d625cbed1ab7f"
+                "reference": "c001a06364893d00ed8c2ce109465ceff586e3dd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fkooman/php-lib-http/zipball/1c97abc9f3e7057e29133800ca4d625cbed1ab7f",
-                "reference": "1c97abc9f3e7057e29133800ca4d625cbed1ab7f",
+                "url": "https://api.github.com/repos/fkooman/php-lib-http/zipball/c001a06364893d00ed8c2ce109465ceff586e3dd",
+                "reference": "c001a06364893d00ed8c2ce109465ceff586e3dd",
                 "shasum": ""
             },
             "require": {
@@ -49,7 +49,7 @@
                 }
             ],
             "description": "Simple PHP library for dealing with HTTP requests and responses.",
-            "time": "2015-10-30 12:13:14"
+            "time": "2015-11-01 12:58:11"
         },
         {
             "name": "fkooman/ini",
