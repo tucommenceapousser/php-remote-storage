@@ -32,22 +32,27 @@ class Path
             throw new PathException('invalid path: not a string');
         }
 
-        // must contain at least one slash and start with it
+        // MUST contain at least one slash and start with it
         if (0 !== strpos($p, '/')) {
             throw new PathException('invalid path: does not start with /');
         }
 
-        // must not contain ".."
+        // MUST NOT contain encoded "/"
+        if (false !== stripos($p, '%2f')) {
+            throw new PathException('invalid path: contains encoded "/"');
+        }
+
+        // MUST NOT contain ".."
         if (false !== strpos($p, '..')) {
             throw new PathException('invalid path: contains ..');
         }
 
-        // must not contain "//"
+        // MUST NOT contain "//"
         if (false !== strpos($p, '//')) {
             throw new PathException('invalid path: contains //');
         }
 
-        // must at least contain a user
+        // MUST contain a user
         $pathParts = explode('/', $p);
         if (count($pathParts) < 3) {
             throw new PathException('invalid path: no user specified');
