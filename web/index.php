@@ -51,7 +51,7 @@ $templateManager = new TwigTemplateManager(
         dirname(__DIR__).'/views',
         dirname(__DIR__).'/config/views',
     ),
-    null
+    $iniReader->v('templateCache', false, null)
 );
 $templateManager->setDefault(
     array(
