@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "61651318fad5370265ae580ecac816fe",
-    "content-hash": "7348610ba3fd6d8b7c1e504093e7ef34",
+    "hash": "bd00b59fd81e6aa3a866812ab482de90",
+    "content-hash": "d80d9d3ff22508ee949d2cdc4c03a7f5",
     "packages": [
         {
             "name": "fkooman/http",
@@ -169,16 +169,16 @@
         },
         {
             "name": "fkooman/oauth",
-            "version": "3.0.1",
+            "version": "4.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/fkooman/php-lib-oauth.git",
-                "reference": "6b48a6e476f3fe50296f8a686b615494b0561f97"
+                "reference": "9b9662a77bdc65186317ad46be6807355fcd41b1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fkooman/php-lib-oauth/zipball/6b48a6e476f3fe50296f8a686b615494b0561f97",
-                "reference": "6b48a6e476f3fe50296f8a686b615494b0561f97",
+                "url": "https://api.github.com/repos/fkooman/php-lib-oauth/zipball/9b9662a77bdc65186317ad46be6807355fcd41b1",
+                "reference": "9b9662a77bdc65186317ad46be6807355fcd41b1",
                 "shasum": ""
             },
             "require": {
@@ -215,7 +215,7 @@
                 }
             ],
             "description": "OAuth 2.0 Server Library",
-            "time": "2015-11-03 20:36:44"
+            "time": "2015-11-03 20:47:20"
         },
         {
             "name": "fkooman/rest",
