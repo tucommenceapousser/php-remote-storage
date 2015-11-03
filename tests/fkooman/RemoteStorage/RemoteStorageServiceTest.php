@@ -28,7 +28,6 @@ use fkooman\Json\Json;
 use fkooman\Rest\Plugin\Authentication\Bearer\BearerAuthentication;
 use fkooman\Rest\Plugin\Authentication\Basic\BasicAuthentication;
 use PHPUnit_Framework_TestCase;
-use fkooman\OAuth\Storage\UnregisteredClientStorage;
 use fkooman\RemoteStorage\Test\TestApproval;
 use fkooman\RemoteStorage\Test\TestTokenValidator;
 use fkooman\RemoteStorage\Test\TestTemplateManager;
@@ -87,7 +86,7 @@ class RemoteStorageServiceTest extends PHPUnit_Framework_TestCase
             $remoteStorage,
             $approvalManagementStorage,
             new TestTemplateManager(),
-            new UnregisteredClientStorage(),
+            new RemoteStorageClientStorage(),
             new RemoteStorageResourceServer(),
             new TestApproval(),
             new TestAuthorizationCode(),

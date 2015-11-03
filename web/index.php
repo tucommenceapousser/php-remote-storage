@@ -21,7 +21,7 @@ use fkooman\Ini\IniReader;
 use fkooman\OAuth\Storage\PdoAccessTokenStorage;
 use fkooman\OAuth\Storage\PdoAuthorizationCodeStorage;
 use fkooman\OAuth\Storage\PdoApprovalStorage;
-use fkooman\OAuth\Storage\UnregisteredClientStorage;
+use fkooman\RemoteStorage\RemoteStorageClientStorage;
 use fkooman\RemoteStorage\DbTokenValidator;
 use fkooman\RemoteStorage\DocumentStorage;
 use fkooman\RemoteStorage\MetadataStorage;
@@ -99,7 +99,7 @@ $service = new RemoteStorageService(
     $remoteStorage,
     new ApprovalManagementStorage($db),
     $templateManager,
-    new UnregisteredClientStorage(),
+    new RemoteStorageClientStorage(),
     new RemoteStorageResourceServer(),
     $approvalStorage,
     $authorizationCodeStorage,
