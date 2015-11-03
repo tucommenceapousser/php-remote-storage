@@ -9,18 +9,10 @@
             You are currently logged in as <strong>{{ user_id|e }}</strong>.
         </p>
 
-        <!-- switch user -->
-<!--        <form method="post" action="{{ rootFolder|e }}_auth/form/logout">
-            <input type="hidden" name="redirect_to" value ="{{ request_url|e }}">
-            <button type="submit">Switch User</button>
-        </form> -->
-
         <p>An application wants to access your <a href="https://remotestorage.io/">remoteStorage</a> data.</p>
 
         <table>
-            <tr><th>Client ID</th><td><code>{{ client_id|e }}</code></td></tr>
-
-            <tr><th>Redirect URI</th><td><code>{{ redirect_uri|e }}</code></td></tr>
+            <tr><th>Application</th><td><code>{{ client_id|e }}</code></td></tr>
             <tr><th>Permissions</th><td><code>{{ scope|e }}</code></td></tr>
         </table>
 

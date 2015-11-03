@@ -17,21 +17,14 @@
 namespace fkooman\RemoteStorage;
 
 use PDO;
+use fkooman\OAuth\Storage\PdoBaseStorage;
 use fkooman\OAuth\Approval;
 
-class ApprovalManagementStorage
+class ApprovalManagementStorage extends PdoBaseStorage
 {
-    /** @var \PDO */
-    protected $db;
-
-    /** @var string */
-    protected $dbPrefix;
-
     public function __construct(PDO $db, $dbPrefix = '')
     {
-        $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $this->db = $db;
-        $this->dbPrefix = $dbPrefix;
+        parent::__construct($db, $dbPrefix);
     }
 
     public function deleteApproval(Approval $approval)
@@ -39,13 +32,12 @@ class ApprovalManagementStorage
         // delete approvals
         $stmt = $this->db->prepare(
             sprintf(
-                'DELETE FROM %s WHERE user_id = :user_id AND client_id = :client_id AND redirect_uri = :redirect_uri AND response_type = :response_type AND scope = :scope',
+                'DELETE FROM %s WHERE user_id = :user_id AND client_id = :client_id AND response_type = :response_type AND scope = :scope',
                 $this->dbPrefix.'approval'
             )
         );
         $stmt->bindValue(':user_id', $approval->getUserId(), PDO::PARAM_STR);
         $stmt->bindValue(':client_id', $approval->getClientId(), PDO::PARAM_STR);
-        $stmt->bindValue(':redirect_uri', $approval->getRedirectUri(), PDO::PARAM_STR);
         $stmt->bindValue(':response_type', $approval->getResponseType(), PDO::PARAM_STR);
         $stmt->bindValue(':scope', $approval->getScope(), PDO::PARAM_STR);
         $stmt->execute();
@@ -69,7 +61,7 @@ class ApprovalManagementStorage
     {
         $stmt = $this->db->prepare(
             sprintf(
-                'SELECT user_id, client_id, redirect_uri, response_type, scope FROM %s WHERE user_id = :user_id',
+                'SELECT user_id, client_id, response_type, scope FROM %s WHERE user_id = :user_id',
                 $this->dbPrefix.'approval'
             )
         );
@@ -79,9 +71,14 @@ class ApprovalManagementStorage
 
         $approvalList = array();
         foreach ($result as $r) {
-            $approvalList[] = new Approval($r['user_id'], $r['client_id'], $r['redirect_uri'], $r['response_type'], $r['scope']);
+            $approvalList[] = new Approval($r['user_id'], $r['client_id'], $r['response_type'], $r['scope']);
         }
 
         return $approvalList;
+    }
+
+    public function createTableQueries($dbPrefix) 
+    {
+        return array();
     }
 }

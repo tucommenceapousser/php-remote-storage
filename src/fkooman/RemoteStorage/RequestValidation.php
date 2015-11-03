@@ -42,15 +42,6 @@ class RequestValidation
             throw new BadRequestException('invalid response_type');
         }
 
-        // REQUIRED redirect_uri
-        $redirectUri = $request->getUrl()->getQueryParameter('redirect_uri');
-        if (is_null($redirectUri)) {
-            throw new BadRequestException('missing redirect_uri');
-        }
-        if (false === InputValidation::redirectUri($redirectUri)) {
-            throw new BadRequestException('invalid redirect_uri');
-        }
-
         // REQUIRED scope
         $scope = $request->getUrl()->getQueryParameter('scope');
         if (is_null($scope)) {
@@ -63,7 +54,6 @@ class RequestValidation
         return array(
             'client_id' => $clientId,
             'response_type' => $responseType,
-            'redirect_uri' => $redirectUri,
             'scope' => $scope,
         );
     }

@@ -25,13 +25,13 @@
             <p class="plain">No permissions granted yet! You need to use an application first :-)</p>
         {% else %}
             <table>
-                <tr><th>Redirect URI</th><th>Permissions</th><th></th></tr>
+                <tr><th>Application</th><th>Permissions</th><th></th></tr>
                 {% for approval in approval_list %}
                 <tr>
-                    <td><code>{{ approval.getRedirectUri|e }}</code></td>
+                    <td><code>{{ approval.getClientId|e }}</code></td>                    
                     <td><code>{{ approval.getScope|e }}</code></td>
                     <td>
-                        <form method="post" action="{{ rootFolder|e }}_approvals?client_id={{ approval.getClientId|e }}&redirect_uri={{ approval.getRedirectUri|e }}&response_type={{ approval.getResponseType|e }}&scope={{ approval.getScope|e }}">
+                        <form method="post" action="{{ rootFolder|e }}_approvals?client_id={{ approval.getClientId|e }}&amp;response_type={{ approval.getResponseType|e }}&amp;scope={{ approval.getScope|e }}">
                             <input type="hidden" name="_METHOD" value="DELETE">
                             <button type="submit" class="error">Revoke</button>
                         </form>

@@ -92,7 +92,6 @@ class RemoteStorageService extends OAuthService
                 $approval = new Approval(
                     $userInfo->getUserId(),
                     $deleteApprovalRequest['client_id'],
-                    $deleteApprovalRequest['redirect_uri'],
                     $deleteApprovalRequest['response_type'],
                     $deleteApprovalRequest['scope']
                 );
