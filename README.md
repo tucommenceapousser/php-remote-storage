@@ -5,6 +5,10 @@
 This is a remoteStorage server implementation written in PHP. It aims at 
 implementing `draft-dejong-remotestorage-03.txt` and higher.
 
+# Deployment
+See the [deployment](https://github.com/fkooman/php-remote-storage-deployment) 
+repository for more information on how to deploy in production environments.
+
 # Development Requirements
 On Fedora >= 22:
 
