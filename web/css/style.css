@@ -14,6 +14,13 @@ p {
     text-align: justify;
 }
 
+p.info {
+    background-color: #063;
+    border: 1px solid #041;
+    color: #fff;
+    padding: 1em;
+}
+
 p.warning {
     background-color: #fc0;
     border: 1px solid #da0;

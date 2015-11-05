@@ -77,7 +77,7 @@ class ApprovalManagementStorage extends PdoBaseStorage
         return $approvalList;
     }
 
-    public function createTableQueries($dbPrefix) 
+    public function createTableQueries($dbPrefix)
     {
         return array();
     }

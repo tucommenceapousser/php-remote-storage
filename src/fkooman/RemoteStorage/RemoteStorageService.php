@@ -111,7 +111,9 @@ class RemoteStorageService extends OAuthService
             function (Request $request) {
                 return $this->templateManager->render(
                     'indexPage',
-                    array()
+                    array(
+                        'host' => $request->getHeader('Host'),
+                    )
                 );
             },
             array(
