@@ -17,19 +17,24 @@
  */
 require_once dirname(__DIR__).'/vendor/autoload.php';
 
-use fkooman\Ini\IniReader;
+use fkooman\Config\YamlFile;
+use fkooman\Config\Reader;
 use fkooman\RemoteStorage\MetadataStorage;
 use fkooman\OAuth\Storage\PdoAccessTokenStorage;
 use fkooman\OAuth\Storage\PdoAuthorizationCodeStorage;
 use fkooman\OAuth\Storage\PdoApprovalStorage;
 
 try {
-    $iniReader = IniReader::fromFile(dirname(__DIR__).'/config/server.ini');
+    $configReader = new Reader(
+        new YamlFile(
+            dirname(__DIR__).'/config/server.yaml'
+        )
+    );
 
     $db = new PDO(
-        $iniReader->v('Db', 'dsn'),
-        $iniReader->v('Db', 'username', false),
-        $iniReader->v('Db', 'password', false)
+        $configReader->v('Db', 'dsn'),
+        $configReader->v('Db', 'username', false),
+        $configReader->v('Db', 'password', false)
     );
 
     $metadataStorage = new MetadataStorage($db);

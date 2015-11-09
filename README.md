@@ -27,15 +27,15 @@ On Fedora >= 22:
     $ sudo chown -R apache.apache data
     $ sudo semanage fcontext -a -t httpd_sys_rw_content_t '/var/www/php-remote-storage/data(/.*)?'
     $ sudo restorecon -R /var/www/php-remote-storage/data
-    $ cp config/server.ini.example config/server.ini
+    $ cp config/server.yaml.example config/server.yaml
 
-Edit `config/server.ini` to match the configuration. You need to at least 
+Edit `config/server.yaml` to match the configuration. You need to at least 
 modify the following lines, and set them to the values shown here:
 
-    storageDir = "/var/www/php-remote-storage/data/storage"
+    storageDir: /var/www/php-remote-storage/data/storage
    
-    [Db]
-    dsn = "sqlite:/var/www/php-remote-storage/data/rs.sqlite"
+    Db:
+        dsn: sqlite:/var/www/php-remote-storage/data/rs.sqlite
 
 Now you can initialize the database:
 
@@ -66,12 +66,9 @@ Now restart Apache:
 
 There are two default accounts available, `foo:bar` and `bar:baz`. You can
 use them to login to the embedded OAuth server. The supported accounts and
-their password can be changed in the configuration file as well. To generate 
-hashes you can use the included script:
+their password can be changed using the `php-remote-storage-add-user` tool.
 
-    $ php bin/php-remote-storage-password-hash s3cr3t
-
-Use the output of this script in `config/server.ini`.
+    $ sudo php bin/php-remote-storage-add-user foobar foobarbaz
 
 If you ever remove the software, you can also remove the SELinux context:
 

@@ -17,7 +17,8 @@
 require_once dirname(__DIR__).'/vendor/autoload.php';
 
 use fkooman\Http\Request;
-use fkooman\Ini\IniReader;
+use fkooman\Config\YamlFile;
+use fkooman\Config\Reader;
 use fkooman\OAuth\Storage\PdoAccessTokenStorage;
 use fkooman\OAuth\Storage\PdoAuthorizationCodeStorage;
 use fkooman\OAuth\Storage\PdoApprovalStorage;
@@ -34,14 +35,16 @@ use fkooman\Rest\Plugin\Authentication\Bearer\BearerAuthentication;
 use fkooman\Rest\Plugin\Authentication\Form\FormAuthentication;
 use fkooman\Tpl\Twig\TwigTemplateManager;
 
-$iniReader = IniReader::fromFile(
-    dirname(__DIR__).'/config/server.ini'
+$configReader = new Reader(
+    new YamlFile(
+        dirname(__DIR__).'/config/server.yaml'
+    )
 );
 
 $db = new PDO(
-    $iniReader->v('Db', 'dsn'),
-    $iniReader->v('Db', 'username', false),
-    $iniReader->v('Db', 'password', false)
+    $configReader->v('Db', 'dsn'),
+    $configReader->v('Db', 'username', false),
+    $configReader->v('Db', 'password', false)
 );
 
 $request = new Request($_SERVER);
@@ -51,7 +54,7 @@ $templateManager = new TwigTemplateManager(
         dirname(__DIR__).'/views',
         dirname(__DIR__).'/config/views',
     ),
-    $iniReader->v('templateCache', false, null)
+    $configReader->v('templateCache', false, null)
 );
 $templateManager->setDefault(
     array(
@@ -65,14 +68,14 @@ $accessTokenStorage = new PdoAccessTokenStorage($db);
 
 $md = new MetadataStorage($db);
 $document = new DocumentStorage(
-    $iniReader->v('storageDir')
+    $configReader->v('storageDir')
 );
 
 $remoteStorage = new RemoteStorage($md, $document);
 
 $userAuth = new FormAuthentication(
-    function ($userId) use ($iniReader) {
-        $userList = $iniReader->v('Users');
+    function ($userId) use ($configReader) {
+        $userList = $configReader->v('Users');
         if (!array_key_exists($userId, $userList)) {
             return false;
         }
