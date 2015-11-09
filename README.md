@@ -35,9 +35,9 @@ modify the following lines, and set them to the values shown here:
     storageDir: /var/www/php-remote-storage/data/storage
    
     Db:
-        dsn: sqlite:/var/www/php-remote-storage/data/rs.sqlite
+        dsn: 'sqlite:/var/www/php-remote-storage/data/rs.sqlite'
 
-Now you can initialize the database:
+Now you can initialize the database (as the user running the web server):
 
     $ sudo -u apache bin/php-remote-storage-init
 
@@ -68,7 +68,7 @@ There are two default accounts available, `foo:bar` and `bar:baz`. You can
 use them to login to the embedded OAuth server. The supported accounts and
 their password can be changed using the `php-remote-storage-add-user` tool.
 
-    $ sudo php bin/php-remote-storage-add-user foobar foobarbaz
+    $ php bin/php-remote-storage-add-user foobar mys3cr3t
 
 If you ever remove the software, you can also remove the SELinux context:
 
