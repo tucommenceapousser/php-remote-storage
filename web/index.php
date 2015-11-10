@@ -76,7 +76,7 @@ $remoteStorage = new RemoteStorage($md, $document);
 $userAuth = new FormAuthentication(
     function ($userId) use ($configReader) {
         $userList = $configReader->v('Users');
-        if (!array_key_exists($userId, $userList)) {
+        if (null === $userList || !array_key_exists($userId, $userList)) {
             return false;
         }
 
