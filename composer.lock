@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "e5104a24696468a30c46aa2ed026a5c5",
-    "content-hash": "5f380dfb48c4c37ca0d93a00d0906e00",
+    "hash": "e1be783dca9fa19bb459cdbd92d6fb5a",
+    "content-hash": "d045b2edb9dae7f53f0620d130ea6c91",
     "packages": [
         {
             "name": "fkooman/config",
@@ -48,16 +48,16 @@
         },
         {
             "name": "fkooman/http",
-            "version": "1.1.3",
+            "version": "1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/fkooman/php-lib-http.git",
-                "reference": "c001a06364893d00ed8c2ce109465ceff586e3dd"
+                "reference": "7486963b0643cf35e40c89ee17e22425be36196e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fkooman/php-lib-http/zipball/c001a06364893d00ed8c2ce109465ceff586e3dd",
-                "reference": "c001a06364893d00ed8c2ce109465ceff586e3dd",
+                "url": "https://api.github.com/repos/fkooman/php-lib-http/zipball/7486963b0643cf35e40c89ee17e22425be36196e",
+                "reference": "7486963b0643cf35e40c89ee17e22425be36196e",
                 "shasum": ""
             },
             "require": {
@@ -88,7 +88,7 @@
                 }
             ],
             "description": "Simple PHP library for dealing with HTTP requests and responses.",
-            "time": "2015-11-01 12:58:11"
+            "time": "2015-11-10 09:36:52"
         },
         {
             "name": "fkooman/io",

@@ -282,9 +282,10 @@ class RemoteStorageService extends OAuthService
 
         $rsr = new Response(200, $documentContentType);
         $rsr->setHeader('ETag', '"'.$documentVersion.'"');
+        $rsr->setHeader('Accept-Ranges', 'bytes');
 
         if ('GET' === $request->getMethod()) {
-            $rsr->setBody(
+            $rsr->setFile(
                 $this->remoteStorage->getDocument(
                     $path,
                     $requestedVersion

@@ -39,6 +39,8 @@ class RemoteStorageServiceTest extends PHPUnit_Framework_TestCase
 {
     private $r;
 
+    private $tempFile;
+
     public function setUp()
     {
         $ioStub = $this->getMockBuilder('fkooman\IO\IO')
@@ -60,6 +62,8 @@ class RemoteStorageServiceTest extends PHPUnit_Framework_TestCase
             @unlink($tempFile);
         }
         mkdir($tempFile);
+        $this->tempFile = $tempFile;
+
         $document = new DocumentStorage($tempFile);
         $remoteStorage = new RemoteStorage($md, $document);
 
@@ -214,12 +218,13 @@ class RemoteStorageServiceTest extends PHPUnit_Framework_TestCase
                 'HTTP/1.1 200 OK',
                 'Content-Type: text/plain',
                 'Etag: "1:2"',
-                'Content-Length: 12',
+                'Accept-Ranges: bytes',
+                sprintf('X-Sendfile: %s/admin/foo/bar/baz.txt', $this->tempFile),
                 'Expires: 0',
                 'Access-Control-Allow-Origin: https://foo.bar.example.org',
                 'Access-Control-Expose-Headers: ETag, Content-Length',
                 '',
-                'Hello World!',
+                '',
             ),
             $response->toArray()
         );

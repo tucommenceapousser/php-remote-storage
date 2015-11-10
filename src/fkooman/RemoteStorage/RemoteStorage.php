@@ -87,7 +87,7 @@ class RemoteStorage
             throw new RemoteStorageException('document not modified');
         }
 
-        return $this->d->getDocument($p);
+        return $this->d->getDocumentPath($p);
     }
 
     public function getFolder(Path $p, array $ifNoneMatch = null)

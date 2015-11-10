@@ -38,12 +38,28 @@ class DocumentStorage
         return true;
     }
 
+    /**
+     * Get the full absolute location of the document on the filesystem.
+     */
+    public function getDocumentPath(Path $p)
+    {
+        $documentPath = $this->baseDir.$p->getPath();
+        if (!is_readable($documentPath)) {
+            throw new DocumentStorageException('unable to read document');
+        }
+
+        return $documentPath;
+    }
+
     public function getDocument(Path $p)
     {
         $documentPath = $this->baseDir.$p->getPath();
+        if (!is_readable($documentPath)) {
+            throw new DocumentStorageException('unable to read document');
+        }
         $documentContent = @file_get_contents($documentPath);
         if (false === $documentContent) {
-            throw new DocumentStorageException('unable to read document');
+            throw new DocumentStorageException('error reading document');
         }
 
         return $documentContent;

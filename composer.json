@@ -12,7 +12,7 @@
         "ext-pdo": "*",
         "ext-spl": "*",
         "fkooman/config": "^1.0.0",
-        "fkooman/http": "^1.0.0",
+        "fkooman/http": "^1.2.0",
         "fkooman/io": "^1.0.0",
         "fkooman/json": "^1.0.0",
         "fkooman/oauth": "^4.0.0",

@@ -26,6 +26,8 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
     /** @var fkooman\RemoteStorage\RemoteStorage */
     private $r;
 
+    private $tempFile;
+
     public function setUp()
     {
         $md = new MetadataStorage(
@@ -42,6 +44,7 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
             @unlink($tempFile);
         }
         mkdir($tempFile);
+        $this->tempFile = $tempFile;
         $document = new DocumentStorage($tempFile);
         $this->r = new RemoteStorage($md, $document);
     }
@@ -50,7 +53,7 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
     {
         $p = new Path('/admin/messages/foo/hello.txt');
         $this->r->putDocument($p, 'text/plain', 'Hello World!');
-        $this->assertEquals('Hello World!', $this->r->getDocument($p));
+        $this->assertEquals(sprintf('%s/admin/messages/foo/hello.txt', $this->tempFile), $this->r->getDocument($p));
         $this->assertRegexp('/1:[a-z0-9]+/i', $this->r->getVersion($p));
     }
 
@@ -63,9 +66,9 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
         $p5 = new Path('/admin/');
         $this->r->putDocument($p1, 'text/plain', 'Hello World!');
         $this->r->putDocument($p2, 'text/plain', 'Hello Foo!');
-        $this->assertEquals('Hello World!', $this->r->getDocument($p1));
+        $this->assertEquals(sprintf('%s/admin/messages/foo/hello.txt', $this->tempFile), $this->r->getDocument($p1));
         $this->assertRegexp('/1:[a-z0-9]+/i', $this->r->getVersion($p1));
-        $this->assertEquals('Hello Foo!', $this->r->getDocument($p2));
+        $this->assertEquals(sprintf('%s/admin/messages/foo/bar.txt', $this->tempFile), $this->r->getDocument($p2));
         $this->assertRegexp('/1:[a-z0-9]+/i', $this->r->getVersion($p2));
         // all parent directories should have version 2 now
         $this->assertRegexp('/2:[a-z0-9]+/i', $this->r->getVersion($p3));
