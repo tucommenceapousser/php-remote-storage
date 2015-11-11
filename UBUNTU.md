@@ -6,16 +6,7 @@ with version 14.04.3 LTS.
 production!
 
 # Dependencies
-Set the system hostname:
-
-    $ sudo hostnamectl set-hostname storage.example
-
-Install all updates:
-
-    $ sudo apt-get update
-    $ sudo apt-get dist-upgrade
-
-Install the dependencies:
+The dependencies:
 
     $ sudo apt-get install apache2 php5 git php5-curl \
         libapache2-mod-xsendfile php5-sqlite
