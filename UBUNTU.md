@@ -6,16 +6,19 @@ with version 14.04.3 LTS.
 production!
 
 # Dependencies
-Install all updates, and the following dependencies:
+Set the system hostname:
+
+    $ sudo hostnamectl set-hostname storage.example
+
+Install all updates:
 
     $ sudo apt-get update
     $ sudo apt-get dist-upgrade
+
+Install the dependencies:
+
     $ sudo apt-get install apache2 php5 git php5-curl \
         libapache2-mod-xsendfile php5-sqlite
-
-Also set the system hostname:
-
-    $ sudo hostnamectl set-hostname storage.example
 
 # Installation
 
@@ -24,12 +27,18 @@ Some Apache modules need to be enabled:
 
     $ sudo a2enmod rewrite
     $ sudo a2enmod ssl
+    $ sudo a2ensite default-ssl
+
+Restart Apache:
+
+    $ sudo service apache2 restart
 
 ## remoteStorage
+Install the software:
 
     $ cd /var/www
     $ sudo mkdir php-remote-storage
-    $ sudo chown ubuntu.ubuntu php-remote-storage
+    $ sudo chown `id -u`.`id -g` php-remote-storage
     $ git clone https://github.com/fkooman/php-remote-storage.git
 
 Now you need to get [Composer](https://getcomposer.org) and use that to 
@@ -88,10 +97,11 @@ Enable the configuration:
     $ sudo a2enconf php-remote-storage
 
 ## WebFinger
+Install the software:
 
     $ cd /var/www
     $ sudo mkdir php-webfinger
-    $ sudo chown ubuntu.ubuntu php-webfinger
+    $ sudo chown `id -u`.`id -g` php-webfinger
     $ git clone https://github.com/fkooman/php-webfinger.git
     $ cd php-webfinger
     $ curl -O https://getcomposer.org/composer.phar
@@ -117,3 +127,19 @@ And the following in `/etc/apache2/conf-available/php-webfinger.conf`:
 Enable the configuration:
 
     $ sudo a2enconf php-webfinger
+
+# Testing
+Use your browser to go to https://storage.example/php-remote-storage/, or any 
+other hostname you may have chosen. Accept the self signed certificate.
+
+Now you should be able to login to the 'Manage' page using the account you 
+created above, the example above showed username `foo` and password `bar`.
+
+On the landing page you can also find some applications to try. They should 
+work perfectly!
+
+If you want to make it possible to access the WebFinger and remoteStorage 
+server remotely do not forget to change the `Require local` to 
+`Require all granted`.
+
+That should be all!
