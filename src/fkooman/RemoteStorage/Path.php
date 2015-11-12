@@ -42,6 +42,8 @@ class Path
             throw new PathException('invalid path: contains encoded "/"');
         }
 
+        $p = self::decodeStr($p);
+
         // MUST NOT contain ".."
         if (false !== strpos($p, '..')) {
             throw new PathException('invalid path: contains ..');
@@ -127,5 +129,10 @@ class Path
     public function getFolderTreeFromUserRoot()
     {
         return array_reverse($this->getFolderTreeToUserRoot());
+    }
+
+    private static function decodeStr($str)
+    {
+        return rawurldecode($str);
     }
 }

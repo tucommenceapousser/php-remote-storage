@@ -101,7 +101,6 @@ class RemoteStorage
             'items' => $this->d->getFolder($p),
         );
         foreach ($f['items'] as $name => $meta) {
-            $name = self::decodeStr($name);
             $f['items'][$name]['ETag'] = $this->md->getVersion(new Path($p->getFolderPath().$name));
 
             // if item is a folder we don't want Content-Type
@@ -111,10 +110,5 @@ class RemoteStorage
         }
 
         return Json::encode($f, JSON_FORCE_OBJECT);
-    }
-
-    private static function decodeStr($str)
-    {
-        return rawurldecode($str);
     }
 }
