@@ -5,9 +5,21 @@
 <body>
     <div id="container">
         {% include 'header.twig' %}
-        <p>
-            You are currently logged in as <strong>{{ user_id|e }}</strong>.
-        </p>
+
+        <h2>Account Information</h2>
+
+        <table> 
+            <tr><th>Username</th><td>{{ user_id|e }}</td></tr>
+            <tr><th>Usage</th><td>{{ disk_usage|e }}</td></tr>
+        </table>
+
+<!--        <p>-->
+<!--            You are logged in as <strong>{{ user_id|e }}</strong>.-->
+<!--        </p>-->
+
+<!--        <p>-->
+<!--            This account is using {{ disk_usage|e }} of storage.-->
+<!--        </p>-->
 
         <!-- logout -->
         <form method="post" action="{{ rootFolder|e }}_auth/form/logout">

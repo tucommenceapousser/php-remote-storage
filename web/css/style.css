@@ -6,8 +6,21 @@ body {
     color: #444;
 }
 
-div.header img {
+div.header a.logo img {
     height: 3em;
+}
+
+div.header a.account {
+    float: right;
+    text-align: center;
+    font-size: 75%;
+    text-decoration: none;
+}
+
+div.header a.account img {
+    height: 1.5em;
+    display: block;
+    margin: 0 auto;
 }
 
 p {

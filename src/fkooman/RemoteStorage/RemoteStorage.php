@@ -111,4 +111,25 @@ class RemoteStorage
 
         return Json::encode($f, JSON_FORCE_OBJECT);
     }
+
+    public function getFolderSize(Path $p)
+    {
+        return self::sizeToHuman($this->d->getFolderSize($p));
+    }
+
+    public static function sizeToHuman($byteSize)
+    {
+        $kB = 1024;
+        $MB = $kB * 1024;
+        $GB = $MB * 1024;
+
+        if ($byteSize > $GB) {
+            return sprintf('%0.2fGB', $byteSize / $GB);
+        }
+        if ($byteSize > $MB) {
+            return sprintf('%0.2fMB', $byteSize / $MB);
+        }
+
+        return sprintf('%0.0fkB', $byteSize / $kB);
+    }
 }

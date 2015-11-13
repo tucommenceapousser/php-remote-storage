@@ -6,7 +6,7 @@
     <div id="container">
         {% include 'header.twig' %}
         <p>
-            Please sign in with your username and password to your <a href="https://remotestorage.io/">remoteStorage</a> account.
+            Please sign in with your username and password to this <a href="https://remotestorage.io/">remoteStorage</a> service.
         </p>
         <form class="auth" method="post" action="{{ rootFolder|e }}_auth/form/verify">
             {% if login_hint %}

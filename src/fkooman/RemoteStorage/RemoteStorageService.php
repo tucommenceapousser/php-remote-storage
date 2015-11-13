@@ -64,15 +64,16 @@ class RemoteStorageService extends OAuthService
         );
 
         $this->get(
-            '/_approvals',
+            '/_account',
             function (Request $request, UserInfoInterface $userInfo) {
                 $approvalList = $this->approvalManagementStorage->getApprovalList($userInfo->getUserId());
 
                 return $this->templateManager->render(
-                    'getApprovalList',
+                    'getAccountPage',
                     array(
                         'approval_list' => $approvalList,
                         'user_id' => $userInfo->getUserId(),
+                        'disk_usage' => $this->remoteStorage->getFolderSize(new Path('/'.$userInfo->getUserId().'/')),
                         'request_url' => $request->getUrl()->toString(),
                     )
                 );
@@ -97,7 +98,7 @@ class RemoteStorageService extends OAuthService
                 );
                 $this->approvalManagementStorage->deleteApproval($approval);
 
-                return new RedirectResponse($request->getUrl()->getRootUrl().'_approvals', 302);
+                return new RedirectResponse($request->getUrl()->getRootUrl().'_account', 302);
             },
             array(
                 'fkooman\Rest\Plugin\Authentication\AuthenticationPlugin' => array(
