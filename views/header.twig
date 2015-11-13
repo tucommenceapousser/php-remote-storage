@@ -3,6 +3,10 @@
     <a class="account" href="{{ rootFolder|e }}_account">
         <!-- logo originally from Font Awesome, got SVG from https://github.com/encharm/Font-Awesome-SVG-PNG -->
         <img src="{{ rootFolder|e }}img/user.svg" title="Account" alt="Account">
-        <span>My Account</span>
+        {% if user_id is defined %}
+            <span>{{ user_id|e }}</span>
+        {% else %}
+            <span>My Account</span>
+        {% endif %}
     </a>
 </div>

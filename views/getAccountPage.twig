@@ -13,14 +13,6 @@
             <tr><th>Usage</th><td>{{ disk_usage|e }}</td></tr>
         </table>
 
-<!--        <p>-->
-<!--            You are logged in as <strong>{{ user_id|e }}</strong>.-->
-<!--        </p>-->
-
-<!--        <p>-->
-<!--            This account is using {{ disk_usage|e }} of storage.-->
-<!--        </p>-->
-
         <!-- logout -->
         <form method="post" action="{{ rootFolder|e }}_auth/form/logout">
             <button type="submit">Logout</button>
