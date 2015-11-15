@@ -34,6 +34,10 @@ p.info {
     padding: 1em;
 }
 
+p.info a {
+    color: #fff;
+}
+
 p.warning {
     background-color: #fc0;
     border: 1px solid #da0;

@@ -9,8 +9,16 @@
         <h2>Account Information</h2>
 
         <table> 
-            <tr><th>Username</th><td>{{ user_id|e }}</td></tr>
-            <tr><th>Usage</th><td>{{ disk_usage|e }}</td></tr>
+            <tr>
+                <th>
+                    <span title="Use this address in the remoteStorage Widget to connect to this storage server.">User Address</span>
+                </th>
+                <td>{{ user_id|e }}@{{ host|e }}</td>
+            </tr>
+            <tr>
+                <th><span title="The total amount of storage used on this storage server.">Usage</span></th>
+                <td>{{ disk_usage|e }}</td>
+            </tr>
         </table>
 
         <!-- logout -->
@@ -29,13 +37,13 @@
             <p class="plain">No permissions granted yet! You need to use an application first :-)</p>
         {% else %}
             <table>
-                <tr><th>Application</th><th>Permissions</th><th></th></tr>
+                <tr><th>Application</th><th>Permissions</th><th>Actions</th></tr>
                 {% for approval in approval_list %}
                 <tr>
-                    <td><code>{{ approval.getClientId|e }}</code></td>                    
+                    <td><a href="{{ approval.getClientId|e }}"><code>{{ approval.getClientId|e }}</code></td>                    
                     <td><code>{{ approval.getScope|e }}</code></td>
                     <td>
-                        <form method="post" action="{{ rootFolder|e }}_approvals?client_id={{ approval.getClientId|e }}&amp;response_type={{ approval.getResponseType|e }}&amp;scope={{ approval.getScope|e }}">
+                        <form class="button" method="post" action="{{ rootFolder|e }}_approvals?client_id={{ approval.getClientId|e }}&amp;response_type={{ approval.getResponseType|e }}&amp;scope={{ approval.getScope|e }}">
                             <input type="hidden" name="_METHOD" value="DELETE">
                             <button type="submit" class="error">Revoke</button>
                         </form>

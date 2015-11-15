@@ -72,6 +72,7 @@ class RemoteStorageService extends OAuthService
                     'getAccountPage',
                     array(
                         'approval_list' => $approvalList,
+                        'host' => $request->getHeader('Host'),
                         'user_id' => $userInfo->getUserId(),
                         'disk_usage' => $this->remoteStorage->getFolderSize(new Path('/'.$userInfo->getUserId().'/')),
                         'request_url' => $request->getUrl()->toString(),
@@ -112,9 +113,7 @@ class RemoteStorageService extends OAuthService
             function (Request $request) {
                 return $this->templateManager->render(
                     'indexPage',
-                    array(
-                        'host' => $request->getHeader('Host'),
-                    )
+                    array()
                 );
             },
             array(
