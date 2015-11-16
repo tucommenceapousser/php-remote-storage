@@ -2,6 +2,8 @@
     <!-- logo from https://github.com/remotestorage/design (Creative Commons Attribution Share-Alike 4.0) -->
     <a class="logo" href="{{ rootFolder|e }}"><img src="{{ rootFolder|e }}img/rs.svg" title="remoteStorage" alt="remoteStorage"></a>
 
+
+    {% if show_account_icon is defined and show_account_icon %}
     <a class="account" href="{{ rootFolder|e }}_account">
         <!-- logo originally from Font Awesome, got SVG from https://github.com/encharm/Font-Awesome-SVG-PNG -->
         <img src="{{ rootFolder|e }}img/user.svg" title="Account" alt="Account">
@@ -11,4 +13,5 @@
             <span>Sign In</span>
         {% endif %}
     </a>
+    {% endif %}
 </div>
