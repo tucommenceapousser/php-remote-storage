@@ -61,6 +61,9 @@ Copy paste the contents below in the file
         XSendFile on
         XSendFilePath /var/www/php-remote-storage/data
 
+        # Limit the request body to 8M
+        LimitRequestBody 8388608
+
         RewriteEngine On
         RewriteBase /php-remote-storage
         RewriteCond %{REQUEST_FILENAME} !-f
