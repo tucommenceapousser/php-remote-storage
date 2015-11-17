@@ -40,6 +40,12 @@ class PathTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('path', $p->getModuleName());
     }
 
+    public function testChars()
+    {
+        $p = new Path('/Fran%C3%A7ois/foo/');
+        $this->assertEquals('/François/foo/', $p->getPath());
+    }
+
     public function testModuleName()
     {
         $p = new Path('/admin/public/foo/bar/baz.txt');
@@ -118,6 +124,7 @@ class PathTest extends PHPUnit_Framework_TestCase
             '/admin/foo//bar/',
             'admin/public/foo.txt',
             '/admin/foo/../../',
+            '/foo%2fbar',
         );
         foreach ($testPath as $t) {
             try {

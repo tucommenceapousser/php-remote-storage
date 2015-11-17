@@ -42,7 +42,10 @@ class Path
             throw new PathException('invalid path: contains encoded "/"');
         }
 
-        $p = self::decodeStr($p);
+        // MUST NOT contain encoded "\0"
+        if (false !== strpos($p, '%00')) {
+            throw new PathException('invalid path: contains encoded "\0"');
+        }
 
         // MUST NOT contain ".."
         if (false !== strpos($p, '..')) {
@@ -60,8 +63,10 @@ class Path
             throw new PathException('invalid path: no user specified');
         }
 
-        $this->p = $p;
-        $this->pathParts = $pathParts;
+        foreach ($pathParts as $pathPart) {
+            $this->pathParts[] = rawurldecode($pathPart);
+        }
+        $this->p = implode('/', $this->pathParts);
     }
 
     public function getPath()
@@ -129,10 +134,5 @@ class Path
     public function getFolderTreeFromUserRoot()
     {
         return array_reverse($this->getFolderTreeToUserRoot());
-    }
-
-    private static function decodeStr($str)
-    {
-        return rawurldecode($str);
     }
 }
