@@ -125,6 +125,7 @@ class PathTest extends PHPUnit_Framework_TestCase
             'admin/public/foo.txt',
             '/admin/foo/../../',
             '/foo%2fbar',
+            '/foo/%2e%2e/bar',
         );
         foreach ($testPath as $t) {
             try {

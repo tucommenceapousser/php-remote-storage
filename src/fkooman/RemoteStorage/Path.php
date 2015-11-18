@@ -52,6 +52,11 @@ class Path
             throw new PathException('invalid path: contains ..');
         }
 
+        // MUST NOT contain "%2e%2e"
+        if (false !== stripos($p, '%2e%2e')) {
+            throw new PathException('invalid path: contains encoded ".."');
+        }
+
         // MUST NOT contain "//"
         if (false !== strpos($p, '//')) {
             throw new PathException('invalid path: contains //');
