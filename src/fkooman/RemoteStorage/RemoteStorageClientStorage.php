@@ -19,18 +19,21 @@ namespace fkooman\RemoteStorage;
 
 use fkooman\OAuth\ClientStorageInterface;
 use fkooman\OAuth\Client;
-use fkooman\Http\Exception\BadRequestException;
 
 class RemoteStorageClientStorage implements ClientStorageInterface
 {
     public function getClient($clientId, $responseType = null, $redirectUri = null, $scope = null)
     {
-        // we know redirect_uri is a valid URI, now we must make sure that
-        // redirect_uri starts with the value of client_id (the Origin)
-        if (0 !== strpos($redirectUri, $clientId)) {
-            throw new BadRequestException('client_id MUST be same origin as redirect_uri');
+        // * determine Origin (scheme + host + non standard port) of 
+        //   redirect_uri and use that as client_id
+        // * we already know redirect_uri is a valid URL
+        $parsedUrl = parse_url($redirectUri);
+        if (array_key_exists('port', $parsedUrl)) {
+            $redirectUriOrigin = sprintf('%s://%s:%d', $parsedUrl['scheme'], $parsedUrl['host'], $parsedUrl['port']);
+        } else {
+            $redirectUriOrigin = sprintf('%s://%s', $parsedUrl['scheme'], $parsedUrl['host']);
         }
 
-        return new Client($clientId, $responseType, $redirectUri, $scope, null);
+        return new Client($redirectUriOrigin, $responseType, $redirectUri, $scope, null);
     }
 }
