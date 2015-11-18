@@ -5,8 +5,15 @@
 <body>
     <div id="container">
         {% include 'header.twig' %}
-        <p>An application wants to access your <a href="https://remotestorage.io/">remoteStorage</a> data.</p>
 
+        {% if 'http://' in redirect_uri %}
+        <p class="warning">
+            <strong>NOTE</strong>: the application does not use TLS, if you continue the access token may be compromised!
+        </p>
+        {% endif %}
+       
+        <p>An application wants to access your <a href="https://remotestorage.io/">remoteStorage</a> data.</p>
+       
         <table>
             <tr><th>Application</th><td><code>{{ client_id|e }}</code></td></tr>
             <tr><th>Permissions</th><td><code>{{ scope|e }}</code></td></tr>
