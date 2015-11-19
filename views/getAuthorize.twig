@@ -6,7 +6,7 @@
     <div id="container">
         {% include 'header.twig' %}
 
-        {% if 'http://' in redirect_uri %}
+        {% if redirect_uri|lower starts with 'http://' %}
         <p class="warning">
             <strong>NOTE</strong>: the application does not use TLS, if you continue the access token may be compromised!
         </p>
