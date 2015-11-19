@@ -47,9 +47,9 @@ class RemoteStorageClientStorage implements ClientStorageInterface
         }
 
         if ($usePort) {
-            return sprintf('%s://%s:%d%s', $scheme, $host, $port, $path);
+            return sprintf('%s://%s:%d', $scheme, $host, $port);
         }
 
-        return sprintf('%s://%s%s', $scheme, $host, $path);
+        return sprintf('%s://%s', $scheme, $host);
     }
 }
