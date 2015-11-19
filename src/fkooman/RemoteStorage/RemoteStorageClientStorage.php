@@ -24,16 +24,32 @@ class RemoteStorageClientStorage implements ClientStorageInterface
 {
     public function getClient($clientId, $responseType = null, $redirectUri = null, $scope = null)
     {
-        // * determine Origin (scheme + host + non standard port) of 
-        //   redirect_uri and use that as client_id
-        // * we already know redirect_uri is a valid URL
-        $parsedUrl = parse_url($redirectUri);
-        if (array_key_exists('port', $parsedUrl)) {
-            $redirectUriOrigin = sprintf('%s://%s:%d', $parsedUrl['scheme'], $parsedUrl['host'], $parsedUrl['port']);
-        } else {
-            $redirectUriOrigin = sprintf('%s://%s', $parsedUrl['scheme'], $parsedUrl['host']);
+        $clientId = self::normalizeRedirectUriOrigin($redirectUri);
+
+        return new Client($clientId, $responseType, $redirectUri, $scope, null);
+    }
+
+    private static function normalizeRedirectUriOrigin($redirectUri)
+    {
+        $scheme = strtolower(parse_url($redirectUri, PHP_URL_SCHEME));
+        $host = strtolower(parse_url($redirectUri, PHP_URL_HOST));
+        $port = parse_url($redirectUri, PHP_URL_PORT);
+        $path = parse_url($redirectUri, PHP_URL_PATH);
+
+        $usePort = false;
+        if (null !== $port) {
+            if (443 !== $port && 'https' === $scheme) {
+                $usePort = true;
+            }
+            if (80 !== $port && 'http' === $scheme) {
+                $usePort = true;
+            }
         }
 
-        return new Client($redirectUriOrigin, $responseType, $redirectUri, $scope, null);
+        if ($usePort) {
+            return sprintf('%s://%s:%d%s', $scheme, $host, $port, $path);
+        }
+
+        return sprintf('%s://%s%s', $scheme, $host, $path);
     }
 }
