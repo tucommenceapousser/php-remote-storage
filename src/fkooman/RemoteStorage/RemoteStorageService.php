@@ -111,17 +111,19 @@ class RemoteStorageService extends OAuthService
 
         $this->get(
             '/',
-            function (Request $request) {
+            function (Request $request, UserInfoInterface $userInfo = null) {
                 return $this->templateManager->render(
                     'indexPage',
                     array(
+                        'user_id' => null !== $userInfo ? $userInfo->getUserId() : null,
                         'show_account_icon' => true,
                     )
                 );
             },
             array(
                 'fkooman\Rest\Plugin\Authentication\AuthenticationPlugin' => array(
-                    'enabled' => false,
+                    'activate' => array('user'),
+                    'require' => false
                 ),
             )
         );
