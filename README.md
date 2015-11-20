@@ -12,7 +12,8 @@ repository for more information on how to deploy in production environments.
 # Development Requirements
 On Fedora >= 22:
 
-    $ sudo dnf -y install php php-pdo mod_ssl httpd mod_xsendfile composer git php-phpunit-PHPUnit policycoreutils-python-utils
+    $ sudo dnf -y install php php-pdo mod_ssl httpd mod_xsendfile mod_security \
+        composer git php-phpunit-PHPUnit policycoreutils-python-utils
 
 # Development Installation
 *NOTE*: in the `chown` line you need to use your own user account name!
