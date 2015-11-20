@@ -123,7 +123,7 @@ class RemoteStorageService extends OAuthService
             array(
                 'fkooman\Rest\Plugin\Authentication\AuthenticationPlugin' => array(
                     'activate' => array('user'),
-                    'require' => false
+                    'require' => false,
                 ),
             )
         );
@@ -478,6 +478,7 @@ class RemoteStorageService extends OAuthService
         // XXX Expires should only be for successful GET??
         if ('GET' === $request->getMethod()) {
             $response->setHeader('Expires', 0);
+            $response->setHeader('Cache-Control', 'no-cache');
         }
 
         // CORS
