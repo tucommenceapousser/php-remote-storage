@@ -82,8 +82,7 @@ $userAuth = new FormAuthentication(
 
         return $userList[$userId];
     },
-    $templateManager,
-    array('realm' => 'OAuth AS')
+    $templateManager
 );
 
 $apiAuth = new BearerAuthentication(

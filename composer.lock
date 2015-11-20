@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "203869d42db7e7cbbc819698247d084c",
-    "content-hash": "4f47c2f366e53e5ade9979428f305a5a",
+    "hash": "47c4f5b987cfec49068d8c60fcbb2bbf",
+    "content-hash": "724f25e80241853b37aeb81a1a6bac19",
     "packages": [
         {
             "name": "fkooman/config",
@@ -352,16 +352,16 @@
         },
         {
             "name": "fkooman/rest-plugin-authentication-form",
-            "version": "2.0.0",
+            "version": "3.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/fkooman/php-lib-rest-plugin-authentication-form.git",
-                "reference": "4e37bb0cf197344a3aff98849122709c531bc771"
+                "reference": "574af30713e50f3368ec7f061a7b26e6a23261cd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fkooman/php-lib-rest-plugin-authentication-form/zipball/4e37bb0cf197344a3aff98849122709c531bc771",
-                "reference": "4e37bb0cf197344a3aff98849122709c531bc771",
+                "url": "https://api.github.com/repos/fkooman/php-lib-rest-plugin-authentication-form/zipball/574af30713e50f3368ec7f061a7b26e6a23261cd",
+                "reference": "574af30713e50f3368ec7f061a7b26e6a23261cd",
                 "shasum": ""
             },
             "require": {
@@ -395,7 +395,7 @@
                 }
             ],
             "description": "HTML Form Authentication plugin for fkooman/rest-plugin-authentication",
-            "time": "2015-11-19 12:34:57"
+            "time": "2015-11-20 10:29:53"
         },
         {
             "name": "fkooman/tpl",
