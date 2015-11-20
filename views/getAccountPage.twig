@@ -28,13 +28,20 @@
 
         <h2>Applications</h2>    
         <p>
-        This is a list of applications you gave access to your <a href="https://remotestorage.io/">remoteStorage</a>
-        data. If you revoke the access, the application can no longer use the 
-        issued tokens and has to ask your permission again!
+            <a href="https://wiki.remotestorage.io/Apps">Here</a> you can find 
+            a list of applications supporting 
+            <a href="https://remotestorage.io/">remoteStorage</a>.
+        </p>
+        
+        <p>
+        This is the list of applications that have access to your remoteStorage
+        data. You can revoke their access here.
         </p>
         
         {% if not approval_list %}
-            <p class="plain">No permissions granted yet! You need to use an application first ☺ <a href="https://wiki.remotestorage.io/Apps">Here</a> is a list!</p>
+            <p class="plain">
+                No permissions granted yet! You need to use an application first ☺
+            </p>
         {% else %}
             <table>
                 <tr><th>Application</th><th>Permissions</th><th>Actions</th></tr>
