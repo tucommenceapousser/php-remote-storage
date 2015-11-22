@@ -3,7 +3,7 @@
 
 # Introduction
 This is a remoteStorage server implementation written in PHP. It aims at 
-implementing `draft-dejong-remotestorage-03.txt` and higher.
+implementing `draft-dejong-remotestorage-03.txt` and later.
 
 # Deployment
 See the [deployment](https://github.com/fkooman/php-remote-storage-deployment) 
@@ -166,14 +166,14 @@ this will be configurable soon instead of a hack in the source. Modify
 
     $apiAuth = new BearerAuthentication(
         new DbTokenValidator($db),
-        array('realm' => 'remoteStorage API')
+        array('realm' => 'remoteStorage')
     );
 
 To:
 
     $apiAuth = new BearerAuthentication(
         new fkooman\RemoteStorage\ApiTestTokenValidator(),
-        array('realm' => 'remoteStorage API')
+        array('realm' => 'remoteStorage')
     );
 
 Now you can run the test suite and all should be fine:
