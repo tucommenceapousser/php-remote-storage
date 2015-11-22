@@ -17,6 +17,7 @@
 require_once dirname(__DIR__).'/vendor/autoload.php';
 
 use fkooman\Http\Request;
+use fkooman\Http\Session;
 use fkooman\Config\YamlFile;
 use fkooman\Config\Reader;
 use fkooman\OAuth\Storage\PdoAccessTokenStorage;
@@ -41,6 +42,8 @@ $configReader = new Reader(
     )
 );
 
+$serverMode = $configReader->v('serverMode', false, 'production');
+
 $db = new PDO(
     $configReader->v('Db', 'dsn'),
     $configReader->v('Db', 'username', false),
@@ -59,6 +62,7 @@ $templateManager = new TwigTemplateManager(
 $templateManager->setDefault(
     array(
         'rootFolder' => $request->getUrl()->getRoot(),
+        'serverMode' => $serverMode,
     )
 );
 
@@ -73,6 +77,13 @@ $document = new DocumentStorage(
 
 $remoteStorage = new RemoteStorage($md, $document);
 
+$session = new Session(
+    'php-remote-storage',
+    array(
+        'secure' => 'development' !== $serverMode,
+    )
+);
+
 $userAuth = new FormAuthentication(
     function ($userId) use ($configReader) {
         $userList = $configReader->v('Users');
@@ -82,14 +93,15 @@ $userAuth = new FormAuthentication(
 
         return $userList[$userId];
     },
-    $templateManager
+    $templateManager,
+    $session
 );
 
 $apiAuth = new BearerAuthentication(
     new DbTokenValidator($db),
 #    new fkooman\RemoteStorage\ApiTestTokenValidator(),
     array(
-        'realm' => 'remoteStorage API',
+        'realm' => 'remoteStorage',
     )
 );
 
@@ -111,6 +123,7 @@ $service = new RemoteStorageService(
         'disable_introspect_endpoint' => true,
         'route_prefix' => '/_oauth',
         'require_state' => false,
+        'server_mode' => $serverMode,
     )
 );
 $service->getPluginRegistry()->registerDefaultPlugin($authenticationPlugin);
