@@ -87,38 +87,6 @@ Enable the configuration:
 
     $ sudo a2enconf php-remote-storage
 
-## WebFinger
-Install the software:
-
-    $ cd /var/www
-    $ sudo mkdir php-webfinger
-    $ sudo chown `id -u`.`id -g` php-webfinger
-    $ git clone https://github.com/fkooman/php-webfinger.git
-    $ cd php-webfinger
-    $ curl -O https://getcomposer.org/composer.phar
-    $ php composer.phar install
-
-Enable the default WebFinger configuration snippets:
-
-    $ cp config/conf.d/php-remote-storage-03.conf.example config/conf.d/php-remote-storage-03.conf
-    $ cp config/conf.d/php-remote-storage-05.conf.example config/conf.d/php-remote-storage-05.conf
-
-### Apache
-And the following in `/etc/apache2/conf-available/php-webfinger.conf`:
-
-    Alias /.well-known/webfinger /var/www/php-webfinger/web/index.php
-
-    <Directory /var/www/php-webfinger/web>
-        AllowOverride None
-
-        Require local
-        #Require all granted
-    </Directory>
-
-Enable the configuration:
-
-    $ sudo a2enconf php-webfinger
-
 # Testing
 Use your browser to go to https://storage.example/php-remote-storage/, or any 
 other hostname you may have chosen. Accept the self signed certificate.
@@ -129,8 +97,7 @@ created above, the example above showed username `foo` and password `bar`.
 On the landing page you can also find some applications to try. They should 
 work perfectly!
 
-If you want to make it possible to access the WebFinger and remoteStorage 
-server remotely do not forget to change the `Require local` to 
-`Require all granted`.
+If you want to make it possible to access the remoteStorage server remotely do 
+not forget to change the `Require local` to `Require all granted`.
 
 That should be all!

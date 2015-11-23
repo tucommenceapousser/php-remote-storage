@@ -81,46 +81,13 @@ If you ever remove the software, you can also remove the SELinux context:
 
     $ sudo semanage fcontext -d -t httpd_sys_rw_content_t '/var/www/php-remote-storage/data(/.*)?'
 
-# WebFinger
-In order to use this server you need to point a user's WebFinger information to 
-this particular server.
+# Development Mode
+You can enable 'development mode' of the software, which currently means:
 
-You can use [php-webfinger](https://github.com/fkooman/php-webfinger) for this
-if you want. It has example configuration files for remoteStorage. or use a 
-static file at `https://example.org/.well-known/webfinger`. To work with this 
-server, the following is an example indicating support for the `-03` and `-05` 
-version of the specification:
-
-    $ curl -k https://localhost/.well-known/webfinger?resource=acct:foo@localhost | python -mjson.tool
-    {
-        "links": [
-            {
-                "href": "https://localhost/php-remote-storage/foo",
-                "properties": {
-                    "http://remotestorage.io/spec/version": "draft-dejong-remotestorage-03",
-                    "http://tools.ietf.org/html/rfc2616#section-14.16": "GET",
-                    "http://tools.ietf.org/html/rfc6749#section-4.2": "https://localhost/php-remote-storage/_oauth/authorize?login_hint=foo",
-                    "http://tools.ietf.org/html/rfc6750#section-2.3": false
-                },
-                "rel": "remotestorage"
-            },
-            {
-                "href": "https://localhost/php-remote-storage/foo",
-                "properties": {
-                    "http://remotestorage.io/spec/version": "draft-dejong-remotestorage-05",
-                    "http://remotestorage.io/spec/web-authoring": null,
-                    "http://tools.ietf.org/html/rfc6749#section-4.2": "https://localhost/php-remote-storage/_oauth/authorize?login_hint=foo",
-                    "http://tools.ietf.org/html/rfc6750#section-2.3": null,
-                    "http://tools.ietf.org/html/rfc7233": "GET"
-                },
-                "rel": "http://tools.ietf.org/id/draft-dejong-remotestorage"
-            }
-        ],
-        "subject": "acct:foo@localhost"
-    }
-
-This WebFinger service is located at the same server as the storage server, but
-that is not a requirement.
+* none secure HTTP cookies are allowed, i.e. authenticating over HTTP will 
+  work;
+* `X-SendFile` will not be used, slowing down document transfer and disabling 
+  range requests
 
 # Usage
 You can visit [https://localhost/php-remote-storage](https://localhost/php-remote-storage) 
