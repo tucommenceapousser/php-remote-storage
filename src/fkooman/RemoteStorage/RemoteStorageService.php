@@ -141,7 +141,7 @@ class RemoteStorageService extends OAuthService
                                 'http://remotestorage.io/spec/web-authoring' => null,
                                 'http://tools.ietf.org/html/rfc6749#section-4.2' => sprintf('%s_oauth/authorize?login_hint=%s', $request->getUrl()->getRootUrl(), $user),
                                 'http://tools.ietf.org/html/rfc6750#section-2.3' => null,
-                                'http://tools.ietf.org/html/rfc7233' => 'GET',
+                                'http://tools.ietf.org/html/rfc7233' => 'development' !== $this->options['server_mode'] ? 'GET' : null,
                             ),
                             'rel' => 'http://tools.ietf.org/id/draft-dejong-remotestorage',
                         ),
@@ -150,7 +150,7 @@ class RemoteStorageService extends OAuthService
                             'href' => sprintf('%s%s', $request->getUrl()->getRootUrl(), $user),
                             'properties' => array(
                                 'http://remotestorage.io/spec/version' => 'draft-dejong-remotestorage-03',
-                                'http://tools.ietf.org/html/rfc2616#section-14.16' => 'GET',
+                                'http://tools.ietf.org/html/rfc2616#section-14.16' => 'development' !== $this->options['server_mode'] ? 'GET' : false,
                                 'http://tools.ietf.org/html/rfc6749#section-4.2' => sprintf('%s_oauth/authorize?login_hint=%s', $request->getUrl()->getRootUrl(), $user),
                                 'http://tools.ietf.org/html/rfc6750#section-2.3' => false,
                             ),
