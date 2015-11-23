@@ -65,7 +65,7 @@ web server:
 
 Development can be enabled in the configuration file `config/server.yaml`:
     
-    ServerMode: development
+    serverMode: development
 
 Make sure you do not enable this in production or test environments!
 
