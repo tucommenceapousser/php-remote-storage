@@ -1,4 +1,4 @@
-# Development
+# Hacking
 This document describes how to setup a development environment on your 
 system.
 
