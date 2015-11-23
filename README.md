@@ -10,14 +10,14 @@ See the [deployment](https://github.com/fkooman/php-remote-storage-deployment)
 repository for more information on how to deploy in production environments.
 
 # Development
-See [DEVELOPMENT.md](DEVELOPMENT.md).
+See [HACKING.md](HACKING.md).
 
 # Contributing
 You can send a pull request, ideally after first discussing a new feature or
 fix. Please make sure there is an accompanying unit test for your feature or 
 fix. I know the current test coverage is not perfect, but trying to improve :)
 
-Also see [DEVELOPMENT.md](DEVELOPMENT.md) for more information.
+See [HACKING.md](HACKING.md) for more information.
 
 # License
 Licensed under the GNU Affero General Public License as published by the Free

@@ -6,12 +6,6 @@ system.
 You need to have at least PHP 5.4 with built-in web server support. The 
 latest version is recommended.
 
-The following PHP modules need to be installed and activated:
-
-* json
-* spl
-* pdo
-
 ## Fedora
 
     $ sudo dnf -y install php-cli php-pdo composer git
@@ -29,12 +23,7 @@ Choose a working directory, clone the repository and run composer:
     $ cd php-remote-storage
     $ composer install
 
-Copy the configuration file:
-
-    $ cp config/server.yaml.example config/server.yaml
-
-Modify it to enable development mode and point to the correct locations for 
-storage and the database. Here is a minimal configuration that should work:
+Use the following configuration file, and place it in `config/server.yaml`:
 
     storageDir: /home/fkooman/Projects/php-remote-storage/data/storage
     serverMode: development
@@ -44,17 +33,22 @@ storage and the database. Here is a minimal configuration that should work:
     Db:
         dsn: 'sqlite:/home/fkooman/Projects/php-remote-storage/data/rs.sqlite'
 
+Modify it to point to the correct locations for storage and the database. 
 Create the directory and initialize the database:
     
     $ mkdir -p data/storage
     $ php bin/php-remote-storage-init
 
-Now you can start the service from the CLI:
+You can start the PHP web server:
 
     $ php -S localhost:8080 -t web/ contrib/rs-router.php
 
 You can now point your browser to http://localhost:8080/ and you should see
 the welcome page.
+
+If you want to test with some applications, make sure they are not using
+HTTPS as that will prevent most browsers from connecting to your service due
+to blocking 'mixed content'.
 
 ## Development Mode
 Development mode disables some features to make it work with the PHP 
