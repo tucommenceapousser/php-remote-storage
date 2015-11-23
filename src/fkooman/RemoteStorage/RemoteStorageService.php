@@ -351,15 +351,31 @@ class RemoteStorageService extends OAuthService
 
         $rsr = new Response(200, $documentContentType);
         $rsr->setHeader('ETag', '"'.$documentVersion.'"');
-        $rsr->setHeader('Accept-Ranges', 'bytes');
+
+        if ('development' !== $this->options['server_mode']) {
+            $rsr->setHeader('Accept-Ranges', 'bytes');
+        }
 
         if ('GET' === $request->getMethod()) {
-            $rsr->setFile(
-                $this->remoteStorage->getDocument(
-                    $path,
-                    $requestedVersion
-                )
-            );
+            if ('development' === $this->options['server_mode']) {
+                // use body
+                $rsr->setBody(
+                    file_get_contents(
+                        $this->remoteStorage->getDocument(
+                            $path,
+                            $requestedVersion
+                        )
+                    )
+                );
+            } else {
+                // use X-SendFile
+                $rsr->setFile(
+                    $this->remoteStorage->getDocument(
+                        $path,
+                        $requestedVersion
+                    )
+                );
+            }
         }
 
         return $rsr;
