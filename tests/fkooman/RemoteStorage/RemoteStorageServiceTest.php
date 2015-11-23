@@ -95,7 +95,7 @@ class RemoteStorageServiceTest extends PHPUnit_Framework_TestCase
             new TestApproval(),
             new TestAuthorizationCode(),
             new TestAccessToken(),
-            array(),
+            array('server_mode' => 'production'),
             $ioStub
         );
         $this->r->getPluginRegistry()->registerDefaultPlugin($authenticationPlugin);
@@ -239,13 +239,13 @@ class RemoteStorageServiceTest extends PHPUnit_Framework_TestCase
             array(
                 'HTTP/1.1 404 Not Found',
                 'Content-Type: application/json',
-                'Content-Length: 30',
+                'Content-Length: 61',
                 'Expires: 0',
                 'Cache-Control: no-cache',
                 'Access-Control-Allow-Origin: https://foo.bar.example.org',
                 'Access-Control-Expose-Headers: ETag, Content-Length',
                 '',
-                '{"error":"document not found"}',
+                '{"error":"document \"\/admin\/foo\/bar\/baz.txt\" not found"}',
             ),
             $response->toArray()
         );
@@ -294,11 +294,11 @@ class RemoteStorageServiceTest extends PHPUnit_Framework_TestCase
             array(
                 'HTTP/1.1 404 Not Found',
                 'Content-Type: application/json',
-                'Content-Length: 30',
+                'Content-Length: 61',
                 'Access-Control-Allow-Origin: https://foo.bar.example.org',
                 'Access-Control-Expose-Headers: ETag, Content-Length',
                 '',
-                '{"error":"document not found"}',
+                '{"error":"document \"\/admin\/foo\/bar\/baz.txt\" not found"}',
             ),
             $response->toArray()
         );

@@ -268,7 +268,9 @@ class RemoteStorageService extends OAuthService
         }
         $documentVersion = $this->remoteStorage->getVersion($path);
         if (null === $documentVersion) {
-            throw new NotFoundException('document not found');
+            throw new NotFoundException(
+                sprintf('document "%s" not found', $path->getPath())
+            );
         }
 
         $requestedVersion = $this->stripQuotes(
@@ -370,7 +372,9 @@ class RemoteStorageService extends OAuthService
         }
 
         if (null === $documentVersion) {
-            throw new NotFoundException('document not found');
+            throw new NotFoundException(
+                sprintf('document "%s" not found', $path->getPath())
+            );
         }
 
         $ifMatch = $this->stripQuotes(
