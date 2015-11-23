@@ -43,8 +43,10 @@ You can start the PHP web server:
 
     $ php -S localhost:8080 -t web/ contrib/rs-router.php
 
-You can now point your browser to http://localhost:8080/ and you should see
-the welcome page.
+You can now point your browser to 
+[http://localhost:8080/](http://localhost:8080/) and you should see the welcome 
+page. You can sign in with the user `foo` and password `bar` to the account 
+page.
 
 If you want to test with some applications, make sure they are not using
 HTTPS as that will prevent most browsers from connecting to your service due
