@@ -73,7 +73,7 @@ You can run the included unit tests with PHPUnit:
 # API test suite
 Some extra dependencies are needed to run the API test suite:
 
-    $ sudo dnf -y install rubygem-bundler ruby-devel gcc-c++
+    $ sudo dnf -y install rubygem-bundler ruby-devel gcc-c++ redhat-rpm-config
 
 Now install the test suite:
 
