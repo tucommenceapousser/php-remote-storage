@@ -82,9 +82,10 @@ If you ever remove the software, you can also remove the SELinux context:
     $ sudo semanage fcontext -d -t httpd_sys_rw_content_t '/var/www/php-remote-storage/data(/.*)?'
 
 # Development Mode
-You can enable 'development mode' of the software, which currently means:
+You can enable 'development mode' of the software, in `config/server.yaml`, 
+which currently means:
 
-* none secure HTTP cookies are allowed, i.e. authenticating over HTTP will 
+* non-secure HTTP cookies are allowed, i.e. authenticating over HTTP will 
   work;
 * `X-SendFile` will not be used, slowing down document transfer and disabling 
   range requests
