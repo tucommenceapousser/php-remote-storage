@@ -50,7 +50,7 @@ page.
 
 If you want to test with some applications, make sure they are not using
 HTTPS as that will prevent most browsers from connecting to your service due
-to blocking 'mixed content'.
+to blocking [mixed content](https://developer.mozilla.org/en-US/docs/Security/MixedContent).
 
 ## Development Mode
 Development mode disables some features to make it work with the PHP 
