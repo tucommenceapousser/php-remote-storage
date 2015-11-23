@@ -63,6 +63,10 @@ web server:
 * non-secure HTTP cookies are allowed;
 * `X-SendFile` will not be used;
 
+Development can be enabled in the configuration file `config/server.yaml`:
+    
+    ServerMode: development
+
 Make sure you do not enable this in production or test environments!
 
 # Testing
