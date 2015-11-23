@@ -14,11 +14,11 @@ The following PHP modules need to be installed and activated:
 
 ## Fedora
 
-    $ sudo dnf -y install php-cli php-pdo composer git php-phpunit-PHPUnit
+    $ sudo dnf -y install php-cli php-pdo composer git
 
 ## Ubuntu
 
-    $ sudo apt-get install php5-cli php5-curl php5-sqlite git phpunit
+    $ sudo apt-get install php5-cli php5-curl php5-sqlite git
 
 On Ubuntu you need to manually install [Composer](https://getcomposer.org). 
 
@@ -68,18 +68,26 @@ Make sure you do not enable this in production or test environments!
 # Testing
 You can run the included unit tests with PHPUnit:
 
-    $ phpunit
+    $ vendor/bin/phpunit
 
 # API test suite
 Some extra dependencies are needed to run the API test suite:
 
+## Fedora
+
     $ sudo dnf -y install rubygem-bundler ruby-devel gcc-c++ redhat-rpm-config
+
+## Ubuntu
+It seems on Ubuntu 14.04 the included Ruby is too old to deal with multi byte
+characters.
+
+    $ sudo apt-get install ruby-dev bundler
 
 Now install the test suite:
 
     $ git clone https://github.com/remotestorage/api-test-suite.git
     $ cd api-test-suite
-    $ bundler install
+    $ bundle install
 
 You need to modify the configuration a bit to work with php-remote-storage:
 
