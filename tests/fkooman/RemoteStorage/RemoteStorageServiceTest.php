@@ -128,7 +128,6 @@ class RemoteStorageServiceTest extends PHPUnit_Framework_TestCase
     {
         return new Request(
             array_merge(
-                $h,
                 array(
                     'SERVER_NAME' => 'www.example.org',
                     'SERVER_PORT' => 80,
@@ -139,7 +138,8 @@ class RemoteStorageServiceTest extends PHPUnit_Framework_TestCase
                     'PATH_INFO' => $urlPath,
                     'REQUEST_METHOD' => 'GET',
                     'HTTP_ORIGIN' => 'https://foo.bar.example.org',
-                )
+                ),
+                $h
             )
         );
     }
@@ -477,6 +477,38 @@ class RemoteStorageServiceTest extends PHPUnit_Framework_TestCase
                 'Access-Control-Expose-Headers: ETag, Content-Length',
                 '',
                 '{"error":"version mismatch"}',
+            ),
+            $response->toArray()
+        );
+    }
+
+    public function testWebFinger()
+    {
+        $q = 'resource=acct:foo@www.example.org';
+
+        $request = new Request(
+            array(
+                'SERVER_NAME' => 'www.example.org',
+                'SERVER_PORT' => 80,
+                'QUERY_STRING' => $q,
+                'REQUEST_URI' => sprintf('/.well-known/webfinger?%s', $q),
+                'SCRIPT_NAME' => '/index.php',
+                'PATH_INFO' => '/.well-known/webfinger',
+                'REQUEST_METHOD' => 'GET',
+            )
+        );
+        $response = $this->r->run($request);
+        $this->assertSame(
+            array(
+                'HTTP/1.1 200 OK',
+                'Content-Type: application/jrd+json',
+                'Content-Length: 866',
+                'Expires: 0',
+                'Cache-Control: no-cache',
+                'Access-Control-Allow-Origin: "*"',
+                'Access-Control-Expose-Headers: ETag, Content-Length',
+                '',
+                '{"links":[{"href":"http:\/\/www.example.org\/foo","properties":{"http:\/\/remotestorage.io\/spec\/version":"draft-dejong-remotestorage-05","http:\/\/remotestorage.io\/spec\/web-authoring":null,"http:\/\/tools.ietf.org\/html\/rfc6749#section-4.2":"http:\/\/www.example.org\/_oauth\/authorize?login_hint=foo","http:\/\/tools.ietf.org\/html\/rfc6750#section-2.3":null,"http:\/\/tools.ietf.org\/html\/rfc7233":"GET"},"rel":"http:\/\/tools.ietf.org\/id\/draft-dejong-remotestorage"},{"href":"http:\/\/www.example.org\/foo","properties":{"http:\/\/remotestorage.io\/spec\/version":"draft-dejong-remotestorage-03","http:\/\/tools.ietf.org\/html\/rfc2616#section-14.16":"GET","http:\/\/tools.ietf.org\/html\/rfc6749#section-4.2":"http:\/\/www.example.org\/_oauth\/authorize?login_hint=foo","http:\/\/tools.ietf.org\/html\/rfc6750#section-2.3":false},"rel":"remotestorage"}]}',
             ),
             $response->toArray()
         );

@@ -38,6 +38,7 @@ use InvalidArgumentException;
 use fkooman\Rest\Plugin\Authentication\UserInfoInterface;
 use fkooman\OAuth\Approval;
 use fkooman\Http\RedirectResponse;
+use fkooman\Json\Json;
 
 class RemoteStorageService extends OAuthService
 {
@@ -105,6 +106,67 @@ class RemoteStorageService extends OAuthService
             array(
                 'fkooman\Rest\Plugin\Authentication\AuthenticationPlugin' => array(
                     'activate' => array('user'),
+                ),
+            )
+        );
+
+        $this->get(
+            '/.well-known/webfinger',
+            function (Request $request) {
+                $resource = $request->getUrl()->getQueryParameter('resource');
+                if (null === $resource) {
+                    throw new BadRequestException('resource parameter missing');
+                }
+                if (0 !== strpos($resource, 'acct:')) {
+                    throw new BadRequestException('unsupported resource type');
+                }
+                $userAddress = substr($resource, 5);
+                $atPos = strpos($userAddress, '@');
+                if (false === $atPos) {
+                    throw new BadRequestException('invalid user address');
+                }
+                $user = substr($userAddress, 0, $atPos);
+                $host = substr($userAddress, $atPos + 1);
+
+                //if($host !== $request->getUrl()->getHost()) {
+                //    throw new BadRequestException(sprintf('host of webfinger resource does not match host of request %s', $host));
+                //}
+
+                $webFingerData = array(
+                    'links' => array(
+                        array(
+                            'href' => sprintf('%s%s', $request->getUrl()->getRootUrl(), $user),
+                            'properties' => array(
+                                'http://remotestorage.io/spec/version' => 'draft-dejong-remotestorage-05',
+                                'http://remotestorage.io/spec/web-authoring' => null,
+                                'http://tools.ietf.org/html/rfc6749#section-4.2' => sprintf('%s_oauth/authorize?login_hint=%s', $request->getUrl()->getRootUrl(), $user),
+                                'http://tools.ietf.org/html/rfc6750#section-2.3' => null,
+                                'http://tools.ietf.org/html/rfc7233' => 'GET',
+                            ),
+                            'rel' => 'http://tools.ietf.org/id/draft-dejong-remotestorage',
+                        ),
+                        // legacy -03 WebFinger response
+                        array(
+                            'href' => sprintf('%s%s', $request->getUrl()->getRootUrl(), $user),
+                            'properties' => array(
+                                'http://remotestorage.io/spec/version' => 'draft-dejong-remotestorage-03',
+                                'http://tools.ietf.org/html/rfc2616#section-14.16' => 'GET',
+                                'http://tools.ietf.org/html/rfc6749#section-4.2' => sprintf('%s_oauth/authorize?login_hint=%s', $request->getUrl()->getRootUrl(), $user),
+                                'http://tools.ietf.org/html/rfc6750#section-2.3' => false,
+                            ),
+                            'rel' => 'remotestorage',
+                        ),
+                    ),
+                );
+
+                $response = new Response(200, 'application/jrd+json');
+                $response->setBody(Json::encode($webFingerData));
+
+                return $response;
+            },
+            array(
+                'fkooman\Rest\Plugin\Authentication\AuthenticationPlugin' => array(
+                    'enabled' => false,
                 ),
             )
         );
