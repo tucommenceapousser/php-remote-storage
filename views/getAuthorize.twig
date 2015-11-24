@@ -6,12 +6,14 @@
     <div id="container">
         {% include 'header.twig' %}
 
-        {% if redirect_uri|lower starts with 'http://' %}
-        <p class="warning">
-            <strong>NOTE</strong>: the application does not use TLS, if you continue the access token may be compromised!
-        </p>
+        {% if 'development' != serverMode %}
+            {% if redirect_uri|lower starts with 'http://' %}
+                <p class="warning">
+                    <strong>NOTE</strong>: the application does not use TLS, if you continue the access token may be compromised!
+                </p>
+            {% endif %}
         {% endif %}
-       
+
         <p>An application wants to access your <a href="https://remotestorage.io/">remoteStorage</a> data.</p>
        
         <table>
