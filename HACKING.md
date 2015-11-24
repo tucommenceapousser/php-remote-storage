@@ -1,6 +1,6 @@
 # Hacking
 This document describes how to setup a development environment on your 
-system.
+system and running tests.
 
 # Requirements
 You need to have at least PHP 5.4 with built-in web server support. The 

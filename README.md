@@ -6,8 +6,11 @@ This is a remoteStorage server implementation written in PHP. It aims at
 implementing `draft-dejong-remotestorage-03.txt` and later.
 
 # Deployment
-See the [deployment](https://github.com/fkooman/php-remote-storage-deployment) 
-repository for more information on how to deploy in production environments.
+See the [deployment repository](https://github.com/fkooman/php-remote-storage-deployment) 
+for more information on how to deploy in production environments.
+
+# Releases
+See [RELEASE.md](RELEASE.md).
 
 # Development
 See [HACKING.md](HACKING.md).
