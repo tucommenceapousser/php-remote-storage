@@ -4,6 +4,9 @@ testing and simple deploys. See the
 [deployment repository](https://github.com/fkooman/php-remote-storage-deployment/) 
 for information on how to deploy for production environments. 
 
+In addition a simple remoteStorage compatible application can be installed 
+that can be used to test and play with the server.
+
 See [HACKING.md](HACKING.md) for setting up a development environment.
 
 # Dependencies
