@@ -18,6 +18,12 @@ See [HACKING.md](HACKING.md) for setting up a development environment.
 
     $ sudo apt-get install php5-cli php5-curl php5-sqlite
 
+## Arch Linux
+
+    $ sudo pacman -S php php-sqlite
+
+Make sure to uncomment `openssl.so` and `pdo_sqlite.so` in `/etc/php/php.ini`.
+
 # Downloading
 The releases can be downloaded from GitHub, or from a remoteStorage server 
 running this software.
