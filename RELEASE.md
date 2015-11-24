@@ -40,7 +40,11 @@ And now start it:
     $ php -S localhost:8080 -t web/ contrib/rs-router.php
 
 Use your browser to go to [http://localhost:8080/](http://localhost:8080/) to
-get started!
+get started! The default user is `foo` with password `bar`.
+
+You can simply add users like this:
+
+    $ php bin/php-remote-storage-add-user me p4ssw0rd
 
 # remoteStorage Application
 You can install a sample remoteStorage application under the `web` directory
