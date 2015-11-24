@@ -23,19 +23,12 @@ Choose a working directory, clone the repository and run composer:
     $ cd php-remote-storage
     $ composer install
 
-Use the following configuration file, and place it in `config/server.yaml`:
+Use the *development* configuration file:
 
-    storageDir: /home/fkooman/Projects/php-remote-storage/data/storage
-    serverMode: development
-    Users:
-        # foo:bar
-        foo: $2y$10$sWzE0MjAP13srnNI/Pg8SuBM6LVmq8/hnznJwkQRF00Obe321PqGq
-    Db:
-        dsn: 'sqlite:/home/fkooman/Projects/php-remote-storage/data/rs.sqlite'
+    $ cp config/server.dev.yaml.example config/server.yaml
 
-Modify it to point to the correct locations for storage and the database. 
-Create the directory and initialize the database:
-    
+Create the storage directory and initialize the database:
+
     $ mkdir -p data/storage
     $ php bin/php-remote-storage-init
 
@@ -50,11 +43,11 @@ page.
 
 If you want to test with some applications, make sure they are not using
 HTTPS as that will prevent most browsers from connecting to your service due
-to blocking [mixed content](https://developer.mozilla.org/en-US/docs/Security/MixedContent).
+to blocking [Mixed Content](https://developer.mozilla.org/en-US/docs/Security/MixedContent).
 
 ## Development Mode
-Development mode disables some features to make it work with the PHP 
-web server:
+Development mode makes it possible to use the built in PHP web server. It 
+changes the following things:
 
 * non-secure HTTP cookies are allowed;
 * `X-SendFile` will not be used;

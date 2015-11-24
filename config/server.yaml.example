@@ -1,3 +1,7 @@
+#
+# PRODUCTION
+#
+
 # Storage folder
 storageDir: /var/lib/php-remote-storage/storage
 
@@ -7,8 +11,6 @@ templateCache: /var/lib/php-remote-storage/tpl
 Users:
     # foo:bar
     #foo: $2y$10$sWzE0MjAP13srnNI/Pg8SuBM6LVmq8/hnznJwkQRF00Obe321PqGq
-    # bar:baz
-    #bar: $2y$10$KLzVp/YwKAhI0asdeUHJmOARFglUZc4ccWTPJKqQEIxYXbtmLkBlm
 
 # Database configuration for file metadata and OAuth tokens
 Db:

@@ -60,10 +60,6 @@ span.err {
     color: #c00;
 }
 
-span.err a {
-    color: #c00 !important;
-}
-
 p.plain {
     background-color: #eee; 
     border: 1px solid #ccc;
