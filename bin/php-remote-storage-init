@@ -32,7 +32,7 @@ try {
     );
 
     $db = new PDO(
-        $configReader->v('Db', 'dsn'),
+        $configReader->v('Db', 'dsn', false, sprintf('sqlite:%s/data/rs.sqlite', dirname(__DIR__))),
         $configReader->v('Db', 'username', false),
         $configReader->v('Db', 'password', false)
     );
