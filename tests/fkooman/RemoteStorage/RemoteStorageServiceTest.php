@@ -21,12 +21,13 @@ require_once __DIR__.'/Test/TestTemplateManager.php';
 require_once __DIR__.'/Test/TestApproval.php';
 require_once __DIR__.'/Test/TestAuthorizationCode.php';
 require_once __DIR__.'/Test/TestAccessToken.php';
+require_once __DIR__.'/Test/TestAuthentication.php';
 
 use PDO;
 use fkooman\Http\Request;
 use fkooman\Json\Json;
+use fkooman\RemoteStorage\Test\TestAuthentication;
 use fkooman\Rest\Plugin\Authentication\Bearer\BearerAuthentication;
-use fkooman\Rest\Plugin\Authentication\Basic\BasicAuthentication;
 use PHPUnit_Framework_TestCase;
 use fkooman\RemoteStorage\Test\TestApproval;
 use fkooman\RemoteStorage\Test\TestTokenValidator;
@@ -69,17 +70,7 @@ class RemoteStorageServiceTest extends PHPUnit_Framework_TestCase
 
         $approvalManagementStorage = new ApprovalManagementStorage($db);
 
-        $userAuth = new BasicAuthentication(
-            function ($userId) {
-                if ('foo' === $userId) {
-                    return '$2y$10$DcG2jZ.V1XC7vMA0O1R5leI8advDzgcpkiHaPcP7/SsvHmNOGwRRK';
-                }
-
-                return false;
-            },
-            array('realm' => 'remoteStorage')
-        );
-
+        $userAuth = new TestAuthentication();
         $apiAuth = new BearerAuthentication(new TestTokenValidator());
 
         $authenticationPlugin = new AuthenticationPlugin();

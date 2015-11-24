@@ -23,7 +23,6 @@
         "php": ">=5.4"
     },
     "require-dev": {
-        "fkooman/rest-plugin-authentication-basic": "^2.0.0",
         "phpunit/phpunit": "^4.8"
     }
 }
