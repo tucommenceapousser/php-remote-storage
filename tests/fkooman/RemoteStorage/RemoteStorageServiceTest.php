@@ -496,7 +496,7 @@ class RemoteStorageServiceTest extends PHPUnit_Framework_TestCase
                 'Content-Length: 866',
                 'Expires: 0',
                 'Cache-Control: no-cache',
-                'Access-Control-Allow-Origin: "*"',
+                'Access-Control-Allow-Origin: *',
                 'Access-Control-Expose-Headers: ETag, Content-Length',
                 '',
                 '{"links":[{"href":"http:\/\/www.example.org\/foo","properties":{"http:\/\/remotestorage.io\/spec\/version":"draft-dejong-remotestorage-05","http:\/\/remotestorage.io\/spec\/web-authoring":null,"http:\/\/tools.ietf.org\/html\/rfc6749#section-4.2":"http:\/\/www.example.org\/_oauth\/authorize?login_hint=foo","http:\/\/tools.ietf.org\/html\/rfc6750#section-2.3":null,"http:\/\/tools.ietf.org\/html\/rfc7233":"GET"},"rel":"http:\/\/tools.ietf.org\/id\/draft-dejong-remotestorage"},{"href":"http:\/\/www.example.org\/foo","properties":{"http:\/\/remotestorage.io\/spec\/version":"draft-dejong-remotestorage-03","http:\/\/tools.ietf.org\/html\/rfc2616#section-14.16":"GET","http:\/\/tools.ietf.org\/html\/rfc6749#section-4.2":"http:\/\/www.example.org\/_oauth\/authorize?login_hint=foo","http:\/\/tools.ietf.org\/html\/rfc6750#section-2.3":false},"rel":"remotestorage"}]}',

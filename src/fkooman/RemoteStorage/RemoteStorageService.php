@@ -567,7 +567,7 @@ class RemoteStorageService extends OAuthService
         if (null !== $request->getHeader('Origin')) {
             $response->setHeader('Access-Control-Allow-Origin', $request->getHeader('Origin'));
         } elseif (in_array($request->getMethod(), array('GET', 'HEAD', 'OPTIONS'))) {
-            $response->setHeader('Access-Control-Allow-Origin', '"*"');
+            $response->setHeader('Access-Control-Allow-Origin', '*');
         }
 
         $response->setHeader(
