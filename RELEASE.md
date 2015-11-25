@@ -1,4 +1,5 @@
 # Introduction
+
 This document describes how to run offical releases on your system, for 
 testing and simple deploys. See the 
 [deployment repository](https://github.com/fkooman/php-remote-storage-deployment/) 
@@ -10,6 +11,7 @@ that can be used to test and play with the server.
 See [HACKING.md](HACKING.md) for setting up a development environment.
 
 # Dependencies
+
 ## Fedora
 
     $ sudo dnf -y install php-cli php-pdo
@@ -23,6 +25,10 @@ See [HACKING.md](HACKING.md) for setting up a development environment.
     $ sudo pacman -S php php-sqlite
 
 Make sure to uncomment `openssl.so` and `pdo_sqlite.so` in `/etc/php/php.ini`.
+
+## Mac OS X
+
+All dependencies should be pre-installed on current versions of OS X.
 
 # Downloading
 The releases can be downloaded from GitHub, or from a remoteStorage server 
