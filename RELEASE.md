@@ -25,10 +25,11 @@ See [HACKING.md](HACKING.md) for setting up a development environment.
 Make sure to uncomment `openssl.so` and `pdo_sqlite.so` in `/etc/php/php.ini`.
 
 # Downloading
-The releases can be downloaded from GitHub, or from a remoteStorage server 
-running this software.
+The releases can be downloaded from a remoteStorage server 
+running this software :-)
 
-* from [GitHub](https://github.com/fkooman/php-remote-storage/releases)
+For the 1.0.0 and later releases they will also be hosted on GitHub.
+
 * from [remoteStorage](https://storage.tuxed.net/fkooman/public/upload/php-remote-storage/releases.html)
 
 # Running
@@ -39,7 +40,7 @@ development mode:
     $ cd php-remote-storage-VERSION
     $ cp config/server.dev.yaml.example config/server.yaml
     $ mkdir -p data/storage
-    $ php bin/php-remote-storage-init
+    $ bin/php-remote-storage-init
 
 And now start it:
 
@@ -50,7 +51,7 @@ get started! The default user is `foo` with password `bar`.
 
 You can simply add users like this:
 
-    $ php bin/php-remote-storage-add-user me p4ssw0rd
+    $ bin/php-remote-storage-add-user me p4ssw0rd
 
 # remoteStorage Application
 You can install a sample remoteStorage application under the `web` directory
