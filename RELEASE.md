@@ -3,7 +3,8 @@
 This document describes how to run offical releases on your system, for 
 testing and simple deploys. See the 
 [deployment repository](https://github.com/fkooman/php-remote-storage-deployment/) 
-for information on how to deploy for production environments. 
+for information on how to deploy for production environments. In the deployment
+repository you can also find the script that was used to create these releases.
 
 In addition a simple remoteStorage compatible application can be installed 
 that can be used to test and play with the server.
@@ -34,7 +35,7 @@ All dependencies should be pre-installed on current versions of OS X.
 The releases can be downloaded from a remoteStorage server 
 running this software :-)
 
-For the 1.0.0 and later releases they will also be hosted on GitHub.
+For the release >= 1.0.0 they will also be hosted on GitHub.
 
 * from [remoteStorage](https://storage.tuxed.net/fkooman/public/upload/php-remote-storage/releases.html)
 
@@ -45,8 +46,8 @@ development mode:
     $ tar -xJf php-remote-storage-VERSION.tar.xz
     $ cd php-remote-storage-VERSION
     $ cp config/server.dev.yaml.example config/server.yaml
-    $ mkdir -p data/storage
-    $ bin/php-remote-storage-init
+    $ mkdir -p data/storage         # XXX: not needed >= 0.9.2
+    $ bin/php-remote-storage-init   # XXX: not needed >= 0.9.2
 
 And now start it:
 
