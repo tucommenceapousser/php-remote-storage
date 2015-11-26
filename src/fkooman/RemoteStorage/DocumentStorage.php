@@ -20,6 +20,7 @@ use fkooman\RemoteStorage\Exception\DocumentStorageException;
 use fkooman\Http\Exception\ConflictException;
 use RecursiveIteratorIterator;
 use RecursiveDirectoryIterator;
+use RuntimeException;
 
 class DocumentStorage
 {
@@ -27,6 +28,12 @@ class DocumentStorage
 
     public function __construct($baseDir)
     {
+        // check if baseDir exists, if not, try to create it
+        if (!is_dir($baseDir)) {
+            if (false === @mkdir($baseDir, 0770, true)) {
+                throw new RuntimeException('unable to create baseDir');
+            }
+        }
         $this->baseDir = $baseDir;
     }
 

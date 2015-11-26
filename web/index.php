@@ -37,6 +37,8 @@ use fkooman\Rest\Plugin\Authentication\Form\FormAuthentication;
 use fkooman\Tpl\Twig\TwigTemplateManager;
 
 try {
+    $request = new Request($_SERVER);
+
     $configReader = new Reader(
         new YamlFile(
             dirname(__DIR__).'/config/server.yaml'
@@ -45,13 +47,18 @@ try {
 
     $serverMode = $configReader->v('serverMode', false, 'production');
 
+    $document = new DocumentStorage(
+        $configReader->v('storageDir', false, sprintf('%s/data/storage', dirname(__DIR__)))
+    );
+
     $db = new PDO(
         $configReader->v('Db', 'dsn', false, sprintf('sqlite:%s/data/rs.sqlite', dirname(__DIR__))),
         $configReader->v('Db', 'username', false),
         $configReader->v('Db', 'password', false)
     );
 
-    $request = new Request($_SERVER);
+    $md = new MetadataStorage($db);
+    $remoteStorage = new RemoteStorage($md, $document);
 
     $templateManager = new TwigTemplateManager(
         array(
@@ -70,13 +77,6 @@ try {
     $approvalStorage = new PdoApprovalStorage($db);
     $authorizationCodeStorage = new PdoAuthorizationCodeStorage($db);
     $accessTokenStorage = new PdoAccessTokenStorage($db);
-
-    $md = new MetadataStorage($db);
-    $document = new DocumentStorage(
-        $configReader->v('storageDir', false, sprintf('%s/data/storage', dirname(__DIR__)))
-    );
-
-    $remoteStorage = new RemoteStorage($md, $document);
 
     $session = new Session(
         'php-remote-storage',
