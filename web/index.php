@@ -51,14 +51,23 @@ try {
         $configReader->v('storageDir', false, sprintf('%s/data/storage', dirname(__DIR__)))
     );
 
+    $dbDsn = $configReader->v('Db', 'dsn', false, sprintf('sqlite:%s/data/rs.sqlite', dirname(__DIR__)));
+    // if we use sqlite, and database is not initialized we will initialize
+    // all tables here. No need to manually initialize the database then!
+    $initDb = false;
+    if (0 === strpos($dbDsn, 'sqlite:')) {
+        // sqlite
+        if (!file_exists(substr($dbDsn, 7))) {
+            // sqlite file does not exist
+            $initDb = true;
+        }
+    }
+
     $db = new PDO(
-        $configReader->v('Db', 'dsn', false, sprintf('sqlite:%s/data/rs.sqlite', dirname(__DIR__))),
+        $dbDsn,
         $configReader->v('Db', 'username', false),
         $configReader->v('Db', 'password', false)
     );
-
-    $md = new MetadataStorage($db);
-    $remoteStorage = new RemoteStorage($md, $document);
 
     $templateManager = new TwigTemplateManager(
         array(
@@ -74,9 +83,19 @@ try {
         )
     );
 
+    $md = new MetadataStorage($db);
     $approvalStorage = new PdoApprovalStorage($db);
     $authorizationCodeStorage = new PdoAuthorizationCodeStorage($db);
     $accessTokenStorage = new PdoAccessTokenStorage($db);
+
+    if ($initDb) {
+        $md->initDatabase();
+        $approvalStorage->initDatabase();
+        $authorizationCodeStorage->initDatabase();
+        $accessTokenStorage->initDatabase();
+    }
+
+    $remoteStorage = new RemoteStorage($md, $document);
 
     $session = new Session(
         'php-remote-storage',
