@@ -8,6 +8,21 @@ compatible application to test and play with the server.
 We will be using the Apache web server with `mod_php`. This is the most common
 deployment scenario, and most people will have some familiarity with this.
 
+This document will assume you use the name `storage.local` for your server. If
+you have your own domain name you can use that instead. These instructions 
+configure the storage server on its own domain, as that is required for making
+WebFinger work without hackery.
+
+If you choose your own domain name, replace all occurrences below with that 
+domain name and do not forget to edit the web server configuration file 
+accordingly!
+
+Of course, dealing with TLS, one MUST verify the TLS configuration. Typically, 
+I use both these services:
+
+* [SSL Decoder](https://ssldecoder.org/)
+* [SSL Labs](https://www.ssllabs.com/ssltest/)
+
 # Dependencies
 
 ## Fedora
