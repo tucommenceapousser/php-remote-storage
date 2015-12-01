@@ -13,6 +13,10 @@ you have your own domain name you can use that instead. These instructions
 configure the storage server on its own domain, as that is required for making
 WebFinger work without hackery.
 
+If you use `storage.local`, you can configure it in `/etc/hosts`:
+
+    1.2.3.4     storage.local
+
 If you choose your own domain name, replace all occurrences below with that 
 domain name and do not forget to edit the web server configuration file 
 accordingly!
