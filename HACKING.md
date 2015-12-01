@@ -1,10 +1,18 @@
-# Hacking
-This document describes how to setup a development environment on your 
-system and running tests.
+# Introduction
 
-# Requirements
-You need to have at least PHP 5.4 with built-in web server support. The 
-latest version is recommended.
+This document describes how to run the latest Git code on your system for 
+remoteStorage server development.
+
+In addition, instructions are provided to install a simple remoteStorage 
+compatible application to test and play with the server.
+
+We will be using PHP's built in web server to reduce the amount of 
+configuration as much as possible.
+
+This document will also describe how to run the integrated unit tests and how
+to set up integration testing.
+
+# Dependencies
 
 ## Fedora
 
@@ -22,43 +30,39 @@ Choose a working directory, clone the repository and run composer:
     $ git clone https://github.com/fkooman/php-remote-storage.git
     $ cd php-remote-storage
     $ composer install
-
-Use the *dev* configuration file:
-
     $ cp config/server.dev.yaml.example config/server.yaml
 
-You can start the PHP web server:
+And now start the server:
 
     $ php -S localhost:8080 -t web/ contrib/rs-router.php
 
-You can now point your browser to 
-[http://localhost:8080/](http://localhost:8080/) and you should see the welcome 
-page. You can sign in with the user `foo` and password `bar` to the account 
-page.
+Use your browser to go to [http://localhost:8080/](http://localhost:8080/) to
+get started! The default user is `foo` with password `bar`.
 
-If you want to test with some applications, make sure they are not using
-HTTPS as that will prevent most browsers from connecting to your service due
-to blocking [Mixed Content](https://developer.mozilla.org/en-US/docs/Security/MixedContent).
+You can easily add more users if you want:
 
-## Development Mode
-Development mode makes it possible to use the built in PHP web server. It 
-changes the following things:
+    $ bin/add-user me p4ssw0rd
 
-* non-secure HTTP cookies are allowed;
-* `X-SendFile` will not be used;
+## remoteStorage Application
+You can install a simple remoteStorage application under the `web/` directory
+as well:
 
-Development can be enabled in the configuration file `config/server.yaml`:
-    
-    serverMode: development
+    $ cd web
+    $ curl -L -O https://github.com/remotestorage/myfavoritedrinks/archive/master.tar.gz
+    $ tar -xzf master.tar.gz
 
-Make sure you do not enable this in production or test environments!
+Now visit [http://localhost:8080/myfavoritedrinks-master/](http://localhost:8080/myfavoritedrinks-master/)
+with your browser and connect to your storage using the user address 
+`foo@localhost:8080`.
 
-# Testing
+You should be able to store some drinks on your server, cheers! :)
+
+# Unit Testing
 You can run the included unit tests with PHPUnit:
 
     $ vendor/bin/phpunit
 
-# API test suite
+# Integration Testing
 Some extra dependencies are needed to run the API test suite:
 
 ## Fedora

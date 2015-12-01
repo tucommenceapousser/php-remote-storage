@@ -2,20 +2,21 @@
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/fkooman/php-remote-storage/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/fkooman/php-remote-storage/?branch=master)
 
 # Introduction
-This is a remoteStorage server implementation written in PHP. It aims at 
-implementing `draft-dejong-remotestorage-03.txt` and later.
+This is a [remoteStorage](https://remotestorage.io/) server implementation 
+written in PHP. It aims at implementing `draft-dejong-remotestorage-03.txt` 
+and later.
 
-# Release
-See [RELEASE.md](RELEASE.md) on how to run and install releases for testing and 
-simple deployments.
+# Application Development
+If you are developing remoteStorage applications, see 
+[DEVELOPMENT.md](DEVELOPMENT.md).
 
-# Development
-See [HACKING.md](HACKING.md) on how to set up a development environment to run
-and test the development version.
+# Personal Server
+If you want to run your own remoteStorage server, see 
+[SERVER.md](SERVER.md).
 
-# Deployment
-See the [deployment repository](https://github.com/fkooman/php-remote-storage-deployment) 
-for more information on how to deploy in production environments.
+# Hacking
+If you want to contribute to the development of this remoteStorage server, see 
+[HACKING.md](HACKING.md).
 
 # License
 Licensed under the GNU Affero General Public License as published by the Free
