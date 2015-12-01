@@ -95,6 +95,12 @@ Enable the web server on boot and start it:
     $ sudo systemctl enable httpd
     $ sudo systemctl start httpd
 
+You should now be able to go to 
+[https://storage.local/](https://storage.local/), accept the self signed
+certificate and login to the account page. To use with remoteStorage 
+applications you can use the identity `me@storage.local`, or any other user
+that you may have added above.
+
 If you want to have your certificate signed by a CA you can also generate a 
 CSR:
 
@@ -136,6 +142,12 @@ Enable some web server modules and enable the site:
     $ sudo a2ensite default-ssl
     $ sudo a2ensite storage.local
     $ sudo service apache2 restart
+
+You should now be able to go to 
+[https://storage.local/](https://storage.local/), accept the self signed
+certificate and login to the account page. To use with remoteStorage 
+applications you can use the identity `me@storage.local`, or any other user
+that you may have added above.
 
 If you want to have your certificate signed by a CA you can also generate a 
 CSR:
