@@ -2,6 +2,8 @@
 
 This document describes how to run official releases for simple deployments.
 
+These instructions were tested with Fedora 23 and Ubuntu 14.04 LTS.
+
 In addition, instructions are provided to install a simple remoteStorage 
 compatible application to test and play with the server.
 
