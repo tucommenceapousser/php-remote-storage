@@ -77,7 +77,9 @@ Enable the web server on boot and start it:
 If you want to have your certificate signed by a CA you can also generate a 
 CSR:
 
-    $ sudo openssl req -subj "/CN=storage.local" -sha256 -new -key /etc/pki/tls/private/storage.local.key -out storage.local.csr
+    $ sudo openssl req -subj "/CN=storage.local" -sha256 -new \
+        -key /etc/pki/tls/private/storage.local.key \
+        -out storage.local.csr
 
 Once you obtain the resulting certificate, overwrite the file 
 `/etc/pki/tls/certs/storage.local.crt` with the new certificate, configure the
