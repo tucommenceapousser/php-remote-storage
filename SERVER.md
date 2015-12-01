@@ -86,7 +86,7 @@ Generate the SSL certificate:
 
 Install the Apache configuration file:
 
-    $ sudo cp contrib/storage.local.conf /etc/httpd/conf.d/storage.local.conf
+    $ sudo cp contrib/storage.local.conf.fedora /etc/httpd/conf.d/storage.local.conf
 
 Enable the web server on boot and start it:
 
@@ -116,20 +116,32 @@ cache:
 
 Generate the SSL certificate:
 
-    ...
+    $ sudo openssl genrsa -out /etc/ssl/private/storage.local.key 2048
+    $ sudo chmod 600 /etc/ssl/private/storage.local.key
+    $ sudo openssl req -subj "/CN=storage.local" -sha256 -new -x509 \
+        -key /etc/ssl/private/storage.local.key \
+        -out /etc/ssl/certs/storage.local.crt
 
 Install the Apache configuration file:
 
-    $ sudo cp contrib/storage.local.conf /etc/apache2/sites-available/storage.local
+    $ sudo cp contrib/storage.local.conf.ubuntu /etc/apache2/sites-available/storage.local.conf
 
 Enable some web server modules and enable the site:
 
     $ sudo a2enmod rewrite
+    $ sudo a2enmod headers
     $ sudo a2enmod ssl
+    $ sudo a2ensite default-ssl
     $ sudo a2ensite storage.local
     $ sudo service apache2 restart
-    
+
 If you want to have your certificate signed by a CA you can also generate a 
 CSR:
-    
-    ...
+
+    $ sudo openssl req -subj "/CN=storage.local" -sha256 -new \
+        -key /etc/ssl/private/storage.local.key \
+        -out storage.local.csr
+
+Once you obtain the resulting certificate, overwrite the file 
+`/etc/ssl/certs/storage.local.crt` with the new certificate, configure the
+chain and restart the web server.

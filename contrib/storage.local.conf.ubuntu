@@ -1,0 +1,60 @@
+<VirtualHost *:80>
+    ServerName storage.local
+
+    ErrorLog ${APACHE_LOG_DIR}/storage.local_error_log
+    TransferLog ${APACHE_LOG_DIR}/storage.local_access_log
+    CustomLog ${APACHE_LOG_DIR}/storage.local_combined_log combined
+    LogLevel warn
+
+    RewriteEngine On
+    RewriteCond %{HTTPS} !=on
+    RewriteCond %{ENV:HTTPS} !=on
+    RewriteRule .* https://%{SERVER_NAME}%{REQUEST_URI} [R=301,L]
+</VirtualHost>
+
+<VirtualHost *:443>
+    ServerName storage.local
+
+    ErrorLog ${APACHE_LOG_DIR}/storage.local_ssl_error_log
+    TransferLog ${APACHE_LOG_DIR}/storage.local_ssl_access_log
+    CustomLog ${APACHE_LOG_DIR}/storage.local_ssl_combined_log combined
+    LogLevel warn
+
+    DocumentRoot /var/www/php-remote-storage/web
+
+    SSLEngine on
+    SSLCertificateFile /etc/ssl/certs/storage.local.crt
+    #SSLCertificateChainFile /etc/pki/tls/certs/storage.local-chain.crt
+    SSLCertificateKeyFile /etc/ssl/private/storage.local.key
+
+    SSLProtocol             all -SSLv3 -TLSv1
+    SSLCipherSuite          ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!3DES:!MD5:!PSK
+    SSLHonorCipherOrder     on
+    SSLCompression          off
+
+    # HSTS (mod_headers is required) (15768000 seconds = 6 months)
+    Header always set Strict-Transport-Security "max-age=15768000"
+
+    <Directory "/var/www/php-remote-storage/web">
+        Options -MultiViews
+
+        Require all granted
+        #Require local
+
+        AllowOverride none
+
+        RewriteEngine on
+        RewriteCond %{REQUEST_FILENAME} !-f
+        RewriteCond %{REQUEST_FILENAME} !-d
+        RewriteRule ^(.*)$ index.php/$1 [L,QSA]
+    </Directory>
+
+    # Limit the request body to 8M
+    LimitRequestBody 8388608
+
+    XSendFile on
+    XSendFilePath /var/www/php-remote-storage/data/storage
+
+    # Pass through the "Authorization" header
+    SetEnvIfNoCase ^Authorization$ "(.+)" HTTP_AUTHORIZATION=$1
+</VirtualHost>
