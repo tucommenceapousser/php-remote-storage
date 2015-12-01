@@ -23,14 +23,9 @@ Choose a working directory, clone the repository and run composer:
     $ cd php-remote-storage
     $ composer install
 
-Use the *development* configuration file:
+Use the *dev* configuration file:
 
     $ cp config/server.dev.yaml.example config/server.yaml
-
-Create the storage directory and initialize the database:
-
-    $ mkdir -p data/storage
-    $ php bin/php-remote-storage-init
 
 You can start the PHP web server:
 
@@ -76,6 +71,7 @@ characters.
 
     $ sudo apt-get install ruby-dev bundler
 
+## The Test Suite
 Now install the test suite:
 
     $ git clone https://github.com/remotestorage/api-test-suite.git
@@ -115,3 +111,7 @@ Now you can run the test suite and all should be fine:
 
     $ rake test
 
+# Contributing
+You can send a pull request, ideally after first discussing a new feature or
+fix. Please make sure there is an accompanying unit test for your feature or 
+fix. I know the current test coverage is not perfect, but trying to improve :)
