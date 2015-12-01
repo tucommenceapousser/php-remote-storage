@@ -69,12 +69,19 @@ try {
         $configReader->v('Db', 'password', false)
     );
 
+    // only enable templateCache when in production mode
+    if ('development' !== $serverMode) {
+        $templateCache = $configReader->v('templateCache', false, sprintf('%s/data/tpl', dirname(__DIR__)));
+    } else {
+        $templateCache = null;
+    }
+
     $templateManager = new TwigTemplateManager(
         array(
             dirname(__DIR__).'/views',
             dirname(__DIR__).'/config/views',
         ),
-        $configReader->v('templateCache', false, null)
+        $templateCache
     );
     $templateManager->setDefault(
         array(
