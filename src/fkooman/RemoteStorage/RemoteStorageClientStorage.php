@@ -34,7 +34,6 @@ class RemoteStorageClientStorage implements ClientStorageInterface
         $scheme = strtolower(parse_url($redirectUri, PHP_URL_SCHEME));
         $host = strtolower(parse_url($redirectUri, PHP_URL_HOST));
         $port = parse_url($redirectUri, PHP_URL_PORT);
-        $path = parse_url($redirectUri, PHP_URL_PATH);
 
         $usePort = false;
         if (null !== $port) {
