@@ -126,11 +126,6 @@ class RemoteStorageService extends OAuthService
                     throw new BadRequestException('invalid user address');
                 }
                 $user = substr($userAddress, 0, $atPos);
-                $host = substr($userAddress, $atPos + 1);
-
-                //if($host !== $request->getUrl()->getHost()) {
-                //    throw new BadRequestException(sprintf('host of webfinger resource does not match host of request %s', $host));
-                //}
 
                 $webFingerData = array(
                     'links' => array(
