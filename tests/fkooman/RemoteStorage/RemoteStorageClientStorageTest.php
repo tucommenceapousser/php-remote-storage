@@ -23,21 +23,21 @@ class RemoteStorageClientStorageTest extends PHPUnit_Framework_TestCase
     public function testBasic()
     {
         $r = new RemoteStorageClientStorage();
-        $client = $r->getClient('foo', 'token', 'http://example.org/cb', 'foo bar');
+        $client = $r->getClient('http://example.org', 'token', 'http://example.org/cb', 'foo bar');
         $this->assertEquals('http://example.org', $client->getClientId());
     }
 
     public function testBasicNonDefaultPort()
     {
         $r = new RemoteStorageClientStorage();
-        $client = $r->getClient('foo', 'token', 'http://example.org:8080/cb', 'foo bar');
+        $client = $r->getClient('http://example.org:8080', 'token', 'http://example.org:8080/cb', 'foo bar');
         $this->assertEquals('http://example.org:8080', $client->getClientId());
     }
 
     public function testBasicOtherScheme()
     {
         $r = new RemoteStorageClientStorage();
-        $client = $r->getClient('foo', 'token', 'app://callback/bar', 'foo bar');
+        $client = $r->getClient('app://callback', 'token', 'app://callback/bar', 'foo bar');
         $this->assertEquals('app://callback', $client->getClientId());
     }
 }
