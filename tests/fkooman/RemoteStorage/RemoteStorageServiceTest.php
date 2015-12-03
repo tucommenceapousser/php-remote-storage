@@ -479,6 +479,35 @@ class RemoteStorageServiceTest extends PHPUnit_Framework_TestCase
         );
     }
 
+    public function testPreflight()
+    {
+        $request = new Request(
+            array(
+                'SERVER_NAME' => 'www.example.org',
+                'SERVER_PORT' => 80,
+                'QUERY_STRING' => '',
+                'REQUEST_URI' => '/any/path/will/do',
+                'SCRIPT_NAME' => '/index.php',
+                'PATH_INFO' => '/any/path/will/do',
+                'REQUEST_METHOD' => 'OPTIONS',
+            )
+        );
+        $response = $this->r->run($request);
+        $this->assertSame(
+            array(
+                'HTTP/1.1 200 OK',
+                'Content-Type: text/html;charset=UTF-8',
+                'Access-Control-Allow-Methods: GET, PUT, DELETE, HEAD, OPTIONS',
+                'Access-Control-Allow-Headers: Authorization, Content-Length, Content-Type, Origin, X-Requested-With, If-Match, If-None-Match',
+                'Access-Control-Allow-Origin: *',
+                'Access-Control-Expose-Headers: ETag, Content-Length',
+                '',
+                '',
+            ),
+            $response->toArray()
+        );
+    }
+
     public function testWebFinger()
     {
         $q = 'resource=acct:foo@www.example.org';

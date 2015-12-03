@@ -257,7 +257,7 @@ class RemoteStorageService extends OAuthService
                     'Access-Control-Allow-Headers',
                     'Authorization, Content-Length, Content-Type, Origin, X-Requested-With, If-Match, If-None-Match'
                 );
-                $response->addCors($response);
+                $this->addCors($response);
 
                 return $response;
             },
