@@ -155,7 +155,10 @@ class RemoteStorageService extends OAuthService
                 );
 
                 $response = new Response(200, 'application/jrd+json');
-                $response->setBody(Json::encode($webFingerData));
+                $response->setHeader('Access-Control-Allow-Origin', '*');
+                $response->setBody(
+                    Json::encode($webFingerData)
+                );
 
                 return $response;
             },
@@ -189,7 +192,11 @@ class RemoteStorageService extends OAuthService
             ['GET', 'HEAD'],
             '*',
             function (Request $request, TokenInfo $tokenInfo = null) {
-                return $this->getObject($request, $tokenInfo);
+                $response = $this->getObject($request, $tokenInfo);
+                $this->addNoCache($response);
+                $this->addCors($response);
+
+                return $response;
             },
             array(
                 'fkooman\Rest\Plugin\Authentication\AuthenticationPlugin' => array(
@@ -203,7 +210,10 @@ class RemoteStorageService extends OAuthService
         $this->put(
             '*',
             function (Request $request, TokenInfo $tokenInfo) {
-                return $this->putDocument($request, $tokenInfo);
+                $response = $this->putDocument($request, $tokenInfo);
+                $this->addCors($response);
+
+                return $response;
             },
             array(
                 'fkooman\Rest\Plugin\Authentication\AuthenticationPlugin' => array(
@@ -219,7 +229,10 @@ class RemoteStorageService extends OAuthService
         $this->delete(
             '*',
             function (Request $request, TokenInfo $tokenInfo) {
-                return $this->deleteDocument($request, $tokenInfo);
+                $response = $this->deleteDocument($request, $tokenInfo);
+                $this->addCors($response);
+
+                return $response;
             },
             array(
                 'fkooman\Rest\Plugin\Authentication\AuthenticationPlugin' => array(
@@ -235,7 +248,17 @@ class RemoteStorageService extends OAuthService
         $this->options(
             '*',
             function (Request $request) {
-                return $this->optionsRequest($request);
+                $response = new Response();
+                $response->setHeader(
+                    'Access-Control-Allow-Methods',
+                    'GET, PUT, DELETE, HEAD, OPTIONS'
+                );
+                $response->setHeader(
+                    'Access-Control-Allow-Headers',
+                    'Authorization, Content-Length, Content-Type, Origin, X-Requested-With, If-Match, If-None-Match'
+                );
+
+                return $response;
             },
             array(
                 'fkooman\Rest\Plugin\Authentication\AuthenticationPlugin' => array('enabled' => false),
@@ -468,10 +491,10 @@ class RemoteStorageService extends OAuthService
         return $rsr;
     }
 
-    public function optionsRequest(Request $request)
-    {
-        return new Response();
-    }
+#    public function optionsRequest(Request $request)
+#    {
+#        return new Response();
+#    }
 
     private function hasReadScope(Scope $i, $moduleName)
     {
@@ -552,37 +575,29 @@ class RemoteStorageService extends OAuthService
             $response = $e->getJsonResponse();
         }
 
-        // XXX Expires should only be for successful GET??
-        if ('GET' === $request->getMethod()) {
-            $response->setHeader('Expires', 0);
-            $response->setHeader('Cache-Control', 'no-cache');
+        // if error, add CORS
+        // XXX: most ugly code below ;)
+        $statusCode = explode(' ', $response->toArray()[0])[1];
+        if (400 <= $statusCode && 500 > $statusCode) {
+            $this->addCors($response);
+            $this->addNoCache($response);
         }
 
-        // CORS
-        if (null !== $request->getHeader('Origin')) {
-            $response->setHeader('Access-Control-Allow-Origin', $request->getHeader('Origin'));
-        } elseif (in_array($request->getMethod(), array('GET', 'HEAD', 'OPTIONS'))) {
-            $response->setHeader('Access-Control-Allow-Origin', '*');
-        }
+        return $response;
+    }
 
+    private function addCors(Response &$response)
+    {
+        $response->setHeader('Access-Control-Allow-Origin', '*');
         $response->setHeader(
             'Access-Control-Expose-Headers',
             'ETag, Content-Length'
         );
+    }
 
-        // this is only needed for OPTIONS requests
-        if ('OPTIONS' === $request->getMethod()) {
-            $response->setHeader(
-                'Access-Control-Allow-Methods',
-                'GET, PUT, DELETE, HEAD, OPTIONS'
-            );
-            // FIXME: are Origin and X-Requested-With really needed?
-            $response->setHeader(
-                'Access-Control-Allow-Headers',
-                'Authorization, Content-Length, Content-Type, Origin, X-Requested-With, If-Match, If-None-Match'
-            );
-        }
-
-        return $response;
+    private function addNoCache(Response &$response)
+    {
+        $response->setHeader('Expires', 0);
+        $response->setHeader('Cache-Control', 'no-cache');
     }
 }
