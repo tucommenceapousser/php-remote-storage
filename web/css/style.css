@@ -48,12 +48,12 @@ p.warning {
 p.err {
     background-color: #c00;
     border: 1px solid #a00;
-    color: #000;
+    color: #fff;
     padding: 1em;
 }
 
 p.err a {
-    color: #000;
+    color: #fff;
 }
 
 span.err {
