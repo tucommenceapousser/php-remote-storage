@@ -257,6 +257,7 @@ class RemoteStorageService extends OAuthService
                     'Access-Control-Allow-Headers',
                     'Authorization, Content-Length, Content-Type, Origin, X-Requested-With, If-Match, If-None-Match'
                 );
+                $response->addCors($response);
 
                 return $response;
             },
@@ -490,11 +491,6 @@ class RemoteStorageService extends OAuthService
 
         return $rsr;
     }
-
-#    public function optionsRequest(Request $request)
-#    {
-#        return new Response();
-#    }
 
     private function hasReadScope(Scope $i, $moduleName)
     {
