@@ -6,6 +6,9 @@ This is a [remoteStorage](https://remotestorage.io/) server implementation
 written in PHP. It aims at implementing `draft-dejong-remotestorage-03.txt` 
 and later.
 
+Development of this server was in part sponsored by 
+[Appcache Ltd.](https://5apps.com/).
+
 # Application Development
 If you are developing remoteStorage applications, see 
 [DEVELOPMENT.md](DEVELOPMENT.md).
