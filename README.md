@@ -7,7 +7,7 @@ written in PHP. It aims at implementing `draft-dejong-remotestorage-03.txt`
 and later.
 
 Development of this server was in part sponsored by 
-[Appcache Ltd.](https://5apps.com/).
+[5apps](https://5apps.com/).
 
 # Application Development
 If you are developing remoteStorage applications, see 
