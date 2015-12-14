@@ -572,8 +572,7 @@ class RemoteStorageService extends OAuthService
         }
 
         // if error, add CORS
-        // XXX: most ugly code below ;)
-        $statusCode = explode(' ', $response->toArray()[0])[1];
+        $statusCode = $response->getStatusCode();
         if (400 <= $statusCode && 500 > $statusCode) {
             $this->addCors($response);
             $this->addNoCache($response);

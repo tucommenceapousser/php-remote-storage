@@ -155,7 +155,16 @@ try {
     );
     $service->getPluginRegistry()->registerDefaultPlugin($authenticationPlugin);
 
-    $service->run($request)->send();
+    $response = $service->run($request);
+    if ('development' === $serverMode && !$response->isOkay()) {
+        error_log(
+            var_export(
+                $response->toArray(),
+                true
+            )
+        );
+    }
+    $response->send();
 } catch (Exception $e) {
     error_log($e->getMessage());
     die(sprintf('ERROR: %s', $e->getMessage()));
