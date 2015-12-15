@@ -4,9 +4,6 @@ This document describes how to run official releases for simple deployments.
 
 These instructions were tested with Fedora 23 and Ubuntu 14.04 LTS.
 
-In addition, instructions are provided to install a simple remoteStorage 
-compatible application to test and play with the server.
-
 We will be using the Apache web server with `mod_php`. This is the most common
 deployment scenario, and most people will have some familiarity with this.
 
