@@ -45,7 +45,7 @@ Stable releases will also be hosted on GitHub, for now the test releases are
 only available from my remoteStorage server instance:
 
 * from [remoteStorage](https://storage.tuxed.net/fkooman/public/upload/php-remote-storage/releases.html);
-* from GitHub (after first stable release).
+* from [GitHub](https://github.com/fkooman/php-remote-storage/releases)
 
 # Installing
 
