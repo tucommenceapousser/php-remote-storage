@@ -46,20 +46,24 @@
                 No permissions granted yet! You need to use an application first ☺
             </p>
         {% else %}
-            <table>
-                <tr><th>Application</th><th>Permissions</th><th>Actions</th></tr>
+            <table class="striped">
+                <thead>
+                    <tr><th>Application</th><th>Permissions</th><th></th></tr>
+                </thead>
+                <tbody>
                 {% for approval in approval_list %}
-                <tr>
-                    <td><a href="{{ approval.getClientId|e }}"><code>{{ approval.getClientId|e }}</code></td>                    
-                    <td><code>{{ approval.getScope|e }}</code></td>
-                    <td>
-                        <form class="button" method="post" action="{{ rootFolder|e }}_approvals?client_id={{ approval.getClientId|e }}&amp;response_type={{ approval.getResponseType|e }}&amp;scope={{ approval.getScope|e }}">
-                            <input type="hidden" name="_METHOD" value="DELETE">
-                            <button type="submit" class="error">Revoke</button>
-                        </form>
-                    </td>
-                </tr>
+                    <tr>
+                        <td><a href="{{ approval.getClientId|e }}"><code>{{ approval.getClientId|e }}</code></a></td>                    
+                        <td><code>{{ approval.getScope|e }}</code></td>
+                        <td class="text-right">
+                            <form class="button" method="post" action="{{ rootFolder|e }}_approvals?client_id={{ approval.getClientId|e }}&amp;response_type={{ approval.getResponseType|e }}&amp;scope={{ approval.getScope|e }}">
+                                <input type="hidden" name="_METHOD" value="DELETE">
+                                <button type="submit" class="error">Revoke</button>
+                            </form>
+                        </td>
+                    </tr>                
                 {% endfor %}
+                </tbody>
             </table>
         {% endif %}
         {% include 'footer.twig' %}

@@ -13,7 +13,7 @@ div.header a.logo img {
 div.header a.account {
     float: right;
     text-align: center;
-    font-size: 75%;
+    font-size: 85%;
     text-decoration: none;
 }
 
@@ -73,37 +73,57 @@ a {
 
 button {
     background-color: #ddd;
-    border: 1px solid #bbb;
+    border: 0;
     color: #000;
-    height: 2em;
-    line-height: 2em;
+    height: 2.5em;
+    line-height: 2.5em;
+    padding: 0 1em;
 }
 
 button.info {
     background-color: #063;
-    border: 1px solid #041;
+    border: 0;
     color: #fff; 
 }
 
 button.warning {
     background-color: #fc0;
-    border: 1px solid #da0;
+    border: 0;
     color: #000; 
 }
 
 button.error {
     background-color: #c00;
-    border: 1px solid #a00;
+    border: 0;
     color: #fff;
 }
 
 table {
     width: 100%;
     margin: 1em 0;
+    border-collapse: collapse;
+}
+
+thead th {
+    border-bottom: 2px solid #eee;
+}
+
+table.striped tr:nth-child(even) {
+    background-color: #f8f8f8;
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+}
+
+.text-right {
+    text-align: right;
+}
+
+code {
+    font-size: 90%;
 }
 
 td, th {
-    padding: 0.5em 0;
+    padding: 0.5em;
 }
 
 th {
@@ -119,7 +139,7 @@ input[type="text"], input[type="password"] {
 div.footer {
     margin-top: 2em;
     text-align: center;
-    font-size: 75%;
+    font-size: 85%;
     color: #ccc;    
 }
 

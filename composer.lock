@@ -48,16 +48,16 @@
         },
         {
             "name": "fkooman/http",
-            "version": "1.4.0",
+            "version": "1.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/fkooman/php-lib-http.git",
-                "reference": "bcb382d3d7cd9fdc719374151276fd593c069d3c"
+                "reference": "f43078dadb881468c182b436917077f2a9e51b0b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fkooman/php-lib-http/zipball/bcb382d3d7cd9fdc719374151276fd593c069d3c",
-                "reference": "bcb382d3d7cd9fdc719374151276fd593c069d3c",
+                "url": "https://api.github.com/repos/fkooman/php-lib-http/zipball/f43078dadb881468c182b436917077f2a9e51b0b",
+                "reference": "f43078dadb881468c182b436917077f2a9e51b0b",
                 "shasum": ""
             },
             "require": {
@@ -88,7 +88,7 @@
                 }
             ],
             "description": "Simple PHP library for dealing with HTTP requests and responses.",
-            "time": "2015-12-14 20:18:07"
+            "time": "2015-12-22 12:27:38"
         },
         {
             "name": "fkooman/io",
@@ -220,16 +220,16 @@
         },
         {
             "name": "fkooman/rest",
-            "version": "1.0.5",
+            "version": "1.0.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/fkooman/php-lib-rest.git",
-                "reference": "ac6a7931b7cb7e4df98b378bcc7b9e4c86d5ee8e"
+                "reference": "17930fcdd581743528448d37d3f9c70c0fb0e63f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fkooman/php-lib-rest/zipball/ac6a7931b7cb7e4df98b378bcc7b9e4c86d5ee8e",
-                "reference": "ac6a7931b7cb7e4df98b378bcc7b9e4c86d5ee8e",
+                "url": "https://api.github.com/repos/fkooman/php-lib-rest/zipball/17930fcdd581743528448d37d3f9c70c0fb0e63f",
+                "reference": "17930fcdd581743528448d37d3f9c70c0fb0e63f",
                 "shasum": ""
             },
             "require": {
@@ -259,7 +259,7 @@
                 }
             ],
             "description": "Simple PHP library for writing REST services.",
-            "time": "2015-10-07 11:53:32"
+            "time": "2015-12-24 23:27:13"
         },
         {
             "name": "fkooman/rest-plugin-authentication",
@@ -720,16 +720,16 @@
         },
         {
             "name": "symfony/yaml",
-            "version": "v2.8.0",
+            "version": "v2.8.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/yaml.git",
-                "reference": "f79824187de95064a2f5038904c4d7f0227fedb5"
+                "reference": "ac84cbb98b68a6abbc9f5149eb96ccc7b07b8966"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/yaml/zipball/f79824187de95064a2f5038904c4d7f0227fedb5",
-                "reference": "f79824187de95064a2f5038904c4d7f0227fedb5",
+                "url": "https://api.github.com/repos/symfony/yaml/zipball/ac84cbb98b68a6abbc9f5149eb96ccc7b07b8966",
+                "reference": "ac84cbb98b68a6abbc9f5149eb96ccc7b07b8966",
                 "shasum": ""
             },
             "require": {
@@ -765,7 +765,7 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "https://symfony.com",
-            "time": "2015-11-30 12:35:10"
+            "time": "2015-12-26 13:37:56"
         },
         {
             "name": "twig/twig",
