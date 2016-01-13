@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.2 (...)
+- partial fix for issue #40
+- update dependencies
+
 ## 1.0.1 (2016-01-07)
 - update `fkooman/rest-plugin-authentication-form` (issue #39)
 - improve the styling a bit

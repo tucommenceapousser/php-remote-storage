@@ -100,7 +100,7 @@ class DocumentStorage
         if (file_exists($documentPath) && is_dir($documentPath)) {
             throw new ConflictException('document path is already a folder');
         }
-        if (false === @file_put_contents($documentPath, $documentContent)) {
+        if (false === @file_put_contents($documentPath, $documentContent, LOCK_EX)) {
             throw new DocumentStorageException('unable to write document');
         }
         // PHP caches files and doesn't flush on getting file size, so we
