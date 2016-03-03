@@ -15,14 +15,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 namespace fkooman\RemoteStorage\Test;
 
 use fkooman\Tpl\TemplateManagerInterface;
 
 class TestTemplateManager implements TemplateManagerInterface
 {
+    public function addDefault(array $templateVariables)
+    {
+        // NOP
+    }
+
     public function setDefault(array $templateVariables)
     {
+        // NOP
     }
 
     public function render($templateName, array $templateVariables = array())
