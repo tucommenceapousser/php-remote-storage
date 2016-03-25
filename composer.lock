@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "0e7da5b88dff42890cbcc8538fd33912",
-    "content-hash": "39a14a800263037df565a9f40042ec0e",
+    "hash": "fa88cdf29b3e6a599e847dbcb69eb7b7",
+    "content-hash": "23ca4e005f3c9ac98748bc79ee740c29",
     "packages": [
         {
             "name": "fkooman/config",
@@ -48,23 +48,23 @@
         },
         {
             "name": "fkooman/http",
-            "version": "1.6.0",
+            "version": "1.6.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/fkooman/php-lib-http.git",
-                "reference": "ada6f0debe78eaed04f6dcb4ee9a7e3576322d3b"
+                "reference": "079ee82d777dc462f59d9d8344eba469182b08ed"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fkooman/php-lib-http/zipball/ada6f0debe78eaed04f6dcb4ee9a7e3576322d3b",
-                "reference": "ada6f0debe78eaed04f6dcb4ee9a7e3576322d3b",
+                "url": "https://api.github.com/repos/fkooman/php-lib-http/zipball/079ee82d777dc462f59d9d8344eba469182b08ed",
+                "reference": "079ee82d777dc462f59d9d8344eba469182b08ed",
                 "shasum": ""
             },
             "require": {
                 "ext-mbstring": "*",
                 "ext-session": "*",
                 "ext-spl": "*",
-                "fkooman/json": "^1.0.0",
+                "fkooman/json": "^2.0.0",
                 "php": ">=5.3.0"
             },
             "suggest": {
@@ -88,7 +88,7 @@
                 }
             ],
             "description": "Simple PHP library for dealing with HTTP requests and responses.",
-            "time": "2016-02-22 00:05:41"
+            "time": "2016-03-25 14:11:53"
         },
         {
             "name": "fkooman/io",
@@ -131,22 +131,25 @@
         },
         {
             "name": "fkooman/json",
-            "version": "1.0.0",
+            "version": "2.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/fkooman/php-lib-json.git",
-                "reference": "f24b7ee1890b29358402defcd9581a4e969e40d7"
+                "reference": "af0016d4a1d660f945ad4a10772cbdacb698a3ac"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fkooman/php-lib-json/zipball/f24b7ee1890b29358402defcd9581a4e969e40d7",
-                "reference": "f24b7ee1890b29358402defcd9581a4e969e40d7",
+                "url": "https://api.github.com/repos/fkooman/php-lib-json/zipball/af0016d4a1d660f945ad4a10772cbdacb698a3ac",
+                "reference": "af0016d4a1d660f945ad4a10772cbdacb698a3ac",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
                 "ext-spl": "*",
                 "php": ">=5.3.3"
+            },
+            "require-dev": {
+                "ext-iconv": "*"
             },
             "type": "library",
             "autoload": {
@@ -166,20 +169,20 @@
                 }
             ],
             "description": "PHP library to encode and decode JSON",
-            "time": "2015-07-13 11:58:01"
+            "time": "2016-03-25 13:54:00"
         },
         {
             "name": "fkooman/oauth",
-            "version": "5.0.1",
+            "version": "5.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/fkooman/php-lib-oauth.git",
-                "reference": "a7acb8c77fb7359ce6a23b140258daf587baac4e"
+                "reference": "41d2ca070c6e4a9e868e5f750f21848365a2c3fc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fkooman/php-lib-oauth/zipball/a7acb8c77fb7359ce6a23b140258daf587baac4e",
-                "reference": "a7acb8c77fb7359ce6a23b140258daf587baac4e",
+                "url": "https://api.github.com/repos/fkooman/php-lib-oauth/zipball/41d2ca070c6e4a9e868e5f750f21848365a2c3fc",
+                "reference": "41d2ca070c6e4a9e868e5f750f21848365a2c3fc",
                 "shasum": ""
             },
             "require": {
@@ -189,7 +192,7 @@
                 "ext-spl": "*",
                 "fkooman/http": "^1.1.0",
                 "fkooman/io": "^1.0.0",
-                "fkooman/json": "^1.0.0",
+                "fkooman/json": "^2.0.0",
                 "fkooman/rest": "^1.0.0",
                 "fkooman/rest-plugin-authentication": "^2.0.0",
                 "fkooman/tpl": "^2.0.0",
@@ -216,7 +219,7 @@
                 }
             ],
             "description": "OAuth 2.0 Server Library",
-            "time": "2015-11-24 20:51:34"
+            "time": "2016-03-25 14:33:26"
         },
         {
             "name": "fkooman/rest",
@@ -353,16 +356,16 @@
         },
         {
             "name": "fkooman/rest-plugin-authentication-form",
-            "version": "3.0.1",
+            "version": "3.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/fkooman/php-lib-rest-plugin-authentication-form.git",
-                "reference": "a426875f00e5bbf8a92821cd8881140d6f7832ea"
+                "reference": "69771491e3913df3ae629c0678b7e817f922ba0d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fkooman/php-lib-rest-plugin-authentication-form/zipball/a426875f00e5bbf8a92821cd8881140d6f7832ea",
-                "reference": "a426875f00e5bbf8a92821cd8881140d6f7832ea",
+                "url": "https://api.github.com/repos/fkooman/php-lib-rest-plugin-authentication-form/zipball/69771491e3913df3ae629c0678b7e817f922ba0d",
+                "reference": "69771491e3913df3ae629c0678b7e817f922ba0d",
                 "shasum": ""
             },
             "require": {
@@ -376,7 +379,7 @@
                 "php": ">=5.4"
             },
             "require-dev": {
-                "fkooman/json": "^1.0.0"
+                "fkooman/json": "^2.0.0"
             },
             "type": "library",
             "autoload": {
@@ -396,7 +399,7 @@
                 }
             ],
             "description": "HTML Form Authentication plugin for fkooman/rest-plugin-authentication",
-            "time": "2015-12-20 10:45:25"
+            "time": "2016-03-25 14:15:00"
         },
         {
             "name": "fkooman/tpl",
@@ -676,16 +679,16 @@
         },
         {
             "name": "react/promise",
-            "version": "v2.2.2",
+            "version": "v2.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/reactphp/promise.git",
-                "reference": "3aacad8bf10c7d83e6fa2089d413529888c2bedf"
+                "reference": "8ffacee1171e33a1c129f424bf1ec36e062eba82"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/reactphp/promise/zipball/3aacad8bf10c7d83e6fa2089d413529888c2bedf",
-                "reference": "3aacad8bf10c7d83e6fa2089d413529888c2bedf",
+                "url": "https://api.github.com/repos/reactphp/promise/zipball/8ffacee1171e33a1c129f424bf1ec36e062eba82",
+                "reference": "8ffacee1171e33a1c129f424bf1ec36e062eba82",
                 "shasum": ""
             },
             "require": {
@@ -716,7 +719,7 @@
                 }
             ],
             "description": "A lightweight implementation of CommonJS Promises/A for PHP",
-            "time": "2016-02-26 19:09:02"
+            "time": "2016-03-24 21:20:22"
         },
         {
             "name": "symfony/yaml",
@@ -1237,16 +1240,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "4.8.23",
+            "version": "4.8.24",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "6e351261f9cd33daf205a131a1ba61c6d33bd483"
+                "reference": "a1066c562c52900a142a0e2bbf0582994671385e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/6e351261f9cd33daf205a131a1ba61c6d33bd483",
-                "reference": "6e351261f9cd33daf205a131a1ba61c6d33bd483",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/a1066c562c52900a142a0e2bbf0582994671385e",
+                "reference": "a1066c562c52900a142a0e2bbf0582994671385e",
                 "shasum": ""
             },
             "require": {
@@ -1305,7 +1308,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2016-02-11 14:56:33"
+            "time": "2016-03-14 06:16:08"
         },
         {
             "name": "phpunit/phpunit-mock-objects",

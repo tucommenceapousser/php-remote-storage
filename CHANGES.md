@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.0.2 (...)
+## 1.0.2 (2016-03-25)
 - partial fix for issue #40
 - update dependencies
 - fix `TestTemplateManager` to deal with API change

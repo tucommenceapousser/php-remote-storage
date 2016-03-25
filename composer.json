@@ -14,7 +14,7 @@
         "fkooman/config": "^1.0.0",
         "fkooman/http": "^1.4.0",
         "fkooman/io": "^1.0.0",
-        "fkooman/json": "^1.0.0",
+        "fkooman/json": "^2.0.0",
         "fkooman/oauth": "^5.0.0",
         "fkooman/rest-plugin-authentication": "^2.0.0",
         "fkooman/rest-plugin-authentication-bearer": "^2.1.0",
