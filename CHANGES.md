@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.0.4 (2016-08-07)
+- update dependencies (issue #48)
+
 ## 1.0.3 (2016-05-25)
 - update `fkooman/io` dependency
 
