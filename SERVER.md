@@ -12,13 +12,15 @@ you have your own domain name you can use that instead. These instructions
 configure the storage server on its own domain, as that is required for making
 WebFinger work without hackery.
 
-If you use `storage.local`, you can configure it in `/etc/hosts`:
+If you use `storage.local`, you can configure it in `/etc/hosts` on your own 
+machine, not on the VM/server where you try to install php-remote-storage. If 
+you use a name that resolves through DNS, you do not need to do this:
 
     1.2.3.4     storage.local
 
-If you choose your own domain name, replace all occurrences below with that 
-domain name and do not forget to edit the web server configuration file 
-accordingly!
+**NOTE**: if you choose your own domain name, replace all occurrences below 
+with that domain name and do not forget to edit the web server configuration 
+file accordingly!
 
 Of course, dealing with TLS, one MUST verify the TLS configuration. Typically, 
 I use both these services:
@@ -44,8 +46,8 @@ software.
 Stable releases will also be hosted on GitHub, for now the test releases are 
 only available from my remoteStorage server instance:
 
-* from [remoteStorage](https://storage.tuxed.net/fkooman/public/upload/php-remote-storage/releases.html);
 * from [GitHub](https://github.com/fkooman/php-remote-storage/releases)
+* from [remoteStorage](https://storage.tuxed.net/fkooman/public/upload/php-remote-storage/releases.html) (self hosted);
 
 # Installing
 
