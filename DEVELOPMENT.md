@@ -49,7 +49,7 @@ development mode:
 
 You can easily add more users if you want:
 
-    $ bin/add-user me p4ssw0rd
+    $ php bin/add-user.php me p4ssw0rd
 
 # Running
 Start the server:

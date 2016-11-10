@@ -22,10 +22,18 @@ use fkooman\OAuth\ResourceServer;
 
 class RemoteStorageResourceServer implements ResourceServerStorageInterface
 {
-    // we do not really have a registration, as there is only one resource 
-    // server, the remoteStorage server...
+    /**
+     * Retrieve a resource server based on resourceServerId.
+     *
+     * @param string $resourceServerId the resource server ID
+     *
+     * @return ResourceServer|false if the resource server exists it
+     *                              returns ResourceServer, otherwise false
+     */
     public function getResourceServer($resourceServerId)
     {
+        // we do not really have a registration, as there is only one resource 
+        // server, the remoteStorage server...
         return new ResourceServer(
             $resourceServerId,
             null,

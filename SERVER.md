@@ -63,7 +63,7 @@ After downloading, extract the software in `/var/www`:
 
 Now add a user, by default no users are set up in the production template:
 
-    $ sudo bin/add-user me p4ssw0rd
+    $ sudo php bin/add-user.php me p4ssw0rd
 
 ## Fedora
 

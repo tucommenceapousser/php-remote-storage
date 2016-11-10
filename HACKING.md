@@ -41,7 +41,7 @@ get started! The default user is `foo` with password `bar`.
 
 You can easily add more users if you want:
 
-    $ bin/add-user me p4ssw0rd
+    $ php bin/add-user.php me p4ssw0rd
 
 ## remoteStorage Application
 You can install a simple remoteStorage application under the `web/` directory
