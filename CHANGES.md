@@ -1,7 +1,7 @@
 # Changelog
 
 ## 1.0.5 (2016-11-10)
-- update dependencies
+- update dependencies, better HTTP request handling
 - rename the scripts in `bin/`
 
 ## 1.0.4 (2016-08-07)
