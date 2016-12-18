@@ -35,6 +35,9 @@ use fkooman\Rest\Plugin\Authentication\AuthenticationPlugin;
 use fkooman\Rest\Plugin\Authentication\Bearer\BearerAuthentication;
 use fkooman\Rest\Plugin\Authentication\Form\FormAuthentication;
 use fkooman\Tpl\Twig\TwigTemplateManager;
+use fkooman\RemoteStorage\Logger;
+
+$logger = new Logger('php-remote-storage');
 
 try {
     $request = new Request($_SERVER);
@@ -121,7 +124,8 @@ try {
             return $userList[$userId];
         },
         $templateManager,
-        $session
+        $session,
+        $logger
     );
 
     $apiAuth = new BearerAuthentication(
@@ -157,7 +161,7 @@ try {
 
     $response = $service->run($request);
     if ('development' === $serverMode && !$response->isOkay()) {
-        error_log(
+        $logger->info(
             var_export(
                 $response->toArray(),
                 true
@@ -166,6 +170,6 @@ try {
     }
     $response->send();
 } catch (Exception $e) {
-    error_log($e->getMessage());
+    $logger->error($e->getMessage());
     die(sprintf('ERROR: %s', $e->getMessage()));
 }
