@@ -26,7 +26,6 @@ use fkooman\OAuth\Storage\PdoAuthorizationCodeStorage;
 use fkooman\RemoteStorage\ApprovalManagementStorage;
 use fkooman\RemoteStorage\DbTokenValidator;
 use fkooman\RemoteStorage\DocumentStorage;
-use fkooman\RemoteStorage\Logger;
 use fkooman\RemoteStorage\MetadataStorage;
 use fkooman\RemoteStorage\RemoteStorage;
 use fkooman\RemoteStorage\RemoteStorageClientStorage;
@@ -36,8 +35,11 @@ use fkooman\Rest\Plugin\Authentication\AuthenticationPlugin;
 use fkooman\Rest\Plugin\Authentication\Bearer\BearerAuthentication;
 use fkooman\Rest\Plugin\Authentication\Form\FormAuthentication;
 use fkooman\Tpl\Twig\TwigTemplateManager;
+use Monolog\Handler\ErrorLogHandler;
+use Monolog\Logger;
 
 $logger = new Logger('php-remote-storage');
+$logger->pushHandler(new ErrorLogHandler());
 
 try {
     $request = new Request($_SERVER);
@@ -133,7 +135,8 @@ try {
     //    new fkooman\RemoteStorage\ApiTestTokenValidator(),
         [
             'realm' => 'remoteStorage',
-        ]
+        ],
+        $logger
     );
 
     $authenticationPlugin = new AuthenticationPlugin();
@@ -161,6 +164,7 @@ try {
 
     $response = $service->run($request);
     if ('development' === $serverMode && !$response->isOkay()) {
+        // log all non 2xx responses
         $logger->info(
             var_export(
                 $response->toArray(),
