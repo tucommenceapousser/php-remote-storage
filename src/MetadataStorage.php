@@ -18,8 +18,8 @@
 namespace fkooman\RemoteStorage;
 
 use fkooman\IO\IO;
-use PDO;
 use fkooman\RemoteStorage\Exception\MetadataStorageException;
+use PDO;
 
 class MetadataStorage
 {
@@ -41,30 +41,6 @@ class MetadataStorage
             $io = new IO();
         }
         $this->io = $io;
-    }
-
-    /**
-     * Get the version of the path which can be either a folder or document.
-     *
-     * @param $path The full path to the folder or document
-     * @returns the version of the path, or null if path does not exist
-     */
-    private function getMetadata(Path $p)
-    {
-        $stmt = $this->db->prepare(
-            sprintf(
-                'SELECT version, content_type FROM %s WHERE path = :path',
-                $this->prefix.'md'
-            )
-        );
-        $stmt->bindValue(':path', $p->getPath(), PDO::PARAM_STR);
-        $stmt->execute();
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        if (false !== $result) {
-            return $result;
-        }
-
-        return;
     }
 
     public function getVersion(Path $p)
@@ -148,7 +124,7 @@ class MetadataStorage
 
     public static function createTableQueries($prefix)
     {
-        $query = array();
+        $query = [];
         $query[] = sprintf(
             'CREATE TABLE IF NOT EXISTS %s (
                 path VARCHAR(255) NOT NULL,
@@ -169,7 +145,7 @@ class MetadataStorage
             $this->db->query($q);
         }
 
-        $tables = array('md');
+        $tables = ['md'];
         foreach ($tables as $t) {
             // make sure the tables are empty
             $this->db->query(
@@ -179,5 +155,29 @@ class MetadataStorage
                 )
             );
         }
+    }
+
+    /**
+     * Get the version of the path which can be either a folder or document.
+     *
+     * @param $path The full path to the folder or document
+     * @returns the version of the path, or null if path does not exist
+     */
+    private function getMetadata(Path $p)
+    {
+        $stmt = $this->db->prepare(
+            sprintf(
+                'SELECT version, content_type FROM %s WHERE path = :path',
+                $this->prefix.'md'
+            )
+        );
+        $stmt->bindValue(':path', $p->getPath(), PDO::PARAM_STR);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (false !== $result) {
+            return $result;
+        }
+
+        return;
     }
 }

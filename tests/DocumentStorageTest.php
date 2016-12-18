@@ -41,10 +41,10 @@ class DocumentStorageTest extends PHPUnit_Framework_TestCase
         $d = 'Hello World!';
 
         $this->assertEquals(
-            array(
+            [
                 '/foo/',
                 '/foo/bar/',
-            ),
+            ],
             $this->document->putDocument($p, $d)
         );
     }
@@ -55,44 +55,44 @@ class DocumentStorageTest extends PHPUnit_Framework_TestCase
         $p2 = new Path('/admin/messages/foo/bar.txt');
         $p3 = new Path('/admin/messages/foo/');
         $this->assertEquals(
-            array(
+            [
                 '/admin/',
                 '/admin/messages/',
                 '/admin/messages/foo/',
-            ),
+            ],
             $this->document->putDocument($p1, 'Hello Baz!')
         );
         $this->assertEquals(
-            array(
+            [
                 '/admin/',
                 '/admin/messages/',
                 '/admin/messages/foo/',
-            ),
+            ],
             $this->document->putDocument($p2, 'Hello Bar!')
         );
         $this->assertEquals(
-            array(
+            [
                 '/admin/',
                 '/admin/messages/',
                 '/admin/messages/foo/',
-            ),
+            ],
             $this->document->putDocument($p2, 'Hello Updated Bar!')
         );
         $this->assertEquals(
-            array(
-                'bar.txt' => array(
+            [
+                'bar.txt' => [
                     'Content-Length' => 18,
-                ),
-                'baz.txt' => array(
+                ],
+                'baz.txt' => [
                     'Content-Length' => 10,
-                ),
-            ),
+                ],
+            ],
             $this->document->getFolder($p3)
         );
     }
 
     /**
-     * @expectedException fkooman\Http\Exception\ConflictException
+     * @expectedException \fkooman\Http\Exception\ConflictException
      */
     public function testPutDocumentOnFolder()
     {
@@ -105,7 +105,7 @@ class DocumentStorageTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException fkooman\Http\Exception\ConflictException
+     * @expectedException \fkooman\Http\Exception\ConflictException
      */
     public function testPutFolderOnDocument()
     {
@@ -123,17 +123,17 @@ class DocumentStorageTest extends PHPUnit_Framework_TestCase
         $d = 'Hello World!';
 
         $this->assertEquals(
-            array(
+            [
                 '/foo/',
                 '/foo/bar/',
-            ),
+            ],
             $this->document->putDocument($p, $d)
         );
         $this->assertEquals($d, $this->document->getDocument($p));
     }
 
     /**
-     * @expectedException fkooman\RemoteStorage\Exception\DocumentStorageException
+     * @expectedException \fkooman\RemoteStorage\Exception\DocumentStorageException
      */
     public function testGetMissingDocument()
     {
@@ -142,7 +142,7 @@ class DocumentStorageTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException fkooman\RemoteStorage\Exception\DocumentStorageException
+     * @expectedException \fkooman\RemoteStorage\Exception\DocumentStorageException
      */
     public function testDeleteMissingDocument()
     {
@@ -156,24 +156,24 @@ class DocumentStorageTest extends PHPUnit_Framework_TestCase
         $d = 'Hello World!';
 
         $this->assertEquals(
-            array(
+            [
                 '/foo/',
                 '/foo/bar/',
-            ),
+            ],
             $this->document->putDocument($p, $d)
         );
         $this->assertEquals(
-            array(
+            [
                 '/foo/bar/baz',
                 '/foo/bar/',
                 '/foo/',
-            ),
+            ],
             $this->document->deleteDocument($p)
         );
     }
 
     /**
-     * @expectedException fkooman\RemoteStorage\Exception\DocumentStorageException
+     * @expectedException \fkooman\RemoteStorage\Exception\DocumentStorageException
      */
     public function testDoubleDeleteDocument()
     {
@@ -181,18 +181,18 @@ class DocumentStorageTest extends PHPUnit_Framework_TestCase
         $d = 'Hello World!';
 
         $this->assertEquals(
-            array(
+            [
                 '/foo/',
                 '/foo/bar/',
-            ),
+            ],
             $this->document->putDocument($p, $d)
         );
         $this->assertEquals(
-            array(
+            [
                 '/foo/bar/baz',
                 '/foo/bar/',
                 '/foo/',
-            ),
+            ],
             $this->document->deleteDocument($p)
         );
         $this->document->deleteDocument($p);
@@ -204,28 +204,28 @@ class DocumentStorageTest extends PHPUnit_Framework_TestCase
         $d = 'Hello World!';
 
         $this->assertEquals(
-            array(
+            [
                 '/foo/',
                 '/foo/bar/',
                 '/foo/bar/baz/',
-            ),
+            ],
             $this->document->putDocument($p, $d)
         );
 
         $parentFolder = new Path('/foo/bar/baz/');
-        $this->assertEquals(array('foo' => array('Content-Length' => 12)), $this->document->getFolder($parentFolder));
+        $this->assertEquals(['foo' => ['Content-Length' => 12]], $this->document->getFolder($parentFolder));
 
         $parentFolder = new Path('/foo/bar/');
-        $this->assertEquals(array('baz/' => array()), $this->document->getFolder($parentFolder));
+        $this->assertEquals(['baz/' => []], $this->document->getFolder($parentFolder));
 
         $parentFolder = new Path('/foo/');
-        $this->assertEquals(array('bar/' => array()), $this->document->getFolder($parentFolder));
+        $this->assertEquals(['bar/' => []], $this->document->getFolder($parentFolder));
     }
 
     public function testGetEmptyFolder()
     {
         $p = new Path('/foo/bar/baz/');
-        $this->assertEquals(array(), $this->document->getFolder($p));
+        $this->assertEquals([], $this->document->getFolder($p));
     }
 
     public function testRecursiveFolderDelete()
@@ -233,26 +233,26 @@ class DocumentStorageTest extends PHPUnit_Framework_TestCase
         $p = new Path('/foo/bar/baz/foobar/foobaz');
         $d = 'Hello World!';
         $this->assertEquals(
-            array(
+            [
                 '/foo/',
                 '/foo/bar/',
                 '/foo/bar/baz/',
                 '/foo/bar/baz/foobar/',
-            ),
+            ],
             $this->document->putDocument($p, $d)
         );
 
         // now delete the document, the /foo/bar directory should be empty
         $this->assertEquals(
-            array(
+            [
                 '/foo/bar/baz/foobar/foobaz',
                 '/foo/bar/baz/foobar/',
                 '/foo/bar/baz/',
                 '/foo/bar/',
                 '/foo/',
-            ),
+            ],
             $this->document->deleteDocument($p)
         );
-        $this->assertEquals(array(), $this->document->getFolder(new Path('/foo/bar/')));
+        $this->assertEquals([], $this->document->getFolder(new Path('/foo/bar/')));
     }
 }

@@ -16,26 +16,26 @@
  */
 require_once dirname(__DIR__).'/vendor/autoload.php';
 
+use fkooman\Config\Reader;
+use fkooman\Config\YamlFile;
 use fkooman\Http\Request;
 use fkooman\Http\Session;
-use fkooman\Config\YamlFile;
-use fkooman\Config\Reader;
 use fkooman\OAuth\Storage\PdoAccessTokenStorage;
-use fkooman\OAuth\Storage\PdoAuthorizationCodeStorage;
 use fkooman\OAuth\Storage\PdoApprovalStorage;
-use fkooman\RemoteStorage\RemoteStorageClientStorage;
+use fkooman\OAuth\Storage\PdoAuthorizationCodeStorage;
+use fkooman\RemoteStorage\ApprovalManagementStorage;
 use fkooman\RemoteStorage\DbTokenValidator;
 use fkooman\RemoteStorage\DocumentStorage;
+use fkooman\RemoteStorage\Logger;
 use fkooman\RemoteStorage\MetadataStorage;
 use fkooman\RemoteStorage\RemoteStorage;
+use fkooman\RemoteStorage\RemoteStorageClientStorage;
 use fkooman\RemoteStorage\RemoteStorageResourceServer;
 use fkooman\RemoteStorage\RemoteStorageService;
-use fkooman\RemoteStorage\ApprovalManagementStorage;
 use fkooman\Rest\Plugin\Authentication\AuthenticationPlugin;
 use fkooman\Rest\Plugin\Authentication\Bearer\BearerAuthentication;
 use fkooman\Rest\Plugin\Authentication\Form\FormAuthentication;
 use fkooman\Tpl\Twig\TwigTemplateManager;
-use fkooman\RemoteStorage\Logger;
 
 $logger = new Logger('php-remote-storage');
 
@@ -80,17 +80,17 @@ try {
     }
 
     $templateManager = new TwigTemplateManager(
-        array(
+        [
             dirname(__DIR__).'/views',
             dirname(__DIR__).'/config/views',
-        ),
+        ],
         $templateCache
     );
     $templateManager->setDefault(
-        array(
+        [
             'rootFolder' => $request->getUrl()->getRoot(),
             'serverMode' => $serverMode,
-        )
+        ]
     );
 
     $md = new MetadataStorage($db);
@@ -109,9 +109,9 @@ try {
 
     $session = new Session(
         'php-remote-storage',
-        array(
+        [
             'secure' => 'development' !== $serverMode,
-        )
+        ]
     );
 
     $userAuth = new FormAuthentication(
@@ -130,10 +130,10 @@ try {
 
     $apiAuth = new BearerAuthentication(
         new DbTokenValidator($db),
-    #    new fkooman\RemoteStorage\ApiTestTokenValidator(),
-        array(
+    //    new fkooman\RemoteStorage\ApiTestTokenValidator(),
+        [
             'realm' => 'remoteStorage',
-        )
+        ]
     );
 
     $authenticationPlugin = new AuthenticationPlugin();
@@ -149,13 +149,13 @@ try {
         $approvalStorage,
         $authorizationCodeStorage,
         $accessTokenStorage,
-        array(
+        [
             'disable_token_endpoint' => true,
             'disable_introspect_endpoint' => true,
             'route_prefix' => '/_oauth',
             'require_state' => false,
             'server_mode' => $serverMode,
-        )
+        ]
     );
     $service->getPluginRegistry()->registerDefaultPlugin($authenticationPlugin);
 

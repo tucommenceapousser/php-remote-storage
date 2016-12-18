@@ -18,10 +18,10 @@
 
 namespace fkooman\RemoteStorage\Test;
 
-use fkooman\OAuth\AuthorizationCodeStorageInterface;
-use fkooman\OAuth\AuthorizationCode;
-use fkooman\Json\Json;
 use fkooman\Base64\Base64Url;
+use fkooman\Json\Json;
+use fkooman\OAuth\AuthorizationCode;
+use fkooman\OAuth\AuthorizationCodeStorageInterface;
 
 class TestAuthorizationCode implements AuthorizationCodeStorageInterface
 {
@@ -29,13 +29,13 @@ class TestAuthorizationCode implements AuthorizationCodeStorageInterface
     {
         return Base64Url::encode(
             Json::encode(
-                array(
+                [
                     'client_id' => $authorizationCode->getClientId(),
                     'user_id' => $authorizationCode->getUserId(),
                     'issued_at' => $authorizationCode->getIssuedAt(),
                     'redirect_uri' => $authorizationCode->getRedirectUri(),
                     'scope' => $authorizationCode->getScope(),
-                )
+                ]
             )
         );
     }

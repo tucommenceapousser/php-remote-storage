@@ -17,9 +17,9 @@
 
 namespace fkooman\RemoteStorage;
 
-use fkooman\RemoteStorage\Exception\RemoteStorageException;
-use fkooman\Json\Json;
 use fkooman\Http\Exception\PreconditionFailedException;
+use fkooman\Json\Json;
+use fkooman\RemoteStorage\Exception\RemoteStorageException;
 
 class RemoteStorage
 {
@@ -97,10 +97,10 @@ class RemoteStorage
             throw new RemoteStorageException('folder not modified');
         }
 
-        $f = array(
+        $f = [
             '@context' => 'http://remotestorage.io/spec/folder-description',
             'items' => $this->d->getFolder($p),
-        );
+        ];
         foreach ($f['items'] as $name => $meta) {
             $f['items'][$name]['ETag'] = $this->md->getVersion(new Path($p->getFolderPath().$name));
 

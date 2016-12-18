@@ -18,8 +18,8 @@
 
 namespace fkooman\RemoteStorage\Test;
 
-use fkooman\Rest\Plugin\Authentication\AuthenticationPluginInterface;
 use fkooman\Http\Request;
+use fkooman\Rest\Plugin\Authentication\AuthenticationPluginInterface;
 use fkooman\Rest\Service;
 
 class TestAuthentication implements AuthenticationPluginInterface

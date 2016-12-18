@@ -18,13 +18,13 @@
 
 namespace fkooman\RemoteStorage;
 
-use fkooman\OAuth\ClientStorageInterface;
 use fkooman\OAuth\Client;
+use fkooman\OAuth\ClientStorageInterface;
 
 class RemoteStorageClientStorage implements ClientStorageInterface
 {
     /**
-     * Retrieve a client based on clientId, responseType, redirectUri and 
+     * Retrieve a client based on clientId, responseType, redirectUri and
      * scope. The parameters except the clientId are optional and are used to
      * support non-registered clients.
      *

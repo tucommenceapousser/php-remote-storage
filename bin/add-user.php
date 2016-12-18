@@ -21,7 +21,7 @@ try {
     $configData = $yamlFile->readConfig();
     $configData['Users'][$userName] = $passwordHash;
 
-    $yamlFile->writeConfig($configData);  
+    $yamlFile->writeConfig($configData);
 } catch (Exception $e) {
     echo $e->getMessage().PHP_EOL;
     exit(1);

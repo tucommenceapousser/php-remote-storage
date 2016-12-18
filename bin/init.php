@@ -17,12 +17,12 @@
  */
 require_once dirname(__DIR__).'/vendor/autoload.php';
 
-use fkooman\Config\YamlFile;
 use fkooman\Config\Reader;
-use fkooman\RemoteStorage\MetadataStorage;
+use fkooman\Config\YamlFile;
 use fkooman\OAuth\Storage\PdoAccessTokenStorage;
-use fkooman\OAuth\Storage\PdoAuthorizationCodeStorage;
 use fkooman\OAuth\Storage\PdoApprovalStorage;
+use fkooman\OAuth\Storage\PdoAuthorizationCodeStorage;
+use fkooman\RemoteStorage\MetadataStorage;
 
 try {
     $configReader = new Reader(

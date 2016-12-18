@@ -2,8 +2,8 @@
 
 namespace fkooman\RemoteStorage\Test;
 
-use fkooman\Rest\Plugin\Authentication\Bearer\ValidatorInterface;
 use fkooman\Rest\Plugin\Authentication\Bearer\TokenInfo;
+use fkooman\Rest\Plugin\Authentication\Bearer\ValidatorInterface;
 
 class TestTokenValidator implements ValidatorInterface
 {
@@ -15,17 +15,17 @@ class TestTokenValidator implements ValidatorInterface
         switch ($bearerToken) {
             case 'test_token':
                 return new TokenInfo(
-                    array(
+                    [
                         'active' => true,
                         'sub' => 'admin',
                         'scope' => 'foo:rw',
-                    )
+                    ]
                 );
             default:
                 return new TokenInfo(
-                    array(
+                    [
                         'active' => false,
-                    )
+                    ]
                 );
         }
     }

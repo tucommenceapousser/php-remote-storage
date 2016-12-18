@@ -95,7 +95,7 @@ class MetadataStorageTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException fkooman\RemoteStorage\Exception\MetadataStorageException
+     * @expectedException \fkooman\RemoteStorage\Exception\MetadataStorageException
      */
     public function testDeleteNonExistingNode()
     {
@@ -104,7 +104,7 @@ class MetadataStorageTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException fkooman\RemoteStorage\Exception\MetadataStorageException
+     * @expectedException \fkooman\RemoteStorage\Exception\MetadataStorageException
      */
     public function testFolderUpdateOnNonFolder()
     {

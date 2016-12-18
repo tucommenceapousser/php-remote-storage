@@ -17,8 +17,8 @@
 
 namespace fkooman\RemoteStorage;
 
-use fkooman\Rest\Plugin\Authentication\Bearer\ValidatorInterface;
 use fkooman\Rest\Plugin\Authentication\Bearer\TokenInfo;
+use fkooman\Rest\Plugin\Authentication\Bearer\ValidatorInterface;
 
 class ApiTestTokenValidator implements ValidatorInterface
 {
@@ -30,41 +30,41 @@ class ApiTestTokenValidator implements ValidatorInterface
         switch ($bearerToken) {
             case 'token':
                 return new TokenInfo(
-                    array(
+                    [
                         'active' => true,
                         'username' => 'demo',
                         'scope' => 'api-test:rw',
-                    )
+                    ]
                 );
             case 'root_token':
                 return new TokenInfo(
-                    array(
+                    [
                         'active' => true,
                         'username' => 'demo',
                         'scope' => '*:rw',
-                    )
+                    ]
                 );
             case 'read_only_token':
                 return new TokenInfo(
-                    array(
+                    [
                         'active' => true,
                         'username' => 'demo',
                         'scope' => 'api-test:r',
-                    )
+                    ]
                 );
             case '12345':
                 return new TokenInfo(
-                    array(
+                    [
                         'active' => true,
                         'username' => 'foo',
                         'scope' => 'foo:rw bar:r',
-                    )
+                    ]
                 );
             default:
                 return new TokenInfo(
-                    array(
+                    [
                         'active' => false,
-                    )
+                    ]
                 );
         }
     }

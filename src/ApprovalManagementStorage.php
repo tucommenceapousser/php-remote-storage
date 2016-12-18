@@ -17,9 +17,9 @@
 
 namespace fkooman\RemoteStorage;
 
-use PDO;
-use fkooman\OAuth\Storage\PdoBaseStorage;
 use fkooman\OAuth\Approval;
+use fkooman\OAuth\Storage\PdoBaseStorage;
+use PDO;
 
 class ApprovalManagementStorage extends PdoBaseStorage
 {
@@ -70,7 +70,7 @@ class ApprovalManagementStorage extends PdoBaseStorage
         $stmt->execute();
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        $approvalList = array();
+        $approvalList = [];
         foreach ($result as $r) {
             $approvalList[] = new Approval($r['user_id'], $r['client_id'], $r['response_type'], $r['scope']);
         }
@@ -80,6 +80,6 @@ class ApprovalManagementStorage extends PdoBaseStorage
 
     public function createTableQueries($dbPrefix)
     {
-        return array();
+        return [];
     }
 }

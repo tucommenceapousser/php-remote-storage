@@ -17,10 +17,10 @@
 
 namespace fkooman\RemoteStorage;
 
-use fkooman\RemoteStorage\Exception\DocumentStorageException;
 use fkooman\Http\Exception\ConflictException;
-use RecursiveIteratorIterator;
+use fkooman\RemoteStorage\Exception\DocumentStorageException;
 use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 use RuntimeException;
 
 class DocumentStorage
@@ -127,7 +127,7 @@ class DocumentStorage
             throw new DocumentStorageException('unable to delete file');
         }
 
-        $deletedObjects = array();
+        $deletedObjects = [];
         $deletedObjects[] = $p->getPath();
 
         // delete all empty folders in the tree up to the user root if
@@ -158,20 +158,34 @@ class DocumentStorage
         $entries = glob($folderPath.'*', GLOB_ERR | GLOB_MARK);
         if (false === $entries) {
             // directory does not exist, return empty list
-            return array();
+            return [];
         }
-        $folderEntries = array();
+        $folderEntries = [];
         foreach ($entries as $e) {
             if (is_dir($e)) {
-                $folderEntries[basename($e).'/'] = array();
+                $folderEntries[basename($e).'/'] = [];
             } else {
-                $folderEntries[basename($e)] = array(
+                $folderEntries[basename($e)] = [
                     'Content-Length' => filesize($e),
-                );
+                ];
             }
         }
 
         return $folderEntries;
+    }
+
+    public function getFolderSize(Path $p)
+    {
+        if (!$this->isFolder($p)) {
+            return 0;
+        }
+        $folderPath = $this->baseDir.$p->getPath();
+        $size = 0;
+        foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($folderPath)) as $file) {
+            $size += $file->getSize();
+        }
+
+        return $size;
     }
 
     private function isEmptyFolder(Path $p)
@@ -192,19 +206,5 @@ class DocumentStorage
         if (false === @rmdir($folderPath)) {
             throw new DocumentStorageException('unable to delete folder');
         }
-    }
-
-    public function getFolderSize(Path $p)
-    {
-        if (!$this->isFolder($p)) {
-            return 0;
-        }
-        $folderPath = $this->baseDir.$p->getPath();
-        $size = 0;
-        foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($folderPath)) as $file) {
-            $size += $file->getSize();
-        }
-
-        return $size;
     }
 }

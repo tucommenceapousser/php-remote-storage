@@ -17,8 +17,8 @@
 
 namespace fkooman\RemoteStorage;
 
-use fkooman\Rest\Plugin\Authentication\Bearer\ValidatorInterface;
 use fkooman\Rest\Plugin\Authentication\Bearer\TokenInfo;
+use fkooman\Rest\Plugin\Authentication\Bearer\ValidatorInterface;
 use PDO;
 
 class DbTokenValidator implements ValidatorInterface
@@ -52,21 +52,21 @@ class DbTokenValidator implements ValidatorInterface
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         if (false === $result) {
             return new TokenInfo(
-                array(
+                [
                     'active' => false,
-                )
+                ]
             );
         }
 
         return new TokenInfo(
-            array(
+            [
                 'active' => true,
                 'client_id' => $result['client_id'],
                 'scope' => $result['scope'],
                 'token_type' => 'bearer',
                 'iat' => intval($result['issued_at']),
                 'sub' => $result['user_id'],
-            )
+            ]
         );
     }
 }

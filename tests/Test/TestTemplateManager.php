@@ -32,8 +32,8 @@ class TestTemplateManager implements TemplateManagerInterface
         // NOP
     }
 
-    public function render($templateName, array $templateVariables = array())
+    public function render($templateName, array $templateVariables = [])
     {
-        return array($templateName => $templateVariables);
+        return [$templateName => $templateVariables];
     }
 }

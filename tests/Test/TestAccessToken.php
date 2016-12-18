@@ -18,10 +18,10 @@
 
 namespace fkooman\RemoteStorage\Test;
 
-use fkooman\OAuth\AccessTokenStorageInterface;
-use fkooman\OAuth\AccessToken;
-use fkooman\Json\Json;
 use fkooman\Base64\Base64Url;
+use fkooman\Json\Json;
+use fkooman\OAuth\AccessToken;
+use fkooman\OAuth\AccessTokenStorageInterface;
 
 class TestAccessToken implements AccessTokenStorageInterface
 {
@@ -29,12 +29,12 @@ class TestAccessToken implements AccessTokenStorageInterface
     {
         return Base64Url::encode(
             Json::encode(
-                array(
+                [
                     'client_id' => $accessToken->getClientId(),
                     'user_id' => $accessToken->getUserId(),
                     'issued_at' => $accessToken->getIssuedAt(),
                     'scope' => $accessToken->getScope(),
-                )
+                ]
             )
         );
     }

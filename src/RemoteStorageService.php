@@ -22,10 +22,13 @@ use fkooman\Http\Exception\ForbiddenException;
 use fkooman\Http\Exception\NotFoundException;
 use fkooman\Http\Exception\PreconditionFailedException;
 use fkooman\Http\Exception\UnauthorizedException;
+use fkooman\Http\RedirectResponse;
 use fkooman\Http\Request;
 use fkooman\Http\Response;
 use fkooman\IO\IO;
+use fkooman\Json\Json;
 use fkooman\OAuth\AccessTokenStorageInterface;
+use fkooman\OAuth\Approval;
 use fkooman\OAuth\ApprovalStorageInterface;
 use fkooman\OAuth\AuthorizationCodeStorageInterface;
 use fkooman\OAuth\ClientStorageInterface;
@@ -34,12 +37,9 @@ use fkooman\OAuth\ResourceServerStorageInterface;
 use fkooman\RemoteStorage\Exception\PathException;
 use fkooman\Rest\Plugin\Authentication\Bearer\Scope;
 use fkooman\Rest\Plugin\Authentication\Bearer\TokenInfo;
+use fkooman\Rest\Plugin\Authentication\UserInfoInterface;
 use fkooman\Tpl\TemplateManagerInterface;
 use InvalidArgumentException;
-use fkooman\Rest\Plugin\Authentication\UserInfoInterface;
-use fkooman\OAuth\Approval;
-use fkooman\Http\RedirectResponse;
-use fkooman\Json\Json;
 
 class RemoteStorageService extends OAuthService
 {
@@ -49,7 +49,7 @@ class RemoteStorageService extends OAuthService
     /** @var ApprovalManagementStorage */
     private $approvalManagementStorage;
 
-    public function __construct(RemoteStorage $remoteStorage, ApprovalManagementStorage $approvalManagementStorage, TemplateManagerInterface $templateManager, ClientStorageInterface $clientStorage, ResourceServerStorageInterface $resourceServerStorage, ApprovalStorageInterface $approvalStorage, AuthorizationCodeStorageInterface $authorizationCodeStorage, AccessTokenStorageInterface $accessTokenStorage, array $options = array(), IO $io = null)
+    public function __construct(RemoteStorage $remoteStorage, ApprovalManagementStorage $approvalManagementStorage, TemplateManagerInterface $templateManager, ClientStorageInterface $clientStorage, ResourceServerStorageInterface $resourceServerStorage, ApprovalStorageInterface $approvalStorage, AuthorizationCodeStorageInterface $authorizationCodeStorage, AccessTokenStorageInterface $accessTokenStorage, array $options = [], IO $io = null)
     {
         $this->remoteStorage = $remoteStorage;
         $this->approvalManagementStorage = $approvalManagementStorage;
@@ -72,21 +72,21 @@ class RemoteStorageService extends OAuthService
 
                 return $this->templateManager->render(
                     'getAccountPage',
-                    array(
+                    [
                         'approval_list' => $approvalList,
                         'host' => $request->getHeader('Host'),
                         'user_id' => $userInfo->getUserId(),
                         'disk_usage' => $this->remoteStorage->getFolderSize(new Path('/'.$userInfo->getUserId().'/')),
                         'request_url' => $request->getUrl()->toString(),
                         'show_account_icon' => true,
-                    )
+                    ]
                 );
             },
-            array(
-                'fkooman\Rest\Plugin\Authentication\AuthenticationPlugin' => array(
-                    'activate' => array('user'),
-                ),
-            )
+            [
+                'fkooman\Rest\Plugin\Authentication\AuthenticationPlugin' => [
+                    'activate' => ['user'],
+                ],
+            ]
         );
 
         $this->delete(
@@ -104,11 +104,11 @@ class RemoteStorageService extends OAuthService
 
                 return new RedirectResponse($request->getUrl()->getRootUrl().'_account', 302);
             },
-            array(
-                'fkooman\Rest\Plugin\Authentication\AuthenticationPlugin' => array(
-                    'activate' => array('user'),
-                ),
-            )
+            [
+                'fkooman\Rest\Plugin\Authentication\AuthenticationPlugin' => [
+                    'activate' => ['user'],
+                ],
+            ]
         );
 
         $this->get(
@@ -128,32 +128,32 @@ class RemoteStorageService extends OAuthService
                 }
                 $user = substr($userAddress, 0, $atPos);
 
-                $webFingerData = array(
-                    'links' => array(
-                        array(
+                $webFingerData = [
+                    'links' => [
+                        [
                             'href' => sprintf('%s%s', $request->getUrl()->getRootUrl(), $user),
-                            'properties' => array(
+                            'properties' => [
                                 'http://remotestorage.io/spec/version' => 'draft-dejong-remotestorage-05',
                                 'http://remotestorage.io/spec/web-authoring' => null,
                                 'http://tools.ietf.org/html/rfc6749#section-4.2' => sprintf('%s_oauth/authorize?login_hint=%s', $request->getUrl()->getRootUrl(), $user),
                                 'http://tools.ietf.org/html/rfc6750#section-2.3' => 'true',
                                 'http://tools.ietf.org/html/rfc7233' => 'development' !== $this->options['server_mode'] ? 'GET' : null,
-                            ),
+                            ],
                             'rel' => 'http://tools.ietf.org/id/draft-dejong-remotestorage',
-                        ),
+                        ],
                         // legacy -03 WebFinger response
-                        array(
+                        [
                             'href' => sprintf('%s%s', $request->getUrl()->getRootUrl(), $user),
-                            'properties' => array(
+                            'properties' => [
                                 'http://remotestorage.io/spec/version' => 'draft-dejong-remotestorage-03',
                                 'http://tools.ietf.org/html/rfc2616#section-14.16' => 'development' !== $this->options['server_mode'] ? 'GET' : false,
                                 'http://tools.ietf.org/html/rfc6749#section-4.2' => sprintf('%s_oauth/authorize?login_hint=%s', $request->getUrl()->getRootUrl(), $user),
                                 'http://tools.ietf.org/html/rfc6750#section-2.3' => true,
-                            ),
+                            ],
                             'rel' => 'remotestorage',
-                        ),
-                    ),
-                );
+                        ],
+                    ],
+                ];
 
                 $response = new Response(200, 'application/jrd+json');
                 $response->setHeader('Access-Control-Allow-Origin', '*');
@@ -163,11 +163,11 @@ class RemoteStorageService extends OAuthService
 
                 return $response;
             },
-            array(
-                'fkooman\Rest\Plugin\Authentication\AuthenticationPlugin' => array(
+            [
+                'fkooman\Rest\Plugin\Authentication\AuthenticationPlugin' => [
                     'enabled' => false,
-                ),
-            )
+                ],
+            ]
         );
 
         $this->get(
@@ -175,18 +175,18 @@ class RemoteStorageService extends OAuthService
             function (Request $request, UserInfoInterface $userInfo = null) {
                 return $this->templateManager->render(
                     'indexPage',
-                    array(
+                    [
                         'user_id' => null !== $userInfo ? $userInfo->getUserId() : null,
                         'show_account_icon' => true,
-                    )
+                    ]
                 );
             },
-            array(
-                'fkooman\Rest\Plugin\Authentication\AuthenticationPlugin' => array(
-                    'activate' => array('user'),
+            [
+                'fkooman\Rest\Plugin\Authentication\AuthenticationPlugin' => [
+                    'activate' => ['user'],
                     'require' => false,
-                ),
-            )
+                ],
+            ]
         );
 
         $this->addRoute(
@@ -199,12 +199,12 @@ class RemoteStorageService extends OAuthService
 
                 return $response;
             },
-            array(
-                'fkooman\Rest\Plugin\Authentication\AuthenticationPlugin' => array(
-                    'activate' => array('api'),
+            [
+                'fkooman\Rest\Plugin\Authentication\AuthenticationPlugin' => [
+                    'activate' => ['api'],
                     'require' => false,
-                ),
-            )
+                ],
+            ]
         );
 
         // put a document
@@ -216,14 +216,14 @@ class RemoteStorageService extends OAuthService
 
                 return $response;
             },
-            array(
-                'fkooman\Rest\Plugin\Authentication\AuthenticationPlugin' => array(
-                    'activate' => array('api'),
-                ),
-                'fkooman\Rest\Plugin\ReferrerCheck\ReferrerCheckPlugin' => array(
+            [
+                'fkooman\Rest\Plugin\Authentication\AuthenticationPlugin' => [
+                    'activate' => ['api'],
+                ],
+                'fkooman\Rest\Plugin\ReferrerCheck\ReferrerCheckPlugin' => [
                     'enabled' => false,
-                ),
-            )
+                ],
+            ]
         );
 
         // delete a document
@@ -235,14 +235,14 @@ class RemoteStorageService extends OAuthService
 
                 return $response;
             },
-            array(
-                'fkooman\Rest\Plugin\Authentication\AuthenticationPlugin' => array(
-                    'activate' => array('api'),
-                ),
-                'fkooman\Rest\Plugin\ReferrerCheck\ReferrerCheckPlugin' => array(
+            [
+                'fkooman\Rest\Plugin\Authentication\AuthenticationPlugin' => [
+                    'activate' => ['api'],
+                ],
+                'fkooman\Rest\Plugin\ReferrerCheck\ReferrerCheckPlugin' => [
                     'enabled' => false,
-                ),
-            )
+                ],
+            ]
         );
 
         // options request
@@ -262,9 +262,9 @@ class RemoteStorageService extends OAuthService
 
                 return $response;
             },
-            array(
-                'fkooman\Rest\Plugin\Authentication\AuthenticationPlugin' => array('enabled' => false),
-            )
+            [
+                'fkooman\Rest\Plugin\Authentication\AuthenticationPlugin' => ['enabled' => false],
+            ]
         );
     }
 
@@ -280,7 +280,7 @@ class RemoteStorageService extends OAuthService
         // past this point we MUST be authenticated
         if (null === $tokenInfo) {
             $e = new UnauthorizedException('unauthorized', 'must authenticate to view folder listing');
-            $e->addScheme('Bearer', array('realm' => 'remoteStorage API'));
+            $e->addScheme('Bearer', ['realm' => 'remoteStorage API']);
             throw $e;
         }
 
@@ -493,40 +493,6 @@ class RemoteStorageService extends OAuthService
         return $rsr;
     }
 
-    private function hasReadScope(Scope $i, $moduleName)
-    {
-        $validReadScopes = array(
-            '*:r',
-            '*:rw',
-            sprintf('%s:%s', $moduleName, 'r'),
-            sprintf('%s:%s', $moduleName, 'rw'),
-        );
-
-        foreach ($validReadScopes as $scope) {
-            if ($i->hasScope($scope)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private function hasWriteScope(Scope $i, $moduleName)
-    {
-        $validWriteScopes = array(
-            '*:rw',
-            sprintf('%s:%s', $moduleName, 'rw'),
-        );
-
-        foreach ($validWriteScopes as $scope) {
-            if ($i->hasScope($scope)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     /**
      * ETag/If-Match/If-None-Match are always quoted, this method removes
      * the quotes.
@@ -537,10 +503,10 @@ class RemoteStorageService extends OAuthService
             return;
         }
 
-        $versions = array();
+        $versions = [];
 
         if ('*' === $versionHeader) {
-            return array('*');
+            return ['*'];
         }
 
         foreach (explode(',', $versionHeader) as $v) {
@@ -580,6 +546,40 @@ class RemoteStorageService extends OAuthService
         }
 
         return $response;
+    }
+
+    private function hasReadScope(Scope $i, $moduleName)
+    {
+        $validReadScopes = [
+            '*:r',
+            '*:rw',
+            sprintf('%s:%s', $moduleName, 'r'),
+            sprintf('%s:%s', $moduleName, 'rw'),
+        ];
+
+        foreach ($validReadScopes as $scope) {
+            if ($i->hasScope($scope)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function hasWriteScope(Scope $i, $moduleName)
+    {
+        $validWriteScopes = [
+            '*:rw',
+            sprintf('%s:%s', $moduleName, 'rw'),
+        ];
+
+        foreach ($validWriteScopes as $scope) {
+            if ($i->hasScope($scope)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private function addCors(Response &$response)

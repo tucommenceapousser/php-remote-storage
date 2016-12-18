@@ -18,8 +18,8 @@
 
 namespace fkooman\RemoteStorage\Test;
 
-use fkooman\OAuth\ApprovalStorageInterface;
 use fkooman\OAuth\Approval;
+use fkooman\OAuth\ApprovalStorageInterface;
 
 class TestApproval implements ApprovalStorageInterface
 {
@@ -40,8 +40,8 @@ class TestApproval implements ApprovalStorageInterface
 
     public function getApprovalList($userId)
     {
-        return array(
+        return [
             new Approval('foo', 'bar', 'read'),
-        );
+        ];
     }
 }

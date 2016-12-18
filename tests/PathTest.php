@@ -91,12 +91,12 @@ class PathTest extends PHPUnit_Framework_TestCase
 
     public function testValidPaths()
     {
-        $testPath = array(
+        $testPath = [
             '/admin/public/foo/',
             '/admin/foo/',
             '/admin/public/foo/bar.txt',
             '/admin/public/foo/bar/very/long/path/with/Document',
-        );
+        ];
         foreach ($testPath as $t) {
             try {
                 $p = new Path($t);
@@ -108,7 +108,7 @@ class PathTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException fkooman\RemoteStorage\Exception\PathException
+     * @expectedException \fkooman\RemoteStorage\Exception\PathException
      * @expectedExceptionMessage invalid path
      */
     public function testNonStringPath()
@@ -118,7 +118,7 @@ class PathTest extends PHPUnit_Framework_TestCase
 
     public function testInvalidPaths()
     {
-        $testPath = array(
+        $testPath = [
             '/',
             '/admin',
             '///',
@@ -127,7 +127,7 @@ class PathTest extends PHPUnit_Framework_TestCase
             '/admin/foo/../../',
             '/foo%2fbar',
             '/foo/%2e%2e/bar',
-        );
+        ];
         foreach ($testPath as $t) {
             try {
                 $p = new Path($t);
@@ -142,11 +142,11 @@ class PathTest extends PHPUnit_Framework_TestCase
     {
         $path = new Path('/admin/contacts/work/colleagues.vcf');
         $this->assertEquals(
-            array(
+            [
                 '/admin/',
                 '/admin/contacts/',
                 '/admin/contacts/work/',
-            ),
+            ],
             $path->getFolderTreeFromUserRoot()
         );
     }
@@ -155,11 +155,11 @@ class PathTest extends PHPUnit_Framework_TestCase
     {
         $path = new Path('/admin/contacts/work/');
         $this->assertEquals(
-            array(
+            [
                 '/admin/',
                 '/admin/contacts/',
                 '/admin/contacts/work/',
-            ),
+            ],
             $path->getFolderTreeFromUserRoot()
         );
     }
@@ -168,9 +168,9 @@ class PathTest extends PHPUnit_Framework_TestCase
     {
         $path = new Path('/foo/bar');
         $this->assertEquals(
-            array(
+            [
                 '/foo/',
-            ),
+            ],
             $path->getFolderTreeFromUserRoot()
         );
     }

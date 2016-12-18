@@ -17,8 +17,8 @@
 
 namespace fkooman\RemoteStorage;
 
-use fkooman\Http\Request;
 use fkooman\Http\Exception\BadRequestException;
+use fkooman\Http\Request;
 use fkooman\OAuth\InputValidation;
 
 class RequestValidation
@@ -52,10 +52,10 @@ class RequestValidation
             throw new BadRequestException('invalid scope');
         }
 
-        return array(
+        return [
             'client_id' => $clientId,
             'response_type' => $responseType,
             'scope' => $scope,
-        );
+        ];
     }
 }

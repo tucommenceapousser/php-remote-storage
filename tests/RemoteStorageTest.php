@@ -17,10 +17,10 @@
 
 namespace fkooman\RemoteStorage;
 
+use fkooman\Json\Json;
+use fkooman\RemoteStorage\Exception\DocumentStorageException;
 use PDO;
 use PHPUnit_Framework_TestCase;
-use fkooman\RemoteStorage\Exception\DocumentStorageException;
-use fkooman\Json\Json;
 
 class RemoteStorageTest extends PHPUnit_Framework_TestCase
 {
@@ -82,7 +82,7 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
         $p = new Path('/admin/messages/foo/baz.txt');
         $this->r->putDocument($p, 'text/plain', 'Hello World!');
         $documentVersion = $this->r->getVersion($p);
-        $this->r->deleteDocument($p, array($documentVersion));
+        $this->r->deleteDocument($p, [$documentVersion]);
         $this->assertNull($this->r->getVersion($p));
         try {
             $this->r->getDocument($p);
@@ -159,40 +159,40 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException fkooman\Http\Exception\PreconditionFailedException
+     * @expectedException \fkooman\Http\Exception\PreconditionFailedException
      * @expectedExceptionMessage version mismatch
      */
     public function testPutIfMatchNotExistingFile()
     {
         $p1 = new Path('/admin/messages/foo/helloz0r.txt');
         //$this->r->putDocument($p1, 'text/plain', 'Hello World');
-        $this->r->putDocument($p1, 'text/plain', 'Hello World', array('incorrect version'));
+        $this->r->putDocument($p1, 'text/plain', 'Hello World', ['incorrect version']);
     }
 
     /**
-     * @expectedException fkooman\Http\Exception\PreconditionFailedException
+     * @expectedException \fkooman\Http\Exception\PreconditionFailedException
      * @expectedExceptionMessage version mismatch
      */
     public function testPutIfMatchPrecondition()
     {
         $p1 = new Path('/admin/messages/foo/hello.txt');
         $this->r->putDocument($p1, 'text/plain', 'Hello World');
-        $this->r->putDocument($p1, 'text/plain', 'Hello World', array('incorrect version'));
+        $this->r->putDocument($p1, 'text/plain', 'Hello World', ['incorrect version']);
     }
 
     /**
-     * @expectedException fkooman\Http\Exception\PreconditionFailedException
+     * @expectedException \fkooman\Http\Exception\PreconditionFailedException
      * @expectedExceptionMessage version mismatch
      */
     public function testDeleteIfMatchPrecondition()
     {
         $p1 = new Path('/admin/messages/foo/hello.txt');
         $this->r->putDocument($p1, 'text/plain', 'Hello World');
-        $this->r->deleteDocument($p1, array('incorrect version'));
+        $this->r->deleteDocument($p1, ['incorrect version']);
     }
 
     /**
-     * @expectedException fkooman\RemoteStorage\Exception\RemoteStorageException
+     * @expectedException \fkooman\RemoteStorage\Exception\RemoteStorageException
      * @expectedExceptionMessage folder not modified
      */
     public function testGetFolderIfMatch()
@@ -201,11 +201,11 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
         $p2 = new Path('/admin/messages/foo/');
         $this->r->putDocument($p1, 'text/plain', 'Hello World');
         $folderVersion = $this->r->getVersion($p2);
-        $this->r->getFolder($p2, array($folderVersion));
+        $this->r->getFolder($p2, [$folderVersion]);
     }
 
     /**
-     * @expectedException fkooman\RemoteStorage\Exception\RemoteStorageException
+     * @expectedException \fkooman\RemoteStorage\Exception\RemoteStorageException
      * @expectedExceptionMessage document not modified
      */
     public function testGetDocumentIfMatch()
@@ -213,25 +213,25 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
         $p1 = new Path('/admin/messages/foo/hello.txt');
         $this->r->putDocument($p1, 'text/plain', 'Hello World');
         $documentVersion = $this->r->getVersion($p1);
-        $this->r->getDocument($p1, array($documentVersion));
+        $this->r->getDocument($p1, [$documentVersion]);
     }
 
     public function testPutDocumentIfNoneMatchStarOkay()
     {
         $p1 = new Path('/admin/messages/foo/hello.txt');
-        $this->r->putDocument($p1, 'text/plain', 'Hello World', null, array('*'));
+        $this->r->putDocument($p1, 'text/plain', 'Hello World', null, ['*']);
         $this->assertNotNull($this->r->getVersion($p1));
     }
 
     /**
-     * @expectedException fkooman\Http\Exception\PreconditionFailedException
+     * @expectedException \fkooman\Http\Exception\PreconditionFailedException
      * @expectedExceptionMessage document already exists
      */
     public function testPutDocumentIfNoneMatchStarFail()
     {
         $p1 = new Path('/admin/messages/foo/hello.txt');
-        $this->r->putDocument($p1, 'text/plain', 'Hello World', null, array('*'));
+        $this->r->putDocument($p1, 'text/plain', 'Hello World', null, ['*']);
         // document already exists now, so we fail
-        $this->r->putDocument($p1, 'text/plain', 'Hello World', null, array('*'));
+        $this->r->putDocument($p1, 'text/plain', 'Hello World', null, ['*']);
     }
 }
