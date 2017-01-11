@@ -25,7 +25,6 @@ require_once __DIR__.'/Test/TestAccessToken.php';
 require_once __DIR__.'/Test/TestAuthentication.php';
 
 use fkooman\Http\Request;
-use fkooman\Json\Json;
 use fkooman\RemoteStorage\Test\TestAccessToken;
 use fkooman\RemoteStorage\Test\TestApproval;
 use fkooman\RemoteStorage\Test\TestAuthentication;

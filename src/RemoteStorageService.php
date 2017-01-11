@@ -26,7 +26,6 @@ use fkooman\Http\RedirectResponse;
 use fkooman\Http\Request;
 use fkooman\Http\Response;
 use fkooman\IO\IO;
-use fkooman\Json\Json;
 use fkooman\OAuth\AccessTokenStorageInterface;
 use fkooman\OAuth\Approval;
 use fkooman\OAuth\ApprovalStorageInterface;
@@ -158,7 +157,7 @@ class RemoteStorageService extends OAuthService
                 $response = new Response(200, 'application/jrd+json');
                 $response->setHeader('Access-Control-Allow-Origin', '*');
                 $response->setBody(
-                    Json::encode($webFingerData)
+                    json_encode($webFingerData)
                 );
 
                 return $response;

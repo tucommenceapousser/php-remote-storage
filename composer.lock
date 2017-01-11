@@ -4,8 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "d0b56f2e6b6838e60df9b1cdc2904b8c",
-    "content-hash": "26d1eaab511f00d0b79b9048b6400c0c",
+    "content-hash": "8505af88d5775e771e5369db23976484",
     "packages": [
         {
             "name": "fkooman/config",
@@ -44,7 +43,7 @@
                 }
             ],
             "description": "Read and write configuration files",
-            "time": "2016-08-10 08:27:32"
+            "time": "2016-08-10T08:27:32+00:00"
         },
         {
             "name": "fkooman/http",
@@ -88,7 +87,7 @@
                 }
             ],
             "description": "Simple PHP library for dealing with HTTP requests and responses.",
-            "time": "2016-08-19 07:36:02"
+            "time": "2016-08-19T07:36:02+00:00"
         },
         {
             "name": "fkooman/io",
@@ -127,7 +126,7 @@
                 }
             ],
             "description": "Simple IO library",
-            "time": "2016-05-25 14:27:49"
+            "time": "2016-05-25T14:27:49+00:00"
         },
         {
             "name": "fkooman/json",
@@ -169,7 +168,7 @@
                 }
             ],
             "description": "PHP library to encode and decode JSON",
-            "time": "2016-03-25 13:54:00"
+            "time": "2016-03-25T13:54:00+00:00"
         },
         {
             "name": "fkooman/oauth",
@@ -219,7 +218,7 @@
                 }
             ],
             "description": "OAuth 2.0 Server Library",
-            "time": "2016-08-19 09:43:37"
+            "time": "2016-08-19T09:43:37+00:00"
         },
         {
             "name": "fkooman/rest",
@@ -263,7 +262,7 @@
                 }
             ],
             "description": "Simple PHP library for writing REST services.",
-            "time": "2016-08-19 09:07:12"
+            "time": "2016-08-19T09:07:12+00:00"
         },
         {
             "name": "fkooman/rest-plugin-authentication",
@@ -310,7 +309,7 @@
                 }
             ],
             "description": "Authentication plugin for fkooman/rest",
-            "time": "2016-08-19 09:08:52"
+            "time": "2016-08-19T09:08:52+00:00"
         },
         {
             "name": "fkooman/rest-plugin-authentication-bearer",
@@ -354,7 +353,7 @@
                 }
             ],
             "description": "Bearer (OAuth) Authentication plugin for fkooman/rest-plugin-authentication",
-            "time": "2016-12-18 19:41:49"
+            "time": "2016-12-18T19:41:49+00:00"
         },
         {
             "name": "fkooman/rest-plugin-authentication-form",
@@ -402,7 +401,7 @@
                 }
             ],
             "description": "HTML Form Authentication plugin for fkooman/rest-plugin-authentication",
-            "time": "2016-12-18 09:41:38"
+            "time": "2016-12-18T09:41:38+00:00"
         },
         {
             "name": "fkooman/tpl",
@@ -438,7 +437,7 @@
                 }
             ],
             "description": "Simple Template Abstraction Library",
-            "time": "2016-02-04 10:00:40"
+            "time": "2016-02-04T10:00:40+00:00"
         },
         {
             "name": "fkooman/tpl-twig",
@@ -479,7 +478,7 @@
                 }
             ],
             "description": "Twig for Simple Template Abstraction Library",
-            "time": "2016-08-10 08:43:01"
+            "time": "2016-08-10T08:43:01+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -531,7 +530,7 @@
                 "rest",
                 "web service"
             ],
-            "time": "2016-07-15 19:28:39"
+            "time": "2016-07-15T19:28:39+00:00"
         },
         {
             "name": "guzzlehttp/ringphp",
@@ -582,7 +581,7 @@
                 }
             ],
             "description": "Provides a simple API and specification that abstracts away the details of HTTP into a single PHP function.",
-            "time": "2015-05-20 03:37:09"
+            "time": "2015-05-20T03:37:09+00:00"
         },
         {
             "name": "guzzlehttp/streams",
@@ -632,7 +631,7 @@
                 "Guzzle",
                 "stream"
             ],
-            "time": "2014-10-12 19:18:40"
+            "time": "2014-10-12T19:18:40+00:00"
         },
         {
             "name": "ircmaxell/password-compat",
@@ -674,7 +673,7 @@
                 "hashing",
                 "password"
             ],
-            "time": "2014-11-20 16:49:30"
+            "time": "2014-11-20T16:49:30+00:00"
         },
         {
             "name": "monolog/monolog",
@@ -752,7 +751,7 @@
                 "logging",
                 "psr-3"
             ],
-            "time": "2016-11-26 00:15:39"
+            "time": "2016-11-26T00:15:39+00:00"
         },
         {
             "name": "paragonie/random_compat",
@@ -800,7 +799,7 @@
                 "pseudorandom",
                 "random"
             ],
-            "time": "2016-03-18 20:34:03"
+            "time": "2016-03-18T20:34:03+00:00"
         },
         {
             "name": "psr/log",
@@ -847,31 +846,26 @@
                 "psr",
                 "psr-3"
             ],
-            "time": "2016-10-10 12:19:37"
+            "time": "2016-10-10T12:19:37+00:00"
         },
         {
             "name": "react/promise",
-            "version": "v2.4.1",
+            "version": "v2.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/reactphp/promise.git",
-                "reference": "8025426794f1944de806618671d4fa476dc7626f"
+                "reference": "2760f3898b7e931aa71153852dcd48a75c9b95db"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/reactphp/promise/zipball/8025426794f1944de806618671d4fa476dc7626f",
-                "reference": "8025426794f1944de806618671d4fa476dc7626f",
+                "url": "https://api.github.com/repos/reactphp/promise/zipball/2760f3898b7e931aa71153852dcd48a75c9b95db",
+                "reference": "2760f3898b7e931aa71153852dcd48a75c9b95db",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.4.0"
             },
             "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "2.0-dev"
-                }
-            },
             "autoload": {
                 "psr-4": {
                     "React\\Promise\\": "src/"
@@ -891,7 +885,11 @@
                 }
             ],
             "description": "A lightweight implementation of CommonJS Promises/A for PHP",
-            "time": "2016-05-03 17:50:52"
+            "keywords": [
+                "promise",
+                "promises"
+            ],
+            "time": "2016-12-22T14:09:01+00:00"
         },
         {
             "name": "symfony/yaml",
@@ -940,7 +938,7 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "https://symfony.com",
-            "time": "2016-11-14 16:15:57"
+            "time": "2016-11-14T16:15:57+00:00"
         },
         {
             "name": "twig/extensions",
@@ -992,20 +990,20 @@
                 "i18n",
                 "text"
             ],
-            "time": "2016-10-25 17:34:14"
+            "time": "2016-10-25T17:34:14+00:00"
         },
         {
             "name": "twig/twig",
-            "version": "v1.29.0",
+            "version": "v1.30.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/twigphp/Twig.git",
-                "reference": "74f723e542368ca2080b252740be5f1113ebb898"
+                "reference": "c6ff71094fde15d12398eaba029434b013dc5e59"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twigphp/Twig/zipball/74f723e542368ca2080b252740be5f1113ebb898",
-                "reference": "74f723e542368ca2080b252740be5f1113ebb898",
+                "url": "https://api.github.com/repos/twigphp/Twig/zipball/c6ff71094fde15d12398eaba029434b013dc5e59",
+                "reference": "c6ff71094fde15d12398eaba029434b013dc5e59",
                 "shasum": ""
             },
             "require": {
@@ -1018,7 +1016,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.29-dev"
+                    "dev-master": "1.30-dev"
                 }
             },
             "autoload": {
@@ -1053,7 +1051,7 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2016-12-13 17:28:18"
+            "time": "2016-12-23T11:06:22+00:00"
         }
     ],
     "packages-dev": [],

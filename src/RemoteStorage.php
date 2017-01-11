@@ -18,7 +18,6 @@
 namespace fkooman\RemoteStorage;
 
 use fkooman\Http\Exception\PreconditionFailedException;
-use fkooman\Json\Json;
 use fkooman\RemoteStorage\Exception\RemoteStorageException;
 
 class RemoteStorage
@@ -110,7 +109,7 @@ class RemoteStorage
             }
         }
 
-        return Json::encode($f, JSON_FORCE_OBJECT);
+        return json_encode($f, JSON_FORCE_OBJECT);
     }
 
     public function getFolderSize(Path $p)

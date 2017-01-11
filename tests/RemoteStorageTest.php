@@ -17,7 +17,6 @@
 
 namespace fkooman\RemoteStorage;
 
-use fkooman\Json\Json;
 use fkooman\RemoteStorage\Exception\DocumentStorageException;
 use PDO;
 use PHPUnit_Framework_TestCase;
@@ -122,8 +121,7 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
         $this->r->putDocument($p2, 'text/plain', 'Hello Bar!');
         $this->r->putDocument($p2, 'text/plain', 'Hello Updated Bar!');
 
-        $j = new Json();
-        $folderData = $j->decode($this->r->getFolder($p3));
+        $folderData = json_decode($this->r->getFolder($p3), true);
         $this->assertEquals(2, count($folderData));
         $this->assertEquals(2, count($folderData['items']));
         $this->assertEquals('http://remotestorage.io/spec/folder-description', $folderData['@context']);
@@ -145,8 +143,7 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
         $this->r->putDocument($p2, 'text/plain', 'Hello Bar!');
         $this->r->putDocument($p2, 'text/plain', 'Hello Updated Bar!');
 
-        $j = new Json();
-        $folderData = $j->decode($this->r->getFolder($p3));
+        $folderData = json_decode($this->r->getFolder($p3), true);
         $this->assertEquals(2, count($folderData));
         $this->assertEquals(2, count($folderData['items']));
         $this->assertEquals('http://remotestorage.io/spec/folder-description', $folderData['@context']);
