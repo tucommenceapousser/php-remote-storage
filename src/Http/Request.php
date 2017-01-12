@@ -31,7 +31,10 @@ class Request
     /** @var array */
     private $postData;
 
-    public function __construct(array $serverData, array $getData = [], array $postData = [])
+    /** @var string|null */
+    private $rawData;
+
+    public function __construct(array $serverData, array $getData = [], array $postData = [], $rawData = null)
     {
         $requiredHeaders = [
             'REQUEST_METHOD',
@@ -51,6 +54,7 @@ class Request
         $this->serverData = $serverData;
         $this->getData = $getData;
         $this->postData = $postData;
+        $this->rawData = $rawData;
     }
 
     public function getAuthority()
@@ -158,5 +162,10 @@ class Request
     public function getHeader($key, $isRequired = true, $defaultValue = null)
     {
         return Utils::getValueFromArray($this->serverData, $key, $isRequired, $defaultValue);
+    }
+
+    public function getBody()
+    {
+        return $this->rawData;
     }
 }

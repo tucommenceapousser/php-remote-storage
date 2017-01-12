@@ -123,11 +123,16 @@ class Service
                     ['Allow' => implode(',', array_keys($this->routes))]
                 );
             }
+
             if (!array_key_exists($pathInfo, $this->routes[$requestMethod])) {
-                throw new HttpException(
-                    sprintf('"%s" not found', $pathInfo),
-                    404
-                );
+                if (!array_key_exists('*', $this->routes[$requestMethod])) {
+                    throw new HttpException(
+                        sprintf('"%s" not found', $pathInfo),
+                        404
+                    );
+                }
+
+                $pathInfo = '*';
             }
 
             $response = $this->routes[$requestMethod][$pathInfo]($request, $hookData);

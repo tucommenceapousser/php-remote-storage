@@ -25,6 +25,14 @@ use fkooman\RemoteStorage\Http\ServiceModuleInterface;
 
 class WebfingerModule implements ServiceModuleInterface
 {
+    /** @var string */
+    private $serverMode;
+
+    public function __construct($serverMode)
+    {
+        $this->serverMode = $serverMode;
+    }
+
     public function init(Service $service)
     {
         $service->get(
@@ -53,7 +61,7 @@ class WebfingerModule implements ServiceModuleInterface
                                 'http://remotestorage.io/spec/web-authoring' => null,
                                 'http://tools.ietf.org/html/rfc6749#section-4.2' => sprintf('%s_oauth/authorize?login_hint=%s', $request->getRootUri(), $user),
                                 'http://tools.ietf.org/html/rfc6750#section-2.3' => 'true',
-                                'http://tools.ietf.org/html/rfc7233' => 'development' !== $this->options['server_mode'] ? 'GET' : null,
+                                'http://tools.ietf.org/html/rfc7233' => 'development' !== $this->serverMode ? 'GET' : null,
                             ],
                             'rel' => 'http://tools.ietf.org/id/draft-dejong-remotestorage',
                         ],
@@ -62,7 +70,7 @@ class WebfingerModule implements ServiceModuleInterface
                             'href' => sprintf('%s%s', $request->getRootUri(), $user),
                             'properties' => [
                                 'http://remotestorage.io/spec/version' => 'draft-dejong-remotestorage-03',
-                                'http://tools.ietf.org/html/rfc2616#section-14.16' => 'development' !== $this->options['server_mode'] ? 'GET' : false,
+                                'http://tools.ietf.org/html/rfc2616#section-14.16' => 'development' !== $this->serverMode ? 'GET' : false,
                                 'http://tools.ietf.org/html/rfc6749#section-4.2' => sprintf('%s_oauth/authorize?login_hint=%s', $request->getRootUri(), $user),
                                 'http://tools.ietf.org/html/rfc6750#section-2.3' => true,
                             ],

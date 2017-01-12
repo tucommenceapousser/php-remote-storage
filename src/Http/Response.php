@@ -82,6 +82,23 @@ class Response
         return $this->body;
     }
 
+    public function toArray()
+    {
+        $output = [$this->statusCode];
+        foreach ($this->headers as $key => $value) {
+            $output[] = sprintf('%s: %s', $key, $value);
+        }
+        $output[] = '';
+        $output[] = $this->body;
+
+        return $output;
+    }
+
+    public function setFile($fileName)
+    {
+        $this->addHeader('X-SENDFILE', $fileName);
+    }
+
     public function send()
     {
         http_response_code($this->statusCode);

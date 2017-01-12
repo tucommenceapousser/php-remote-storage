@@ -23,6 +23,7 @@ use fkooman\RemoteStorage\Http\Request;
 use fkooman\RemoteStorage\Http\Response;
 use fkooman\RemoteStorage\Http\Service;
 use fkooman\RemoteStorage\Http\ServiceModuleInterface;
+use fkooman\RemoteStorage\OAuth\TokenInfo;
 use fkooman\RemoteStorage\OAuth\TokenStorage;
 use InvalidArgumentException;
 
@@ -34,7 +35,10 @@ class ApiModule implements ServiceModuleInterface
     /** @var \fkooman\RemoteStorage\OAuth\TokenStorage */
     private $tokenStorage;
 
-    public function __construct(RemoteStorage $remoteStorage, TokenStorage $tokenStorage)
+    /** @var string */
+    private $serverMode;
+
+    public function __construct(RemoteStorage $remoteStorage, TokenStorage $tokenStorage, $serverMode)
     {
         $this->remoteStorage = $remoteStorage;
         $this->tokenStorage = $tokenStorage;
@@ -45,9 +49,25 @@ class ApiModule implements ServiceModuleInterface
         // ApiAuth OPTIONAL??
         // maybe for "public" files it is optional?
         $service->addRoute(
-            ['GET', 'HEAD'],
+            'GET',
             '*',
-            function (Request $request, TokenInfo $tokenInfo = null) {
+            function (Request $request, array $hookData) {
+                $tokenInfo = $hookData['bearer'];
+
+                $response = $this->getObject($request, $tokenInfo);
+                $this->addNoCache($response);
+                $this->addCors($response);
+
+                return $response;
+            }
+        );
+
+        $service->addRoute(
+            'HEAD',
+            '*',
+            function (Request $request, array $hookData) {
+                $tokenInfo = $hookData['bearer'];
+
                 $response = $this->getObject($request, $tokenInfo);
                 $this->addNoCache($response);
                 $this->addCors($response);
@@ -60,7 +80,9 @@ class ApiModule implements ServiceModuleInterface
         // ApiAuth
         $service->put(
             '*',
-            function (Request $request, TokenInfo $tokenInfo) {
+            function (Request $request, array $hookData) {
+                $tokenInfo = $hookData['bearer'];
+
                 $response = $this->putDocument($request, $tokenInfo);
                 $this->addCors($response);
 
@@ -72,7 +94,9 @@ class ApiModule implements ServiceModuleInterface
         // ApiAuth
         $service->delete(
             '*',
-            function (Request $request, TokenInfo $tokenInfo) {
+            function (Request $request, array $hookData) {
+                $tokenInfo = $hookData['bearer'];
+
                 $response = $this->deleteDocument($request, $tokenInfo);
                 $this->addCors($response);
 
@@ -101,7 +125,7 @@ class ApiModule implements ServiceModuleInterface
         );
     }
 
-    public function getObject(Request $request, $tokenInfo)
+    public function getObject(Request $request, TokenInfo $tokenInfo)
     {
         $path = new Path($request->getPathInfo());
 
@@ -112,9 +136,11 @@ class ApiModule implements ServiceModuleInterface
 
         // past this point we MUST be authenticated
         if (null === $tokenInfo) {
-            $e = new UnauthorizedException('unauthorized', 'must authenticate to view folder listing');
-            $e->addScheme('Bearer', ['realm' => 'remoteStorage API']);
-            throw $e;
+            throw new HttpException(
+                'no_token',
+                401,
+                ['WWW-Authenticate' => 'Bearer realm="remoteStorage API"']
+            );
         }
 
         if ($path->getIsFolder()) {
@@ -141,7 +167,7 @@ class ApiModule implements ServiceModuleInterface
         }
 
         $requestedVersion = $this->stripQuotes(
-            $request->getHeader('If-None-Match')
+            $request->getHeader('If-None-Match', false, null)
         );
 
         if (null !== $requestedVersion) {
@@ -157,12 +183,12 @@ class ApiModule implements ServiceModuleInterface
         $rsr = new Response(200, 'application/ld+json');
         $rsr->addHeader('ETag', '"'.$folderVersion.'"');
 
-        if ('GET' === $request->getMethod()) {
+        if ('GET' === $request->getRequestMethod()) {
             $rsr->setBody(
                 $this->remoteStorage->getFolder(
                     $path,
                     $this->stripQuotes(
-                        $request->getHeader('If-None-Match')
+                        $request->getHeader('If-None-Match', false, null)
                     )
                 )
             );
@@ -184,12 +210,13 @@ class ApiModule implements ServiceModuleInterface
         $documentVersion = $this->remoteStorage->getVersion($path);
         if (null === $documentVersion) {
             throw new HttpException(
-                sprintf('document "%s" not found', $path->getPath(), 404)
+                sprintf('document "%s" not found', $path->getPath()),
+                404
             );
         }
 
         $requestedVersion = $this->stripQuotes(
-            $request->getHeader('If-None-Match')
+            $request->getHeader('If-None-Match', false, null)
         );
         $documentContentType = $this->remoteStorage->getContentType($path);
 
@@ -205,12 +232,12 @@ class ApiModule implements ServiceModuleInterface
         $rsr = new Response(200, $documentContentType);
         $rsr->addHeader('ETag', '"'.$documentVersion.'"');
 
-        if ('development' !== $this->options['server_mode']) {
+        if ('development' !== $this->serverMode) {
             $rsr->addHeader('Accept-Ranges', 'bytes');
         }
 
-        if ('GET' === $request->getMethod()) {
-            if ('development' === $this->options['server_mode']) {
+        if ('GET' === $request->getRequestMethod()) {
+            if ('development' === $this->serverMode) {
                 // use body
                 $rsr->setBody(
                     file_get_contents(
@@ -246,10 +273,10 @@ class ApiModule implements ServiceModuleInterface
         }
 
         $ifMatch = $this->stripQuotes(
-            $request->getHeader('If-Match')
+            $request->getHeader('If-Match', false, null)
         );
         $ifNoneMatch = $this->stripQuotes(
-            $request->getHeader('If-None-Match')
+            $request->getHeader('If-None-Match', false, null)
         );
 
         $documentVersion = $this->remoteStorage->getVersion($path);
@@ -293,7 +320,7 @@ class ApiModule implements ServiceModuleInterface
         $documentVersion = $this->remoteStorage->getVersion($path);
 
         $ifMatch = $this->stripQuotes(
-            $request->getHeader('If-Match')
+            $request->getHeader('If-Match', false, null)
         );
 
         // if document does not exist, and we have If-Match header set we should
@@ -310,7 +337,7 @@ class ApiModule implements ServiceModuleInterface
         }
 
         $ifMatch = $this->stripQuotes(
-            $request->getHeader('If-Match')
+            $request->getHeader('If-Match', false, null)
         );
         if (null !== $ifMatch && !in_array($documentVersion, $ifMatch)) {
             throw new HttpException('version mismatch', 412);
@@ -382,17 +409,18 @@ class ApiModule implements ServiceModuleInterface
 //        return $response;
 //    }
 
-    private function hasReadScope(Scope $i, $moduleName)
+    private function hasReadScope($scope, $moduleName)
     {
-        $validReadScopes = [
+        $obtainedScopes = explode(' ', $scope);
+        $requiredScopes = [
             '*:r',
             '*:rw',
             sprintf('%s:%s', $moduleName, 'r'),
             sprintf('%s:%s', $moduleName, 'rw'),
         ];
 
-        foreach ($validReadScopes as $scope) {
-            if ($i->hasScope($scope)) {
+        foreach ($requiredScopes as $requiredScope) {
+            if (in_array($requiredScope, $obtainedScopes)) {
                 return true;
             }
         }
@@ -400,15 +428,16 @@ class ApiModule implements ServiceModuleInterface
         return false;
     }
 
-    private function hasWriteScope(Scope $i, $moduleName)
+    private function hasWriteScope($scope, $moduleName)
     {
-        $validWriteScopes = [
+        $obtainedScopes = explode(' ', $scope);
+        $requiredScopes = [
             '*:rw',
             sprintf('%s:%s', $moduleName, 'rw'),
         ];
 
-        foreach ($validWriteScopes as $scope) {
-            if ($i->hasScope($scope)) {
+        foreach ($requiredScopes as $requiredScope) {
+            if (in_array($requiredScope, $obtainedScopes)) {
                 return true;
             }
         }
@@ -416,18 +445,18 @@ class ApiModule implements ServiceModuleInterface
         return false;
     }
 
-//    private function addCors(Response &$response)
-//    {
-//        $response->addHeader('Access-Control-Allow-Origin', '*');
-//        $response->addHeader(
-//            'Access-Control-Expose-Headers',
-//            'ETag, Content-Length'
-//        );
-//    }
+    private function addCors(Response &$response)
+    {
+        $response->addHeader('Access-Control-Allow-Origin', '*');
+        $response->addHeader(
+            'Access-Control-Expose-Headers',
+            'ETag, Content-Length'
+        );
+    }
 
-//    private function addNoCache(Response &$response)
-//    {
-//        $response->addHeader('Expires', '0');
-//        $response->addHeader('Cache-Control', 'no-cache');
-//    }
+    private function addNoCache(Response &$response)
+    {
+        $response->addHeader('Expires', '0');
+        $response->addHeader('Cache-Control', 'no-cache');
+    }
 }

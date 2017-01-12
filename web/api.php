@@ -16,6 +16,7 @@
  */
 require_once dirname(__DIR__).'/vendor/autoload.php';
 
+use fkooman\RemoteStorage\ApiModule;
 use fkooman\RemoteStorage\Config;
 use fkooman\RemoteStorage\DocumentStorage;
 use fkooman\RemoteStorage\Http\Request;
@@ -52,6 +53,15 @@ try {
             $tokenStorage
     );
     $service->addBeforeHook('bearer', $bearerAuthenticationHook);
+
+    $apiModule = new ApiModule(
+        $remoteStorage,
+        $tokenStorage,
+        $serverMode
+    );
+
+    $service->addModule($apiModule);
+
     $response = $service->run($request);
 
     if ('development' === $serverMode && !$response->isOkay()) {

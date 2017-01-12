@@ -74,7 +74,7 @@ class BearerAuthenticationHook implements BeforeHookInterface
 
         // time safe string compare, using polyfill on PHP < 5.6
         if (hash_equals($tokenInfo['access_token'], $accessToken)) {
-            return $tokenInfo['user_id'];
+            return new TokenInfo($tokenInfo);
         }
 
         throw $this->invalidTokenException();

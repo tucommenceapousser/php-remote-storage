@@ -16,6 +16,7 @@
  */
 require_once dirname(__DIR__).'/vendor/autoload.php';
 
+use fkooman\RemoteStorage\Config;
 use fkooman\RemoteStorage\Http\Request;
 use fkooman\RemoteStorage\Http\Service;
 use fkooman\RemoteStorage\WebfingerModule;
@@ -26,9 +27,12 @@ $logger = new Logger('php-remote-storage');
 $logger->pushHandler(new ErrorLogHandler());
 
 try {
+    $config = Config::fromFile(dirname(__DIR__).'/config/server.yaml');
+    $serverMode = $config->getItem('serverMode');
+
     $request = new Request($_SERVER, $_GET, $_POST);
     $service = new Service();
-    $service->addModule(new WebfingerModule());
+    $service->addModule(new WebfingerModule($serverMode));
     $service->run($request)->send();
 } catch (Exception $e) {
     $logger->error($e->getMessage());
