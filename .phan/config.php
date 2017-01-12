@@ -6,7 +6,6 @@ return [
         'web',
         'bin',
         'vendor/monolog',
-        'vendor/psr',
         'vendor/symfony',
         'vendor/twig',
     ],
