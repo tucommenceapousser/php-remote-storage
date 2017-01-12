@@ -3,7 +3,7 @@
 
 require_once dirname(__DIR__).'/vendor/autoload.php';
 
-use fkooman\Config\YamlFile;
+use fkooman\RemoteStorage\Config\YamlFile;
 
 try {
     if (3 > $argc) {

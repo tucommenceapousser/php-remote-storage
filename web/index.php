@@ -16,14 +16,14 @@
  */
 require_once dirname(__DIR__).'/vendor/autoload.php';
 
-use fkooman\Config\Reader;
-use fkooman\Config\YamlFile;
 use fkooman\Http\Request;
 use fkooman\Http\Session;
 use fkooman\OAuth\Storage\PdoAccessTokenStorage;
 use fkooman\OAuth\Storage\PdoApprovalStorage;
 use fkooman\OAuth\Storage\PdoAuthorizationCodeStorage;
 use fkooman\RemoteStorage\ApprovalManagementStorage;
+use fkooman\RemoteStorage\Config\Reader;
+use fkooman\RemoteStorage\Config\YamlFile;
 use fkooman\RemoteStorage\DbTokenValidator;
 use fkooman\RemoteStorage\DocumentStorage;
 use fkooman\RemoteStorage\MetadataStorage;

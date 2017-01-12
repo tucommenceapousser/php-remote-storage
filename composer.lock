@@ -4,47 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "8505af88d5775e771e5369db23976484",
+    "content-hash": "c56734409ff99df39c48d901be255363",
     "packages": [
-        {
-            "name": "fkooman/config",
-            "version": "1.1.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/fkooman/php-lib-config.git",
-                "reference": "92eb45e9c32b9fc41d25824dc47d9462b990085c"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/fkooman/php-lib-config/zipball/92eb45e9c32b9fc41d25824dc47d9462b990085c",
-                "reference": "92eb45e9c32b9fc41d25824dc47d9462b990085c",
-                "shasum": ""
-            },
-            "require": {
-                "ext-spl": "*",
-                "php": ">=5.4",
-                "symfony/yaml": "^2.7"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "fkooman\\Config\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "Apache-2.0"
-            ],
-            "authors": [
-                {
-                    "name": "François Kooman",
-                    "email": "fkooman@tuxed.net",
-                    "role": "Developer"
-                }
-            ],
-            "description": "Read and write configuration files",
-            "time": "2016-08-10T08:27:32+00:00"
-        },
         {
             "name": "fkooman/http",
             "version": "2.0.0",
