@@ -30,12 +30,16 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
 
     public function setUp()
     {
+        $random = $this->getMockBuilder('fkooman\RemoteStorage\RandomInterface')->getMock();
+        $random->method('get')->willReturn('abcd1234');
+
         $md = new MetadataStorage(
             new PDO(
                 $GLOBALS['DB_DSN'],
                 $GLOBALS['DB_USER'],
                 $GLOBALS['DB_PASSWD']
-            )
+            ),
+            $random
         );
         $md->initDatabase();
 
@@ -156,7 +160,7 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \fkooman\Http\Exception\PreconditionFailedException
+     * @expectedException \fkooman\RemoteStorage\Http\Exception\HttpException
      * @expectedExceptionMessage version mismatch
      */
     public function testPutIfMatchNotExistingFile()
@@ -167,7 +171,7 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \fkooman\Http\Exception\PreconditionFailedException
+     * @expectedException \fkooman\RemoteStorage\Http\Exception\HttpException
      * @expectedExceptionMessage version mismatch
      */
     public function testPutIfMatchPrecondition()
@@ -178,7 +182,7 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \fkooman\Http\Exception\PreconditionFailedException
+     * @expectedException \fkooman\RemoteStorage\Http\Exception\HttpException
      * @expectedExceptionMessage version mismatch
      */
     public function testDeleteIfMatchPrecondition()
@@ -221,7 +225,7 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \fkooman\Http\Exception\PreconditionFailedException
+     * @expectedException \fkooman\RemoteStorage\Http\Exception\HttpException
      * @expectedExceptionMessage document already exists
      */
     public function testPutDocumentIfNoneMatchStarFail()

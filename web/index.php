@@ -16,25 +16,21 @@
  */
 require_once dirname(__DIR__).'/vendor/autoload.php';
 
-use fkooman\Config\Reader;
-use fkooman\Config\YamlFile;
-use fkooman\Http\Request;
-use fkooman\Http\Session;
-use fkooman\OAuth\Storage\PdoAccessTokenStorage;
-use fkooman\OAuth\Storage\PdoApprovalStorage;
-use fkooman\OAuth\Storage\PdoAuthorizationCodeStorage;
-use fkooman\RemoteStorage\ApprovalManagementStorage;
-use fkooman\RemoteStorage\DbTokenValidator;
+use fkooman\RemoteStorage\Config;
 use fkooman\RemoteStorage\DocumentStorage;
+use fkooman\RemoteStorage\Http\FormAuthenticationHook;
+use fkooman\RemoteStorage\Http\FormAuthenticationModule;
+use fkooman\RemoteStorage\Http\Request;
+use fkooman\RemoteStorage\Http\Service;
+use fkooman\RemoteStorage\Http\Session;
 use fkooman\RemoteStorage\MetadataStorage;
+use fkooman\RemoteStorage\OAuth\BearerAuthenticationHook;
+use fkooman\RemoteStorage\OAuth\OAuthModule;
+use fkooman\RemoteStorage\OAuth\TokenStorage;
+use fkooman\RemoteStorage\Random;
 use fkooman\RemoteStorage\RemoteStorage;
-use fkooman\RemoteStorage\RemoteStorageClientStorage;
-use fkooman\RemoteStorage\RemoteStorageResourceServer;
-use fkooman\RemoteStorage\RemoteStorageService;
-use fkooman\Rest\Plugin\Authentication\AuthenticationPlugin;
-use fkooman\Rest\Plugin\Authentication\Bearer\BearerAuthentication;
-use fkooman\Rest\Plugin\Authentication\Form\FormAuthentication;
-use fkooman\Tpl\Twig\TwigTemplateManager;
+use fkooman\RemoteStorage\TwigTpl;
+use fkooman\RemoteStorage\UiModule;
 use Monolog\Handler\ErrorLogHandler;
 use Monolog\Logger;
 
@@ -42,46 +38,19 @@ $logger = new Logger('php-remote-storage');
 $logger->pushHandler(new ErrorLogHandler());
 
 try {
-    $request = new Request($_SERVER);
-
-    $configReader = new Reader(
-        new YamlFile(
-            dirname(__DIR__).'/config/server.yaml'
-        )
-    );
-
-    $serverMode = $configReader->v('serverMode', false, 'production');
-
+    $config = Config::fromFile(dirname(__DIR__).'/config/server.yaml');
+    $serverMode = $config->getItem('serverMode');
     $document = new DocumentStorage(
-        $configReader->v('storageDir', false, sprintf('%s/data/storage', dirname(__DIR__)))
+        sprintf('%s/data/storage', dirname(__DIR__))
     );
 
-    $dbDsn = $configReader->v('Db', 'dsn', false, sprintf('sqlite:%s/data/rs.sqlite', dirname(__DIR__)));
-    // if we use sqlite, and database is not initialized we will initialize
-    // all tables here. No need to manually initialize the database then!
-    $initDb = false;
-    if (0 === strpos($dbDsn, 'sqlite:')) {
-        // sqlite
-        if (!file_exists(substr($dbDsn, 7))) {
-            // sqlite file does not exist
-            $initDb = true;
-        }
-    }
-
-    $db = new PDO(
-        $dbDsn,
-        $configReader->v('Db', 'username', false),
-        $configReader->v('Db', 'password', false)
-    );
-
-    // only enable templateCache when in production mode
+    $templateCache = null;
     if ('development' !== $serverMode) {
-        $templateCache = $configReader->v('templateCache', false, sprintf('%s/data/tpl', dirname(__DIR__)));
-    } else {
-        $templateCache = null;
+        $templateCache = sprintf('%s/data/tpl', dirname(__DIR__));
     }
 
-    $templateManager = new TwigTemplateManager(
+    $request = new Request($_SERVER, $_GET, $_POST);
+    $templateManager = new TwigTpl(
         [
             dirname(__DIR__).'/views',
             dirname(__DIR__).'/config/views',
@@ -90,86 +59,82 @@ try {
     );
     $templateManager->setDefault(
         [
-            'rootFolder' => $request->getUrl()->getRoot(),
+            'requestRoot' => $request->getRoot(),
+
+//            'rootFolder' => $request->getRoot(),
             'serverMode' => $serverMode,
         ]
     );
 
-    $md = new MetadataStorage($db);
-    $approvalStorage = new PdoApprovalStorage($db);
-    $authorizationCodeStorage = new PdoAuthorizationCodeStorage($db);
-    $accessTokenStorage = new PdoAccessTokenStorage($db);
-
-    if ($initDb) {
-        $md->initDatabase();
-        $approvalStorage->initDatabase();
-        $authorizationCodeStorage->initDatabase();
-        $accessTokenStorage->initDatabase();
-    }
+    $db = new PDO(sprintf('sqlite:%s/data/rs.sqlite', dirname(__DIR__)));
+    $md = new MetadataStorage($db, new Random());
+    $md->initDatabase();
 
     $remoteStorage = new RemoteStorage($md, $document);
+    $service = new Service($templateManager);
 
     $session = new Session(
-        'php-remote-storage',
-        [
-            'secure' => 'development' !== $serverMode,
-        ]
+        $request->getServerName(),
+        $request->getRoot(),
+        'development' !== $serverMode
     );
 
-    $userAuth = new FormAuthentication(
-        function ($userId) use ($configReader) {
-            $userList = $configReader->v('Users');
-            if (null === $userList || !array_key_exists($userId, $userList)) {
-                return false;
-            }
-
-            return $userList[$userId];
-        },
-        $templateManager,
+    $formAuthenticationHook = new FormAuthenticationHook(
         $session,
-        $logger
+        $templateManager
     );
-
-    $apiAuth = new BearerAuthentication(
-        new DbTokenValidator($db),
-    //    new fkooman\RemoteStorage\ApiTestTokenValidator(),
+    $formAuthenticationHook->notFor(
         [
-            'realm' => 'remoteStorage',
-        ],
-        $logger
-    );
-
-    $authenticationPlugin = new AuthenticationPlugin();
-    $authenticationPlugin->register($userAuth, 'user');
-    $authenticationPlugin->register($apiAuth, 'api');
-
-    $service = new RemoteStorageService(
-        $remoteStorage,
-        new ApprovalManagementStorage($db),
-        $templateManager,
-        new RemoteStorageClientStorage(),
-        new RemoteStorageResourceServer(),
-        $approvalStorage,
-        $authorizationCodeStorage,
-        $accessTokenStorage,
-        [
-            'disable_token_endpoint' => true,
-            'disable_introspect_endpoint' => true,
-            'route_prefix' => '/_oauth',
-            'require_state' => false,
-            'server_mode' => $serverMode,
+            'GET' => ['/.well-known/webfinger'],
+            // XXX add stuff from ApiModule,
         ]
     );
-    $service->getPluginRegistry()->registerDefaultPlugin($authenticationPlugin);
+    $service->addBeforeHook('auth', $formAuthenticationHook);
+
+    $service->addModule(
+        new FormAuthenticationModule(
+            $config->getSection('Users')->toArray(),
+            $session,
+            $templateManager
+        )
+    );
+
+    $tokenStorage = new TokenStorage($db);
+    $oauthModule = new OAuthModule(
+        $templateManager,
+        new Random(),
+        $tokenStorage,
+        $config
+    );
+    $service->addModule($oauthModule);
+
+    $bearerAuthenticationHook = new BearerAuthenticationHook(
+            $tokenStorage
+    );
+    $bearerAuthenticationHook->notFor(
+        [
+            'GET' => ['/', '/_account', '/.well-known/webfinger'],
+            'POST' => ['/_account', '/_form/auth/verify', '/_form/auth/logout'],
+        ]
+    );
+    $service->addBeforeHook(
+        'bearer', $bearerAuthenticationHook
+    );
+
+    $uiModule = new UiModule(
+        $remoteStorage,
+        $templateManager,
+        $tokenStorage
+    );
+
+    $service->addModule($uiModule);
 
     $response = $service->run($request);
+
     if ('development' === $serverMode && !$response->isOkay()) {
         // log all non 2xx responses
         $logger->info(
-            var_export(
-                $response->toArray(),
-                true
-            )
+            (string) $response
         );
     }
     $response->send();

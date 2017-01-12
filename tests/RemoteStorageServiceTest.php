@@ -17,22 +17,7 @@
 
 namespace fkooman\RemoteStorage;
 
-require_once __DIR__.'/Test/TestTokenValidator.php';
-require_once __DIR__.'/Test/TestTemplateManager.php';
-require_once __DIR__.'/Test/TestApproval.php';
-require_once __DIR__.'/Test/TestAuthorizationCode.php';
-require_once __DIR__.'/Test/TestAccessToken.php';
-require_once __DIR__.'/Test/TestAuthentication.php';
-
-use fkooman\Http\Request;
-use fkooman\RemoteStorage\Test\TestAccessToken;
-use fkooman\RemoteStorage\Test\TestApproval;
-use fkooman\RemoteStorage\Test\TestAuthentication;
-use fkooman\RemoteStorage\Test\TestAuthorizationCode;
-use fkooman\RemoteStorage\Test\TestTemplateManager;
-use fkooman\RemoteStorage\Test\TestTokenValidator;
-use fkooman\Rest\Plugin\Authentication\AuthenticationPlugin;
-use fkooman\Rest\Plugin\Authentication\Bearer\BearerAuthentication;
+use fkooman\RemoteStorage\Http\Request;
 use PDO;
 use PHPUnit_Framework_TestCase;
 
@@ -44,10 +29,8 @@ class RemoteStorageServiceTest extends PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $ioStub = $this->getMockBuilder('fkooman\IO\IO')
-                     ->getMock();
-        $ioStub->method('getRandom')
-             ->will($this->onConsecutiveCalls(2, 3, 5, 7));
+        $random = $this->getMockBuilder('fkooman\RemoteStorage\RandomInterface')->getMock();
+        $random->method('get')->will($this->onConsecutiveCalls('random_1', 'random_2'));
 
         $db = new PDO(
             $GLOBALS['DB_DSN'],
@@ -55,7 +38,7 @@ class RemoteStorageServiceTest extends PHPUnit_Framework_TestCase
             $GLOBALS['DB_PASSWD']
         );
 
-        $md = new MetadataStorage($db, '', $ioStub);
+        $md = new MetadataStorage($db, $random);
         $md->initDatabase();
 
         $tempFile = tempnam(sys_get_temp_dir(), '');
@@ -68,14 +51,14 @@ class RemoteStorageServiceTest extends PHPUnit_Framework_TestCase
         $document = new DocumentStorage($tempFile);
         $remoteStorage = new RemoteStorage($md, $document);
 
-        $approvalManagementStorage = new ApprovalManagementStorage($db);
+//        $approvalManagementStorage = new ApprovalManagementStorage($db);
 
-        $userAuth = new TestAuthentication();
-        $apiAuth = new BearerAuthentication(new TestTokenValidator());
+//        $userAuth = new TestAuthentication();
+//        $apiAuth = new BearerAuthentication(new TestTokenValidator());
 
-        $authenticationPlugin = new AuthenticationPlugin();
-        $authenticationPlugin->register($userAuth, 'user');
-        $authenticationPlugin->register($apiAuth, 'api');
+//        $authenticationPlugin = new AuthenticationPlugin();
+//        $authenticationPlugin->register($userAuth, 'user');
+//        $authenticationPlugin->register($apiAuth, 'api');
 
         $this->r = new RemoteStorageService(
             $remoteStorage,

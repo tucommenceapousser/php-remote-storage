@@ -17,37 +17,20 @@
  */
 require_once dirname(__DIR__).'/vendor/autoload.php';
 
-use fkooman\Config\Reader;
-use fkooman\Config\YamlFile;
-use fkooman\OAuth\Storage\PdoAccessTokenStorage;
-use fkooman\OAuth\Storage\PdoApprovalStorage;
-use fkooman\OAuth\Storage\PdoAuthorizationCodeStorage;
+use fkooman\RemoteStorage\Config;
 use fkooman\RemoteStorage\MetadataStorage;
+use fkooman\RemoteStorage\OAuth\TokenStorage;
+use fkooman\RemoteStorage\Random;
 
 try {
-    $configReader = new Reader(
-        new YamlFile(
-            dirname(__DIR__).'/config/server.yaml'
-        )
-    );
+    $config = Config::fromFile(dirname(__DIR__).'/config/server.yaml');
+    $db = new PDO(sprintf('sqlite:%s/data/rs.sqlite', dirname(__DIR__)));
 
-    $db = new PDO(
-        $configReader->v('Db', 'dsn', false, sprintf('sqlite:%s/data/rs.sqlite', dirname(__DIR__))),
-        $configReader->v('Db', 'username', false),
-        $configReader->v('Db', 'password', false)
-    );
-
-    $metadataStorage = new MetadataStorage($db);
+    $metadataStorage = new MetadataStorage($db, new Random());
     $metadataStorage->initDatabase();
 
-    $approvalStorage = new PdoApprovalStorage($db);
-    $approvalStorage->initDatabase();
-
-    $authorizationCodeStorage = new PdoAuthorizationCodeStorage($db);
-    $authorizationCodeStorage->initDatabase();
-
-    $accessTokenStorage = new PdoAccessTokenStorage($db);
-    $accessTokenStorage->initDatabase();
+    $tokenStorage = new TokenStorage($db);
+    $tokenStorage->init();
 } catch (Exception $e) {
     echo $e->getMessage().PHP_EOL;
     exit(1);

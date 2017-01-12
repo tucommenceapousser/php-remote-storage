@@ -25,7 +25,7 @@
         </table>
 
         <!-- logout -->
-        <form method="post" action="{{ rootFolder|e }}_auth/form/logout">
+        <form method="post" action="{{ requestRoot }}_form/auth/logout">
             <button type="submit">Logout</button>
         </form>
 
@@ -56,7 +56,7 @@
                         <td><a href="{{ approval.getClientId|e }}"><code>{{ approval.getClientId|e }}</code></a></td>                    
                         <td><code>{{ approval.getScope|e }}</code></td>
                         <td class="text-right">
-                            <form class="button" method="post" action="{{ rootFolder|e }}_approvals?client_id={{ approval.getClientId|e }}&amp;response_type={{ approval.getResponseType|e }}&amp;scope={{ approval.getScope|e }}">
+                            <form class="button" method="post" action="{{ requestRoot }}_approvals?client_id={{ approval.getClientId|e }}&amp;response_type={{ approval.getResponseType|e }}&amp;scope={{ approval.getScope|e }}">
                                 <input type="hidden" name="_METHOD" value="DELETE">
                                 <button type="submit" class="error">Revoke</button>
                             </form>

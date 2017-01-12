@@ -26,12 +26,16 @@ class MetadataStorageTest extends PHPUnit_Framework_TestCase
 
     public function setUp()
     {
+        $random = $this->getMockBuilder('fkooman\RemoteStorage\RandomInterface')->getMock();
+        $random->method('get')->will($this->onConsecutiveCalls('random_1', 'random_2'));
+
         $this->md = new MetadataStorage(
             new PDO(
                 $GLOBALS['DB_DSN'],
                 $GLOBALS['DB_USER'],
                 $GLOBALS['DB_PASSWD']
-            )
+            ),
+            $random
         );
         $this->md->initDatabase();
     }

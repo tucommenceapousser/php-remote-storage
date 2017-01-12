@@ -17,7 +17,6 @@
 
 namespace fkooman\RemoteStorage;
 
-use fkooman\IO\IO;
 use fkooman\RemoteStorage\Exception\MetadataStorageException;
 use PDO;
 
@@ -26,21 +25,14 @@ class MetadataStorage
     /** @var PDO */
     private $db;
 
-    /** @var string */
-    private $prefix;
+    /** @var RandomInterface */
+    private $random;
 
-    /** @var \fkooman\IO\IO */
-    private $io;
-
-    public function __construct(PDO $db, $prefix = '', IO $io = null)
+    public function __construct(PDO $db, RandomInterface $random)
     {
         $this->db = $db;
         $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $this->prefix = $prefix;
-        if (null === $io) {
-            $io = new IO();
-        }
-        $this->io = $io;
+        $this->random = $random;
     }
 
     public function getVersion(Path $p)
@@ -78,21 +70,15 @@ class MetadataStorage
     {
         $currentVersion = $this->getVersion($p);
         if (null === $currentVersion) {
-            $newVersion = '1:'.$this->io->getRandom();
+            $newVersion = '1:'.$this->random->get(8);
             $stmt = $this->db->prepare(
-                sprintf(
-                    'INSERT INTO %s (path, content_type, version) VALUES(:path, :content_type, :version)',
-                    $this->prefix.'md'
-                )
+                'INSERT INTO md (path, content_type, version) VALUES(:path, :content_type, :version)'
             );
         } else {
             $explodedData = explode(':', $currentVersion);
-            $newVersion = sprintf('%d:%s', $explodedData[0] + 1, $this->io->getRandom());
+            $newVersion = sprintf('%d:%s', $explodedData[0] + 1, $this->random->get(8));
             $stmt = $this->db->prepare(
-                sprintf(
-                    'UPDATE %s SET version = :version, content_type = :content_type WHERE path = :path',
-                    $this->prefix.'md'
-                )
+                'UPDATE md SET version = :version, content_type = :content_type WHERE path = :path'
             );
         }
 
@@ -109,10 +95,7 @@ class MetadataStorage
     public function deleteNode(Path $p)
     {
         $stmt = $this->db->prepare(
-            sprintf(
-                'DELETE FROM %s WHERE path = :path',
-                $this->prefix.'md'
-            )
+            'DELETE FROM md WHERE path = :path'
         );
         $stmt->bindValue(':path', $p->getPath(), PDO::PARAM_STR);
         $stmt->execute();
@@ -122,38 +105,23 @@ class MetadataStorage
         }
     }
 
-    public static function createTableQueries($prefix)
+    public static function createTableQueries()
     {
-        $query = [];
-        $query[] = sprintf(
-            'CREATE TABLE IF NOT EXISTS %s (
+        return [
+            'CREATE TABLE IF NOT EXISTS md (
                 path VARCHAR(255) NOT NULL,
                 content_type VARCHAR(255) DEFAULT NULL,
                 version VARCHAR(255) NOT NULL,
                 UNIQUE (path)
             )',
-            $prefix.'md'
-        );
-
-        return $query;
+        ];
     }
 
     public function initDatabase()
     {
-        $queries = self::createTableQueries($this->prefix);
+        $queries = self::createTableQueries();
         foreach ($queries as $q) {
             $this->db->query($q);
-        }
-
-        $tables = ['md'];
-        foreach ($tables as $t) {
-            // make sure the tables are empty
-            $this->db->query(
-                sprintf(
-                    'DELETE FROM %s',
-                    $this->prefix.$t
-                )
-            );
         }
     }
 
@@ -166,10 +134,7 @@ class MetadataStorage
     private function getMetadata(Path $p)
     {
         $stmt = $this->db->prepare(
-            sprintf(
-                'SELECT version, content_type FROM %s WHERE path = :path',
-                $this->prefix.'md'
-            )
+            'SELECT version, content_type FROM md WHERE path = :path'
         );
         $stmt->bindValue(':path', $p->getPath(), PDO::PARAM_STR);
         $stmt->execute();

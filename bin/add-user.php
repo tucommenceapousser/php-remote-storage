@@ -3,7 +3,7 @@
 
 require_once dirname(__DIR__).'/vendor/autoload.php';
 
-use fkooman\Config\YamlFile;
+use fkooman\RemoteStorage\Config;
 
 try {
     if (3 > $argc) {
@@ -15,13 +15,11 @@ try {
     $secret = $argv[2];
     $passwordHash = password_hash($secret, PASSWORD_DEFAULT);
 
-    $yamlFile = new YamlFile(
-        dirname(__DIR__).'/config/server.yaml'
-    );
-    $configData = $yamlFile->readConfig();
+    $config = Config::fromFile(dirname(__DIR__).'/config/server.yaml');
+    $configData = $config->toArray();
     $configData['Users'][$userName] = $passwordHash;
 
-    $yamlFile->writeConfig($configData);
+    Config::toFile(dirname(__DIR__).'/config/server.yaml', $configData);
 } catch (Exception $e) {
     echo $e->getMessage().PHP_EOL;
     exit(1);

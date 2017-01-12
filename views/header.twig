@@ -1,13 +1,11 @@
 <div class="header">
     <!-- logo from https://github.com/remotestorage/design (Creative Commons Attribution Share-Alike 4.0) -->
-    <a class="logo" href="{{ rootFolder|e }}"><img src="{{ rootFolder|e }}img/rs.svg" title="remoteStorage" alt="remoteStorage"></a>
+    <a class="logo" href="{{ requestRoot }}"><img src="{{ requestRoot }}img/rs.svg" title="remoteStorage" alt="remoteStorage"></a>
 
     {% if show_account_icon is defined and show_account_icon %}
-    <a class="account" href="{{ rootFolder|e }}_account">
-        <!-- logo originally from Font Awesome, got SVG from https://github.com/encharm/Font-Awesome-SVG-PNG -->
-        <img src="{{ rootFolder|e }}img/user.svg" title="Account" alt="Account">
+    <a class="account" href="{{ requestRoot }}_account">
         {% if user_id is defined and user_id %}
-            <span>{{ user_id|e }}</span>
+            <span>{{ user_id }}</span>
         {% else %}
             <span>Sign In</span>
         {% endif %}

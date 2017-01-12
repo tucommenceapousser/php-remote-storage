@@ -92,7 +92,8 @@ class DocumentStorageTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \fkooman\Http\Exception\ConflictException
+     * @expectedException \fkooman\RemoteStorage\Http\Exception\HttpException
+     * @expectedExceptionMessage document path is already a folder
      */
     public function testPutDocumentOnFolder()
     {
@@ -105,7 +106,8 @@ class DocumentStorageTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \fkooman\Http\Exception\ConflictException
+     * @expectedException \fkooman\RemoteStorage\Http\Exception\HttpException
+     * @expectedExceptionMessage file already exists in path preventing folder creation
      */
     public function testPutFolderOnDocument()
     {
