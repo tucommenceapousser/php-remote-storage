@@ -15,29 +15,17 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace fkooman\RemoteStorage;
+namespace fkooman\RemoteStorage\OAuth\Storage;
 
-use fkooman\RemoteStorage\OAuth\ResourceServer;
 use fkooman\RemoteStorage\OAuth\ResourceServerStorageInterface;
 
-class RemoteStorageResourceServer implements ResourceServerStorageInterface
+/**
+ * No registered Resource Servers.
+ */
+class NoResourceServerStorage implements ResourceServerStorageInterface
 {
-    /**
-     * Retrieve a resource server based on resourceServerId.
-     *
-     * @param string $resourceServerId the resource server ID
-     *
-     * @return ResourceServer|false if the resource server exists it
-     *                              returns ResourceServer, otherwise false
-     */
     public function getResourceServer($resourceServerId)
     {
-        // we do not really have a registration, as there is only one resource
-        // server, the remoteStorage server...
-        return new ResourceServer(
-            $resourceServerId,
-            null,
-            null
-        );
+        return false;
     }
 }

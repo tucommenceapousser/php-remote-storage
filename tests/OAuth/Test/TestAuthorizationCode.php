@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-namespace fkooman\RemoteStorage\Test;
+namespace fkooman\RemoteStorage\OAuth\Test;
 
 use fkooman\RemoteStorage\Base64\Base64Url;
 use fkooman\RemoteStorage\OAuth\AuthorizationCode;

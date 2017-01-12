@@ -13,9 +13,7 @@ return [
         'vendor/fkooman/rest-plugin-authentication-form',
         'vendor/fkooman/tpl',
         'vendor/fkooman/tpl-twig',
-        'vendor/fkooman/oauth',
         'vendor/fkooman/io',
-        'vendor/fkooman/json',
         'vendor/monolog',
     ],
     'exclude_analysis_directory_list' => [

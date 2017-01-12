@@ -17,8 +17,8 @@
 
 namespace fkooman\RemoteStorage;
 
-use fkooman\OAuth\Approval;
-use fkooman\OAuth\Storage\PdoBaseStorage;
+use fkooman\RemoteStorage\OAuth\Approval;
+use fkooman\RemoteStorage\OAuth\Storage\PdoBaseStorage;
 use PDO;
 
 class ApprovalManagementStorage extends PdoBaseStorage

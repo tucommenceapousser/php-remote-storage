@@ -16,32 +16,22 @@
  * limitations under the License.
  */
 
-namespace fkooman\RemoteStorage\Test;
+namespace fkooman\RemoteStorage\OAuth\Test;
 
-use fkooman\RemoteStorage\OAuth\Approval;
-use fkooman\RemoteStorage\OAuth\ApprovalStorageInterface;
+use fkooman\Tpl\TemplateManagerInterface;
 
-class TestApproval implements ApprovalStorageInterface
+class TestTemplateManager implements TemplateManagerInterface
 {
-    public function storeApproval(Approval $approval)
+    public function addDefault(array $templateVariables)
     {
-        return true;
     }
 
-    public function isApproved(Approval $approval)
+    public function setDefault(array $templateVariables)
     {
-        return false;
     }
 
-    public function deleteApproval(Approval $approval)
+    public function render($templateName, array $templateVariables = [])
     {
-        return true;
-    }
-
-    public function getApprovalList($userId)
-    {
-        return [
-            new Approval('foo', 'bar', 'read'),
-        ];
+        return json_encode([$templateName => $templateVariables]);
     }
 }

@@ -16,32 +16,11 @@
  * limitations under the License.
  */
 
-namespace fkooman\RemoteStorage\Test;
+namespace fkooman\RemoteStorage\OAuth;
 
-use fkooman\RemoteStorage\OAuth\Approval;
-use fkooman\RemoteStorage\OAuth\ApprovalStorageInterface;
-
-class TestApproval implements ApprovalStorageInterface
+interface ApprovalStorageInterface
 {
-    public function storeApproval(Approval $approval)
-    {
-        return true;
-    }
+    public function storeApproval(Approval $approval);
 
-    public function isApproved(Approval $approval)
-    {
-        return false;
-    }
-
-    public function deleteApproval(Approval $approval)
-    {
-        return true;
-    }
-
-    public function getApprovalList($userId)
-    {
-        return [
-            new Approval('foo', 'bar', 'read'),
-        ];
-    }
+    public function isApproved(Approval $approval);
 }

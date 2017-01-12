@@ -16,32 +16,23 @@
  * limitations under the License.
  */
 
-namespace fkooman\RemoteStorage\Test;
+namespace fkooman\RemoteStorage\OAuth\Storage;
 
 use fkooman\RemoteStorage\OAuth\Approval;
 use fkooman\RemoteStorage\OAuth\ApprovalStorageInterface;
 
-class TestApproval implements ApprovalStorageInterface
+/**
+ * Never store approval, always show "authorization" dialog.
+ */
+class NullApprovalStorage implements ApprovalStorageInterface
 {
     public function storeApproval(Approval $approval)
     {
-        return true;
+        // NOP
     }
 
     public function isApproved(Approval $approval)
     {
         return false;
-    }
-
-    public function deleteApproval(Approval $approval)
-    {
-        return true;
-    }
-
-    public function getApprovalList($userId)
-    {
-        return [
-            new Approval('foo', 'bar', 'read'),
-        ];
     }
 }

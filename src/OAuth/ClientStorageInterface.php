@@ -16,12 +16,9 @@
  * limitations under the License.
  */
 
-namespace fkooman\RemoteStorage;
+namespace fkooman\RemoteStorage\OAuth;
 
-use fkooman\RemoteStorage\OAuth\Client;
-use fkooman\RemoteStorage\OAuth\ClientStorageInterface;
-
-class RemoteStorageClientStorage implements ClientStorageInterface
+interface ClientStorageInterface
 {
     /**
      * Retrieve a client based on clientId, responseType, redirectUri and
@@ -36,33 +33,5 @@ class RemoteStorageClientStorage implements ClientStorageInterface
      * @return Client|false if the client exists with the clientId it returns
      *                      Client, otherwise false
      */
-    public function getClient($clientId, $responseType = null, $redirectUri = null, $scope = null)
-    {
-        $clientId = self::normalizeRedirectUriOrigin($redirectUri);
-
-        return new Client($clientId, $responseType, $redirectUri, $scope, null);
-    }
-
-    private static function normalizeRedirectUriOrigin($redirectUri)
-    {
-        $scheme = strtolower(parse_url($redirectUri, PHP_URL_SCHEME));
-        $host = strtolower(parse_url($redirectUri, PHP_URL_HOST));
-        $port = parse_url($redirectUri, PHP_URL_PORT);
-
-        $usePort = false;
-        if (null !== $port) {
-            if (443 !== $port && 'https' === $scheme) {
-                $usePort = true;
-            }
-            if (80 !== $port && 'http' === $scheme) {
-                $usePort = true;
-            }
-        }
-
-        if ($usePort) {
-            return sprintf('%s://%s:%d', $scheme, $host, $port);
-        }
-
-        return sprintf('%s://%s', $scheme, $host);
-    }
+    public function getClient($clientId, $responseType = null, $redirectUri = null, $scope = null);
 }

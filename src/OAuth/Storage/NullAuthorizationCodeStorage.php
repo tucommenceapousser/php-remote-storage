@@ -16,32 +16,29 @@
  * limitations under the License.
  */
 
-namespace fkooman\RemoteStorage\Test;
+namespace fkooman\RemoteStorage\OAuth\Storage;
 
-use fkooman\RemoteStorage\OAuth\Approval;
-use fkooman\RemoteStorage\OAuth\ApprovalStorageInterface;
+use fkooman\RemoteStorage\OAuth\AuthorizationCode;
+use fkooman\RemoteStorage\OAuth\AuthorizationCodeStorageInterface;
 
-class TestApproval implements ApprovalStorageInterface
+/**
+ * If only the implicit grant profile is supported we do not need authorization
+ * codes.
+ */
+class NullAuthorizationCodeStorage implements AuthorizationCodeStorageInterface
 {
-    public function storeApproval(Approval $approval)
+    public function storeAuthorizationCode(AuthorizationCode $authorizationCode)
     {
-        return true;
+        // NOP
     }
 
-    public function isApproved(Approval $approval)
+    public function retrieveAuthorizationCode($authorizationCode)
     {
         return false;
     }
 
-    public function deleteApproval(Approval $approval)
+    public function isFreshAuthorizationCode($authorizationCode)
     {
-        return true;
-    }
-
-    public function getApprovalList($userId)
-    {
-        return [
-            new Approval('foo', 'bar', 'read'),
-        ];
+        return false;
     }
 }

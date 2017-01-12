@@ -16,32 +16,32 @@
  * limitations under the License.
  */
 
-namespace fkooman\RemoteStorage\Test;
+namespace fkooman\RemoteStorage\OAuth\Storage;
 
-use fkooman\RemoteStorage\OAuth\Approval;
-use fkooman\RemoteStorage\OAuth\ApprovalStorageInterface;
+use PDO;
 
-class TestApproval implements ApprovalStorageInterface
+abstract class PdoBaseStorage
 {
-    public function storeApproval(Approval $approval)
+    /** @var \PDO */
+    protected $db;
+
+    /** @var string */
+    protected $dbPrefix;
+
+    public function __construct(PDO $db, $dbPrefix = '')
     {
-        return true;
+        $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $this->db = $db;
+        $this->dbPrefix = $dbPrefix;
     }
 
-    public function isApproved(Approval $approval)
-    {
-        return false;
-    }
+    abstract public function createTableQueries($dbPrefix);
 
-    public function deleteApproval(Approval $approval)
+    public function initDatabase()
     {
-        return true;
-    }
-
-    public function getApprovalList($userId)
-    {
-        return [
-            new Approval('foo', 'bar', 'read'),
-        ];
+        $queries = $this->createTableQueries($this->dbPrefix);
+        foreach ($queries as $q) {
+            $this->db->query($q);
+        }
     }
 }
