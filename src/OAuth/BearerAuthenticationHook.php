@@ -40,11 +40,6 @@ class BearerAuthenticationHook implements BeforeHookInterface
         $this->notForList = [];
     }
 
-    public function notFor(array $methodPathInfo)
-    {
-        $this->notForList = array_merge_recursive($this->notForList, $methodPathInfo);
-    }
-
     public function executeBefore(Request $request, array $hookData)
     {
         if (array_key_exists($request->getRequestMethod(), $this->notForList)) {

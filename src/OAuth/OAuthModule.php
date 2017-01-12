@@ -154,6 +154,8 @@ class OAuthModule implements ServiceModuleInterface
         if (1 !== preg_match('/^(?:[\x20-\x7E])+$/', $clientId)) {
             throw new HttpException('invalid client_id', 400);
         }
+
+        // XXX we also should enforce HTTPS
         $redirectUri = $request->getQueryParameter('redirect_uri');
         if (false === filter_var($redirectUri, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED | FILTER_FLAG_HOST_REQUIRED | FILTER_FLAG_PATH_REQUIRED)) {
             throw new HttpException('invalid redirect_uri', 400);
@@ -163,9 +165,13 @@ class OAuthModule implements ServiceModuleInterface
             throw new HttpException('invalid response_type', 400);
         }
         $scope = $request->getQueryParameter('scope');
-        if ('config' !== $scope) {
-            throw new HttpException('invalid scope', 400);
-        }
+
+        // XXX validate scopes!
+//        if ('config' !== $scope) {
+//            throw new HttpException('invalid scope', 400);
+//        }
+
+        // XXX make state optional for RS (bleh)
         $state = $request->getQueryParameter('state');
         if (1 !== preg_match('/^(?:[\x20-\x7E])+$/', $state)) {
             throw new HttpException('invalid state', 400);
@@ -177,13 +183,9 @@ class OAuthModule implements ServiceModuleInterface
         $clientId = $request->getQueryParameter('client_id');
         $redirectUri = $request->getQueryParameter('redirect_uri');
 
-        // check if we have a client with this clientId and redirectUri
-        if (false === $this->config->getSection('apiConsumers')->hasSection($clientId)) {
-            throw new HttpException(sprintf('client "%s" not registered', $clientId), 400);
-        }
-        $clientRedirectUri = $this->config->getSection('apiConsumers')->getSection($clientId)->getItem('redirect_uri');
-        if ($redirectUri !== $clientRedirectUri) {
-            throw new HttpException(sprintf('redirect_uri does not match expected value "%s"', $clientRedirectUri), 400);
+        // redirectUri has to start with clientId (or be equal)
+        if (0 !== strpos($redirectUri, $clientId)) {
+            throw new HttpException('"redirect_uri" does not start with "client_id"', 400);
         }
     }
 }

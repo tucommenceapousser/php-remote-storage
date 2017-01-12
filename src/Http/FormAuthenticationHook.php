@@ -40,11 +40,6 @@ class FormAuthenticationHook implements BeforeHookInterface
         ];
     }
 
-    public function notFor(array $methodPathInfo)
-    {
-        $this->notForList = array_merge_recursive($this->notForList, $methodPathInfo);
-    }
-
     public function executeBefore(Request $request, array $hookData)
     {
         if ($this->session->has('_form_auth_user')) {

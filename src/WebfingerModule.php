@@ -23,11 +23,10 @@ use fkooman\RemoteStorage\Http\Response;
 use fkooman\RemoteStorage\Http\Service;
 use fkooman\RemoteStorage\Http\ServiceModuleInterface;
 
-class WebFingerModule implements ServiceModuleInterface
+class WebfingerModule implements ServiceModuleInterface
 {
     public function init(Service $service)
     {
-        // NoAuth
         $service->get(
             '/.well-known/webfinger',
             function (Request $request) {

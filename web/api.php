@@ -18,18 +18,13 @@ require_once dirname(__DIR__).'/vendor/autoload.php';
 
 use fkooman\RemoteStorage\Config;
 use fkooman\RemoteStorage\DocumentStorage;
-use fkooman\RemoteStorage\Http\FormAuthenticationHook;
-use fkooman\RemoteStorage\Http\FormAuthenticationModule;
 use fkooman\RemoteStorage\Http\Request;
 use fkooman\RemoteStorage\Http\Service;
-use fkooman\RemoteStorage\Http\Session;
 use fkooman\RemoteStorage\MetadataStorage;
-use fkooman\RemoteStorage\OAuth\OAuthModule;
+use fkooman\RemoteStorage\OAuth\BearerAuthenticationHook;
 use fkooman\RemoteStorage\OAuth\TokenStorage;
 use fkooman\RemoteStorage\Random;
 use fkooman\RemoteStorage\RemoteStorage;
-use fkooman\RemoteStorage\TwigTpl;
-use fkooman\RemoteStorage\UiModule;
 use Monolog\Handler\ErrorLogHandler;
 use Monolog\Logger;
 
@@ -43,69 +38,20 @@ try {
         sprintf('%s/data/storage', dirname(__DIR__))
     );
 
-    $templateCache = null;
-    if ('development' !== $serverMode) {
-        $templateCache = sprintf('%s/data/tpl', dirname(__DIR__));
-    }
-
     $request = new Request($_SERVER, $_GET, $_POST);
-    $templateManager = new TwigTpl(
-        [
-            dirname(__DIR__).'/views',
-            dirname(__DIR__).'/config/views',
-        ],
-        $templateCache
-    );
-    $templateManager->setDefault(
-        [
-            'requestRoot' => $request->getRoot(),
-            'serverMode' => $serverMode,
-        ]
-    );
 
     $db = new PDO(sprintf('sqlite:%s/data/rs.sqlite', dirname(__DIR__)));
     $md = new MetadataStorage($db, new Random());
     $md->initDatabase();
 
     $remoteStorage = new RemoteStorage($md, $document);
-    $service = new Service($templateManager);
-
-    $session = new Session(
-        $request->getServerName(),
-        $request->getRoot(),
-        'development' !== $serverMode
-    );
-
-    $formAuthenticationHook = new FormAuthenticationHook(
-        $session,
-        $templateManager
-    );
-    $service->addBeforeHook('auth', $formAuthenticationHook);
-
-    $service->addModule(
-        new FormAuthenticationModule(
-            $config->getSection('Users')->toArray(),
-            $session,
-            $templateManager
-        )
-    );
+    $service = new Service();
 
     $tokenStorage = new TokenStorage($db);
-    $oauthModule = new OAuthModule(
-        $templateManager,
-        new Random(),
-        $tokenStorage,
-        $config
+    $bearerAuthenticationHook = new BearerAuthenticationHook(
+            $tokenStorage
     );
-    $service->addModule($oauthModule);
-
-    $uiModule = new UiModule(
-        $remoteStorage,
-        $templateManager,
-        $tokenStorage
-    );
-    $service->addModule($uiModule);
-
+    $service->addBeforeHook('bearer', $bearerAuthenticationHook);
     $response = $service->run($request);
 
     if ('development' === $serverMode && !$response->isOkay()) {
