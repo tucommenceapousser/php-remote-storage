@@ -17,8 +17,8 @@
 
 namespace fkooman\RemoteStorage;
 
-use fkooman\Http\Exception\ConflictException;
 use fkooman\RemoteStorage\Exception\DocumentStorageException;
+use fkooman\RemoteStorage\Http\Exception\HttpException;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use RuntimeException;
@@ -87,7 +87,7 @@ class DocumentStorage
             $folderPath = $this->baseDir.$pathItem;
             $folderPathAsFile = substr($folderPath, 0, strlen($folderPath) - 1);
             if (file_exists($folderPathAsFile) && is_file($folderPathAsFile)) {
-                throw new ConflictException('file already exists in path preventing folder creation');
+                throw new HttpException('file already exists in path preventing folder creation', 409);
             }
             if (!file_exists($folderPath)) {
                 // create it
@@ -99,7 +99,7 @@ class DocumentStorage
 
         $documentPath = $this->baseDir.$p->getPath();
         if (file_exists($documentPath) && is_dir($documentPath)) {
-            throw new ConflictException('document path is already a folder');
+            throw new HttpException('document path is already a folder', 409);
         }
         if (false === @file_put_contents($documentPath, $documentContent, LOCK_EX)) {
             throw new DocumentStorageException('unable to write document');

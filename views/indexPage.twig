@@ -3,22 +3,21 @@
 <html lang="en">
 {% include 'head.twig' %}
 <body>
-    <div id="container">
-        {% include 'header.twig' %}
-        <p>
-            Welcome to this <a href="https://remotestorage.io/">remoteStorage</a> 
-            server!
-        </p>
+    {% include 'header.twig' %}
 
-        <p class="info">
-            Use an <a href="https://wiki.remotestorage.io/Apps">application</a> that supports 
-            remoteStorage and connect with this service or run your own
-            <a href="https://wiki.remotestorage.io/Servers">server</a>!
-        </p>
+    <p>
+        Welcome to this <a href="https://remotestorage.io/">remoteStorage</a> 
+        server!
+    </p>
 
-        {% include 'providerNote.twig' ignore missing %}
+    <p class="success">
+        Use an <a href="https://wiki.remotestorage.io/Apps">application</a> that supports 
+        remoteStorage and connect with this service or run your own
+        <a href="https://wiki.remotestorage.io/Servers">server</a>!
+    </p>
 
-        {% include 'footer.twig' %}
-    </div> <!-- /container -->
+    {% include 'providerNote.twig' ignore missing %}
+
+    {% include 'footer.twig' %}
 </body>
 </html>

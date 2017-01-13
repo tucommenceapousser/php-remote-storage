@@ -1,0 +1,95 @@
+<?php
+/**
+ *  Copyright (C) 2016 SURFnet.
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Affero General Public License as
+ *  published by the Free Software Foundation, either version 3 of the
+ *  License, or (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Affero General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+namespace fkooman\RemoteStorage;
+
+use fkooman\RemoteStorage\Exception\ConfigException;
+use Symfony\Component\Yaml\Yaml;
+
+class Config
+{
+    /** @var array */
+    protected $configData;
+
+    public function __construct(array $configData)
+    {
+        $this->configData = $configData;
+        $this->configData = array_merge(static::defaultConfig(), $configData);
+    }
+
+    public static function defaultConfig()
+    {
+        return [];
+    }
+
+    public function hasSection($key)
+    {
+        if (!array_key_exists($key, $this->configData)) {
+            throw new ConfigException(sprintf('section "%s" not available', $key));
+        }
+
+        return is_array($this->configData[$key]);
+    }
+
+    public function getSection($key)
+    {
+        if (false === $this->hasSection($key)) {
+            throw new ConfigException(sprintf('"%s" is not a section', $key));
+        }
+
+        // do not return the parent object if we were subclassed, but an actual
+        // "Config" object to avoid copying in the defaults if set
+        return new self($this->configData[$key]);
+    }
+
+    public function hasItem($key)
+    {
+        return array_key_exists($key, $this->configData);
+    }
+
+    public function getItem($key)
+    {
+        if (false === $this->hasItem($key)) {
+            throw new ConfigException(sprintf('item "%s" not available', $key));
+        }
+
+        return $this->configData[$key];
+    }
+
+    public static function fromFile($configFile)
+    {
+        if (false === $fileContent = @file_get_contents($configFile)) {
+            throw new ConfigException(sprintf('unable to read "%s"', $configFile));
+        }
+
+        return new static(Yaml::parse($fileContent));
+    }
+
+    public function toArray()
+    {
+        return $this->configData;
+    }
+
+    public static function toFile($configFile, array $configData)
+    {
+        $fileData = Yaml::dump($configData, 3);
+        if (false === @file_put_contents($configFile, $fileData)) {
+            throw new ConfigException(sprintf('unable to write "%s"', $configFile));
+        }
+    }
+}
