@@ -128,17 +128,22 @@ class ApiModule implements ServiceModuleInterface
         );
     }
 
-    public function getObject(Request $request, TokenInfo $tokenInfo)
+    /**
+     * @param Request         $request
+     * @param TokenInfo|false $tokenInfo
+     */
+    public function getObject(Request $request, $tokenInfo)
     {
         $path = new Path($request->getPathInfo());
 
         // allow requests to public files (GET|HEAD) without authentication
         if ($path->getIsPublic() && $path->getIsDocument()) {
+            // XXX create a getPublicDocument call instead to make sure?
             return $this->getDocument($path, $request, $tokenInfo);
         }
 
         // past this point we MUST be authenticated
-        if (null === $tokenInfo) {
+        if (!$tokenInfo) {
             throw new HttpException(
                 'no_token',
                 401,
@@ -200,9 +205,9 @@ class ApiModule implements ServiceModuleInterface
         return $rsr;
     }
 
-    public function getDocument(Path $path, Request $request, TokenInfo $tokenInfo = null)
+    public function getDocument(Path $path, Request $request, $tokenInfo)
     {
-        if (null !== $tokenInfo) {
+        if ($tokenInfo) {
             if ($path->getUserId() !== $tokenInfo->getUserId()) {
                 throw new HttpException('path does not match authorized subject', 403);
             }

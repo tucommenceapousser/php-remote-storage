@@ -42,11 +42,7 @@ class BearerAuthenticationHook implements BeforeHookInterface
 
         // is authorization header there?
         if (is_null($authorizationHeader)) {
-            throw new HttpException(
-                'no_token',
-                401,
-                ['WWW-Authenticate' => sprintf('Bearer realm="%s"', $this->realm)]
-            );
+            return false;
         }
 
         // validate the HTTP_AUTHORIZATION header
