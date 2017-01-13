@@ -30,8 +30,9 @@ class MetadataStorage
 
     public function __construct(PDO $db, RandomInterface $random)
     {
+        $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        // $db->query('PRAGMA foreign_keys = ON');
         $this->db = $db;
-        $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $this->random = $random;
     }
 
