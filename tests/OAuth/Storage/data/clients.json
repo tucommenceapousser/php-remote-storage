@@ -1,8 +1,0 @@
-{
-    "my_client": {
-        "scope": "read",
-        "secret": "$2y$10$cG3iFTTpitGAHYyci8bII.68.uRwvmSpCTvEfVmDwka5E2132XmAC",
-        "redirect_uri": "https://example.org/cb",
-        "response_type": "code"
-    }
-}

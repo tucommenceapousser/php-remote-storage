@@ -19,7 +19,7 @@ namespace fkooman\RemoteStorage;
 
 use fkooman\Http\Exception\BadRequestException;
 use fkooman\Http\Request;
-use fkooman\RemoteStorage\OAuth\InputValidation;
+use fkooman\OAuth\InputValidation;
 
 class RequestValidation
 {

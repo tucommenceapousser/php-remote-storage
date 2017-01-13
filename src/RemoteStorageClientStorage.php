@@ -18,8 +18,8 @@
 
 namespace fkooman\RemoteStorage;
 
-use fkooman\RemoteStorage\OAuth\Client;
-use fkooman\RemoteStorage\OAuth\ClientStorageInterface;
+use fkooman\OAuth\Client;
+use fkooman\OAuth\ClientStorageInterface;
 
 class RemoteStorageClientStorage implements ClientStorageInterface
 {

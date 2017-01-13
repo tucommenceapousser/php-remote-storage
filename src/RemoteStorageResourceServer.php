@@ -17,8 +17,8 @@
 
 namespace fkooman\RemoteStorage;
 
-use fkooman\RemoteStorage\OAuth\ResourceServer;
-use fkooman\RemoteStorage\OAuth\ResourceServerStorageInterface;
+use fkooman\OAuth\ResourceServer;
+use fkooman\OAuth\ResourceServerStorageInterface;
 
 class RemoteStorageResourceServer implements ResourceServerStorageInterface
 {

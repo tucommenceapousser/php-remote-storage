@@ -18,8 +18,8 @@
 
 namespace fkooman\RemoteStorage\Test;
 
-use fkooman\RemoteStorage\OAuth\Approval;
-use fkooman\RemoteStorage\OAuth\ApprovalStorageInterface;
+use fkooman\OAuth\Approval;
+use fkooman\OAuth\ApprovalStorageInterface;
 
 class TestApproval implements ApprovalStorageInterface
 {

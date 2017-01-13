@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "e2bf54526e770a9690f26a59b28ca7f7",
+    "content-hash": "c56734409ff99df39c48d901be255363",
     "packages": [
         {
             "name": "fkooman/http",
@@ -88,6 +88,98 @@
             ],
             "description": "Simple IO library",
             "time": "2016-05-25T14:27:49+00:00"
+        },
+        {
+            "name": "fkooman/json",
+            "version": "2.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/fkooman/php-lib-json.git",
+                "reference": "af0016d4a1d660f945ad4a10772cbdacb698a3ac"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/fkooman/php-lib-json/zipball/af0016d4a1d660f945ad4a10772cbdacb698a3ac",
+                "reference": "af0016d4a1d660f945ad4a10772cbdacb698a3ac",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "ext-spl": "*",
+                "php": ">=5.3.3"
+            },
+            "require-dev": {
+                "ext-iconv": "*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "fkooman\\Json\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "François Kooman",
+                    "email": "fkooman@tuxed.net",
+                    "role": "Developer"
+                }
+            ],
+            "description": "PHP library to encode and decode JSON",
+            "time": "2016-03-25T13:54:00+00:00"
+        },
+        {
+            "name": "fkooman/oauth",
+            "version": "6.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/fkooman/php-lib-oauth.git",
+                "reference": "537c0f1b003fe562175ec85fd3ae6cc0ca0ed4ca"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/fkooman/php-lib-oauth/zipball/537c0f1b003fe562175ec85fd3ae6cc0ca0ed4ca",
+                "reference": "537c0f1b003fe562175ec85fd3ae6cc0ca0ed4ca",
+                "shasum": ""
+            },
+            "require": {
+                "ext-filter": "*",
+                "ext-pcre": "*",
+                "ext-pdo": "*",
+                "ext-spl": "*",
+                "fkooman/http": "^2.0",
+                "fkooman/io": "^2.0",
+                "fkooman/json": "^2.0.0",
+                "fkooman/rest": "^2.0",
+                "fkooman/rest-plugin-authentication": "^3.0",
+                "fkooman/tpl": "^2.0.0",
+                "php": ">= 5.4"
+            },
+            "require-dev": {
+                "fkooman/base64": "^1.0.0",
+                "fkooman/rest-plugin-authentication-basic": "^3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "fkooman\\OAuth\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "François Kooman",
+                    "email": "fkooman@tuxed.net"
+                }
+            ],
+            "description": "OAuth 2.0 Server Library",
+            "time": "2016-08-19T09:43:37+00:00"
         },
         {
             "name": "fkooman/rest",
@@ -179,46 +271,6 @@
             ],
             "description": "Authentication plugin for fkooman/rest",
             "time": "2016-08-19T09:08:52+00:00"
-        },
-        {
-            "name": "fkooman/rest-plugin-authentication-basic",
-            "version": "3.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/fkooman/php-lib-rest-plugin-authentication-basic.git",
-                "reference": "5de17de83178e9a6d324cde347ec932ccd979714"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/fkooman/php-lib-rest-plugin-authentication-basic/zipball/5de17de83178e9a6d324cde347ec932ccd979714",
-                "reference": "5de17de83178e9a6d324cde347ec932ccd979714",
-                "shasum": ""
-            },
-            "require": {
-                "fkooman/rest": "^2.0.0",
-                "fkooman/rest-plugin-authentication": "^3.0.0",
-                "ircmaxell/password-compat": "~1.0",
-                "php": ">=5.4"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "fkooman\\Rest\\Plugin\\Authentication\\Basic\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "Apache-2.0"
-            ],
-            "authors": [
-                {
-                    "name": "François Kooman",
-                    "email": "fkooman@tuxed.net",
-                    "role": "Developer"
-                }
-            ],
-            "description": "Basic Authentication plugin for fkooman/rest-plugin-authentication",
-            "time": "2016-08-19T09:11:11+00:00"
         },
         {
             "name": "fkooman/rest-plugin-authentication-bearer",

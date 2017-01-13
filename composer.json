@@ -19,14 +19,14 @@
         "ext-pdo": "*",
         "ext-spl": "*",
         "fkooman/http": "^2.0",
+	"symfony/yaml": "^2.8",
         "fkooman/io": "^2.0",
+        "fkooman/oauth": "^6.0.0",
         "fkooman/rest-plugin-authentication": "^3.0",
-        "fkooman/rest-plugin-authentication-basic": "^3.0",
         "fkooman/rest-plugin-authentication-bearer": "^3.0",
         "fkooman/rest-plugin-authentication-form": "^4.0",
         "fkooman/tpl-twig": "^1.0.0",
         "monolog/monolog": "^1.22",
-        "php": ">=5.4",
-        "symfony/yaml": "^2.8"
+        "php": ">=5.4"
     }
 }

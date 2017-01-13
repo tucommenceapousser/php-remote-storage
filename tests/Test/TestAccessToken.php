@@ -18,9 +18,9 @@
 
 namespace fkooman\RemoteStorage\Test;
 
-use fkooman\RemoteStorage\Base64\Base64Url;
-use fkooman\RemoteStorage\OAuth\AccessToken;
-use fkooman\RemoteStorage\OAuth\AccessTokenStorageInterface;
+use fkooman\Base64\Base64Url;
+use fkooman\OAuth\AccessToken;
+use fkooman\OAuth\AccessTokenStorageInterface;
 
 class TestAccessToken implements AccessTokenStorageInterface
 {

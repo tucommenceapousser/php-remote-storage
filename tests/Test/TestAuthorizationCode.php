@@ -18,9 +18,9 @@
 
 namespace fkooman\RemoteStorage\Test;
 
-use fkooman\RemoteStorage\Base64\Base64Url;
-use fkooman\RemoteStorage\OAuth\AuthorizationCode;
-use fkooman\RemoteStorage\OAuth\AuthorizationCodeStorageInterface;
+use fkooman\Base64\Base64Url;
+use fkooman\OAuth\AuthorizationCode;
+use fkooman\OAuth\AuthorizationCodeStorageInterface;
 
 class TestAuthorizationCode implements AuthorizationCodeStorageInterface
 {
