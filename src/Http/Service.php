@@ -25,26 +25,23 @@ use fkooman\RemoteStorage\TplInterface;
 class Service
 {
     /** @var \fkooman\RemoteStorage\TplInterface|null */
-    private $tpl;
+    private $tpl = null;
 
     /** @var array */
-    private $routes;
+    private $routes = [
+        'GET' => [],
+        'POST' => [],
+    ];
 
     /** @var array */
-    private $beforeHooks;
+    private $beforeHooks = [];
 
     /** @var array */
-    private $afterHooks;
+    private $afterHooks = [];
 
-    public function __construct(TplInterface $tpl = null)
+    public function setTpl(TplInterface $tpl)
     {
         $this->tpl = $tpl;
-        $this->routes = [
-            'GET' => [],
-            'POST' => [],
-        ];
-        $this->beforeHooks = [];
-        $this->afterHooks = [];
     }
 
     public function addBeforeHook($name, BeforeHookInterface $beforeHook)
@@ -70,26 +67,6 @@ class Service
     public function post($pathInfo, callable $callback)
     {
         $this->addRoute('POST', $pathInfo, $callback);
-    }
-
-    public function put($pathInfo, callable $callback)
-    {
-        $this->addRoute('PUT', $pathInfo, $callback);
-    }
-
-    public function delete($pathInfo, callable $callback)
-    {
-        $this->addRoute('DELETE', $pathInfo, $callback);
-    }
-
-    public function options($pathInfo, callable $callback)
-    {
-        $this->addRoute('OPTIONS', $pathInfo, $callback);
-    }
-
-    public function head($pathInfo, callable $callback)
-    {
-        $this->addRoute('HEAD', $pathInfo, $callback);
     }
 
     public function addModule(ServiceModuleInterface $module)
@@ -151,21 +128,23 @@ class Service
                     $response->setBody(sprintf('%d: %s', $e->getCode(), $e->getMessage()));
                 } else {
                     // template available
-                    $response = new Response($e->getCode(), 'text/html');
-                    $response->setBody(
+                    $response = new HtmlResponse(
                         $this->tpl->render(
                             'errorPage',
                             [
                                 'code' => $e->getCode(),
                                 'message' => $e->getMessage(),
                             ]
-                        )
+                        ),
+                        $e->getCode()
                     );
                 }
             } else {
                 // not a browser
-                $response = new Response($e->getCode(), 'application/json');
-                $response->setBody(json_encode(['error' => $e->getMessage()]));
+                $response = new JsonResponse(
+                    ['error' => $e->getMessage()],
+                    $e->getCode()
+                );
             }
 
             foreach ($e->getResponseHeaders() as $key => $value) {

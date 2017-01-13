@@ -78,7 +78,8 @@ class ApiModule implements ServiceModuleInterface
 
         // put a document
         // ApiAuth
-        $service->put(
+        $service->addRoute(
+            'PUT',
             '*',
             function (Request $request, array $hookData) {
                 $tokenInfo = $hookData['bearer'];
@@ -92,7 +93,8 @@ class ApiModule implements ServiceModuleInterface
 
         // delete a document
         // ApiAuth
-        $service->delete(
+        $service->addRoute(
+            'DELETE',
             '*',
             function (Request $request, array $hookData) {
                 $tokenInfo = $hookData['bearer'];
@@ -106,7 +108,8 @@ class ApiModule implements ServiceModuleInterface
 
         // options request
         // NoAuth
-        $service->options(
+        $service->addRoute(
+            'OPTIONS',
             '*',
             function (Request $request) {
                 $response = new Response();

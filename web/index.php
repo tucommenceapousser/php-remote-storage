@@ -68,7 +68,8 @@ try {
     $md->initDatabase();
 
     $remoteStorage = new RemoteStorage($md, $document);
-    $service = new Service($templateManager);
+    $service = new Service();
+    $service->setTpl($templateManager);
 
     $session = new Session(
         $request->getServerName(),
