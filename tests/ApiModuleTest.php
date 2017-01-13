@@ -34,7 +34,7 @@ class ApiModuleTest extends PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $random = $this->getMockBuilder('fkooman\RemoteStorage\RandomInterface')->getMock();
+        $random = $this->getMockBuilder('\fkooman\RemoteStorage\RandomInterface')->getMock();
         $random->method('get')->will($this->onConsecutiveCalls('random_1', 'random_2'));
 
         $db = new PDO('sqlite::memory:');

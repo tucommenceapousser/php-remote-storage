@@ -23,7 +23,7 @@ use PHPUnit_Framework_TestCase;
 
 class RemoteStorageTest extends PHPUnit_Framework_TestCase
 {
-    /** @var fkooman\RemoteStorage\RemoteStorage */
+    /** @var \fkooman\RemoteStorage\RemoteStorage */
     private $r;
 
     private $tempFile;

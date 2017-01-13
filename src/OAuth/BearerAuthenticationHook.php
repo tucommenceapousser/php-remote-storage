@@ -30,24 +30,14 @@ class BearerAuthenticationHook implements BeforeHookInterface
     /** @var string */
     private $realm;
 
-    /** @var array */
-    private $notForList;
-
     public function __construct(TokenStorage $tokenStorage, $realm = 'Protected Area')
     {
         $this->tokenStorage = $tokenStorage;
         $this->realm = $realm;
-        $this->notForList = [];
     }
 
     public function executeBefore(Request $request, array $hookData)
     {
-        if (array_key_exists($request->getRequestMethod(), $this->notForList)) {
-            if (in_array($request->getPathInfo(), $this->notForList[$request->getRequestMethod()])) {
-                return;
-            }
-        }
-
         $authorizationHeader = $request->getHeader('HTTP_AUTHORIZATION', false, null);
 
         // is authorization header there?
