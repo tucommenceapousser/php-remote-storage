@@ -24,7 +24,7 @@ use fkooman\RemoteStorage\TplInterface;
 
 class Service
 {
-    /** @var \SURFnet\VPN\Common\TplInterface|null */
+    /** @var \fkooman\RemoteStorage\TplInterface|null */
     private $tpl;
 
     /** @var array */

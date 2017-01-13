@@ -29,7 +29,7 @@ class FormAuthenticationModule implements ServiceModuleInterface
     /** @var SessionInterface */
     private $session;
 
-    /** @var \SURFnet\VPN\Common\TplInterface */
+    /** @var \fkooman\RemoteStorage\TplInterface */
     private $tpl;
 
     public function __construct(array $userPass, SessionInterface $session, TplInterface $tpl)
