@@ -36,6 +36,7 @@ class FormAuthenticationHook implements BeforeHookInterface
         $this->session = $session;
         $this->tpl = $tpl;
         $this->notForList = [
+            'GET' => ['/.well-known/webfinger', '/'],
             'POST' => ['/_form/auth/verify'],
         ];
     }

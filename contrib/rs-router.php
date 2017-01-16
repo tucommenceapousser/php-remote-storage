@@ -8,15 +8,17 @@
 // Now you should be able to use RS apps using 'foo@localhost:8080' as
 // user address in the RS widget
 
+//var_dump($_SERVER);
+
 if (file_exists($_SERVER['DOCUMENT_ROOT'].$_SERVER['REQUEST_URI'])) {
     return false;
+} elseif (0 === strpos($_SERVER['REQUEST_URI'], '/.well-known/webfinger')) {
+    $_SERVER['SCRIPT_NAME'] = '/webfinger.php';
+    require 'web/webfinger.php';
+} elseif (0 === strpos($_SERVER['REQUEST_URI'], '/store')) {
+    $_SERVER['SCRIPT_NAME'] = '/api.php';
+    require 'web/api.php';
 } else {
-    $questionPos = strpos($_SERVER['REQUEST_URI'], '?');
-    if (false !== $questionPos) {
-        $_SERVER['PATH_INFO'] = substr($_SERVER['REQUEST_URI'], 0, $questionPos);
-    } else {
-        $_SERVER['PATH_INFO'] = $_SERVER['REQUEST_URI'];
-    }
-
+    $_SERVER['SCRIPT_NAME'] = '/index.php';
     require 'web/index.php';
 }

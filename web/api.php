@@ -26,11 +26,6 @@ use fkooman\RemoteStorage\OAuth\BearerAuthenticationHook;
 use fkooman\RemoteStorage\OAuth\TokenStorage;
 use fkooman\RemoteStorage\Random;
 use fkooman\RemoteStorage\RemoteStorage;
-use Monolog\Handler\ErrorLogHandler;
-use Monolog\Logger;
-
-$logger = new Logger('php-remote-storage');
-$logger->pushHandler(new ErrorLogHandler());
 
 try {
     $config = Config::fromFile(dirname(__DIR__).'/config/server.yaml');
@@ -66,12 +61,10 @@ try {
 
     if ('development' === $serverMode && !$response->isOkay()) {
         // log all non 2xx responses
-        $logger->info(
-            (string) $response
-        );
+        error_log((string) $response);
     }
     $response->send();
 } catch (Exception $e) {
-    $logger->error($e->getMessage());
+    error_log($e->getMessage());
     die(sprintf('ERROR: %s', $e->getMessage()));
 }

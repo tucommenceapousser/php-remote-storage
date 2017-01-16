@@ -20,11 +20,6 @@ use fkooman\RemoteStorage\Config;
 use fkooman\RemoteStorage\Http\Request;
 use fkooman\RemoteStorage\Http\Service;
 use fkooman\RemoteStorage\WebfingerModule;
-use Monolog\Handler\ErrorLogHandler;
-use Monolog\Logger;
-
-$logger = new Logger('php-remote-storage');
-$logger->pushHandler(new ErrorLogHandler());
 
 try {
     $config = Config::fromFile(dirname(__DIR__).'/config/server.yaml');
@@ -35,6 +30,6 @@ try {
     $service->addModule(new WebfingerModule($serverMode));
     $service->run($request)->send();
 } catch (Exception $e) {
-    $logger->error($e->getMessage());
+    error_log($e->getMessage());
     die(sprintf('ERROR: %s', $e->getMessage()));
 }
