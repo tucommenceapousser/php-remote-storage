@@ -18,7 +18,6 @@
 
 namespace fkooman\RemoteStorage\OAuth;
 
-use fkooman\RemoteStorage\Config;
 use fkooman\RemoteStorage\Http\Exception\HttpException;
 use fkooman\RemoteStorage\Http\HtmlResponse;
 use fkooman\RemoteStorage\Http\RedirectResponse;
@@ -39,15 +38,11 @@ class OAuthModule implements ServiceModuleInterface
     /** @var TokenStorage */
     private $tokenStorage;
 
-    /** @var \fkooman\RemoteStorage\Config */
-    private $config;
-
-    public function __construct(TplInterface $tpl, RandomInterface $random, TokenStorage $tokenStorage, Config $config)
+    public function __construct(TplInterface $tpl, RandomInterface $random, TokenStorage $tokenStorage)
     {
         $this->tpl = $tpl;
         $this->random = $random;
         $this->tokenStorage = $tokenStorage;
-        $this->config = $config;
     }
 
     public function init(Service $service)
@@ -80,16 +75,19 @@ class OAuthModule implements ServiceModuleInterface
                 $this->validateRequest($request);
                 $this->validateClient($request);
 
+                // state is OPTIONAL in remoteStorage specification
+                $state = $request->getQueryParameter('state', false, null);
                 $returnUriPattern = '%s#%s';
 
                 if ('no' === $request->getPostParameter('approve')) {
-                    $redirectQuery = http_build_query(
-                        [
-                            'error' => 'access_denied',
-                            'error_description' => 'user refused authorization',
-                            'state' => $request->getQueryParameter('state'),
-                        ]
-                    );
+                    $redirectParameters = [
+                        'error' => 'access_denied',
+                        'error_description' => 'user refused authorization',
+                    ];
+                    if (!is_null($state)) {
+                        $redirectParameters['state'] = $state;
+                    }
+                    $redirectQuery = http_build_query($redirectParameters);
 
                     $redirectUri = sprintf($returnUriPattern, $request->getQueryParameter('redirect_uri'), $redirectQuery);
 
@@ -102,14 +100,14 @@ class OAuthModule implements ServiceModuleInterface
                     $request->getQueryParameter('scope')
                 );
 
-                // add state, access_token to redirect_uri
-                $redirectQuery = http_build_query(
-                    [
-                        'access_token' => $accessToken,
-                        'state' => $request->getQueryParameter('state'),
-                    ]
-                );
-
+                // add access_token (and optionally state) to redirect_uri
+                $redirectParameters = [
+                    'access_token' => $accessToken,
+                ];
+                if (!is_null($state)) {
+                    $redirectParameters['state'] = $state;
+                }
+                $redirectQuery = http_build_query($redirectParameters);
                 $redirectUri = sprintf($returnUriPattern, $request->getQueryParameter('redirect_uri'), $redirectQuery);
 
                 return new RedirectResponse($redirectUri, 302);
@@ -151,12 +149,13 @@ class OAuthModule implements ServiceModuleInterface
     {
         // we enforce that all parameter are set, nothing is "OPTIONAL"
         $clientId = $request->getQueryParameter('client_id');
-        if (1 !== preg_match('/^(?:[\x20-\x7E])+$/', $clientId)) {
+        if (1 !== preg_match('/^[\x20-\x7E]+$/', $clientId)) {
             throw new HttpException('invalid client_id', 400);
         }
 
         // XXX we also should enforce HTTPS
         $redirectUri = $request->getQueryParameter('redirect_uri');
+        // XXX MUST not have "?"
         if (false === filter_var($redirectUri, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED | FILTER_FLAG_HOST_REQUIRED | FILTER_FLAG_PATH_REQUIRED)) {
             throw new HttpException('invalid redirect_uri', 400);
         }
@@ -165,16 +164,18 @@ class OAuthModule implements ServiceModuleInterface
             throw new HttpException('invalid response_type', 400);
         }
         $scope = $request->getQueryParameter('scope');
+        $scopeTokens = explode(' ', $scope);
+        foreach ($scopeTokens as $scopeToken) {
+            if (1 !== preg_match('/^\x21|[\x23-\x5B]|[\x5D-\x7E]+$/', $scopeToken)) {
+                throw new HttpException('invalid scope', 400);
+            }
+        }
 
-        // XXX validate scopes!
-//        if ('config' !== $scope) {
-//            throw new HttpException('invalid scope', 400);
-//        }
-
-        // XXX make state optional for RS (bleh)
-        $state = $request->getQueryParameter('state');
-        if (1 !== preg_match('/^(?:[\x20-\x7E])+$/', $state)) {
-            throw new HttpException('invalid state', 400);
+        $state = $request->getQueryParameter('state', false, null);
+        if (!is_null($state)) {
+            if (1 !== preg_match('/^[\x20-\x7E]+$/', $state)) {
+                throw new HttpException('invalid state', 400);
+            }
         }
     }
 
@@ -185,7 +186,7 @@ class OAuthModule implements ServiceModuleInterface
 
         // redirectUri has to start with clientId (or be equal)
         if (0 !== strpos($redirectUri, $clientId)) {
-            throw new HttpException('"redirect_uri" does not start with "client_id"', 400);
+            throw new HttpException('"redirect_uri" does not match "client_id"', 400);
         }
     }
 }
