@@ -34,11 +34,7 @@ class RemoteStorageTest extends PHPUnit_Framework_TestCase
         $random->method('get')->willReturn('abcd1234');
 
         $md = new MetadataStorage(
-            new PDO(
-                $GLOBALS['DB_DSN'],
-                $GLOBALS['DB_USER'],
-                $GLOBALS['DB_PASSWD']
-            ),
+            new PDO('sqlite::memory:'),
             $random
         );
         $md->initDatabase();
