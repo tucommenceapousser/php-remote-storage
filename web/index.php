@@ -75,6 +75,7 @@ try {
         $remoteStorage,
         $config->getSection('Users')->toArray()
     );
+
     $response = $controller->run($request);
 
     if ('development' === $serverMode && !$response->isOkay()) {

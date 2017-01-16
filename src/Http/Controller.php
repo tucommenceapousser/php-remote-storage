@@ -15,6 +15,7 @@ use fkooman\RemoteStorage\WebfingerModule;
 
 class Controller
 {
+    private $tpl;
     private $formAuth;
     private $bearerAuth;
     private $oauthModule;
@@ -24,6 +25,7 @@ class Controller
 
     public function __construct(TplInterface $tpl, SessionInterface $session, TokenStorage $tokenStorage, RandomInterface $random, RemoteStorage $remoteStorage, array $userPass)
     {
+        $this->tpl = $tpl;
         $serverMode = 'development';
         $this->formAuth = new FormAuthentication($session, $tpl, $userPass);
         $this->bearerAuth = new BearerAuthentication($tokenStorage);
@@ -35,28 +37,53 @@ class Controller
 
     public function run(Request $request)
     {
-        switch ($request->getRequestMethod()) {
-            case 'GET':
-                return $this->handleGet($request);
-            case 'POST':
-                return $this->handlePost($request);
-            case 'PUT':
-                $tokenInfo = $this->bearerAuth->requireAuth($request);
+        try {
+            switch ($request->getRequestMethod()) {
+                case 'GET':
+                    return $this->handleGet($request);
+                case 'POST':
+                    return $this->handlePost($request);
+                case 'PUT':
+                    $tokenInfo = $this->bearerAuth->requireAuth($request);
 
-                return $this->apiModule->put($request, $tokenInfo);
-            case 'DELETE':
-                $tokenInfo = $this->bearerAuth->requireAuth($request);
+                    return $this->apiModule->put($request, $tokenInfo);
+                case 'DELETE':
+                    $tokenInfo = $this->bearerAuth->requireAuth($request);
 
-                return $this->apiModule->delete($request, $tokenInfo);
-            case 'OPTIONS':
-                return $this->apiModule->options($request);
-            case 'HEAD':
-                $tokenInfo = $this->bearerAuth->requireAuth($request);
+                    return $this->apiModule->delete($request, $tokenInfo);
+                case 'OPTIONS':
+                    return $this->apiModule->options($request);
+                case 'HEAD':
+                    $tokenInfo = $this->bearerAuth->requireAuth($request);
 
-                return $this->apiModule->head($request, $tokenInfo);
-            default:
-                throw new HttpException('', 405);
-       }
+                    return $this->apiModule->head($request, $tokenInfo);
+                default:
+                    throw new HttpException('', 405);
+           }
+        } catch (HttpException $e) {
+            if ($request->isBrowser()) {
+                $response = new Response($e->getCode(), 'text/html');
+                $response->setBody(
+                    $this->tpl->render(
+                        'errorPage',
+                        [
+                            'code' => $e->getCode(),
+                            'message' => $e->getMessage(),
+                        ]
+                    )
+                );
+            } else {
+                // not a browser
+                $response = new Response($e->getCode(), 'application/json');
+                $response->setBody(json_encode(['error' => $e->getMessage()]));
+            }
+
+            foreach ($e->getResponseHeaders() as $key => $value) {
+                $response->addHeader($key, $value);
+            }
+
+            return $response;
+        }
     }
 
     private function handleGet(Request $request)

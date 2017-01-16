@@ -140,7 +140,7 @@ class ApiModule
         }
 
         $requestedVersion = $this->stripQuotes(
-            $request->getHeader('If-None-Match', false, null)
+            $request->getHeader('HTTP_IF_NONE_MATCH', false, null)
         );
 
         if (null !== $requestedVersion) {
@@ -161,7 +161,7 @@ class ApiModule
                 $this->remoteStorage->getFolder(
                     $path,
                     $this->stripQuotes(
-                        $request->getHeader('If-None-Match', false, null)
+                        $request->getHeader('HTTP_IF_NONE_MATCH', false, null)
                     )
                 )
             );
@@ -189,7 +189,7 @@ class ApiModule
         }
 
         $requestedVersion = $this->stripQuotes(
-            $request->getHeader('If-None-Match', false, null)
+            $request->getHeader('HTTP_IF_NONE_MATCH', false, null)
         );
         $documentContentType = $this->remoteStorage->getContentType($path);
 
@@ -246,10 +246,10 @@ class ApiModule
         }
 
         $ifMatch = $this->stripQuotes(
-            $request->getHeader('If-Match', false, null)
+            $request->getHeader('HTTP_IF_MATCH', false, null)
         );
         $ifNoneMatch = $this->stripQuotes(
-            $request->getHeader('If-None-Match', false, null)
+            $request->getHeader('HTTP_IF_NONE_MATCH', false, null)
         );
 
         $documentVersion = $this->remoteStorage->getVersion($path);
@@ -293,7 +293,7 @@ class ApiModule
         $documentVersion = $this->remoteStorage->getVersion($path);
 
         $ifMatch = $this->stripQuotes(
-            $request->getHeader('If-Match', false, null)
+            $request->getHeader('HTTP_IF_MATCH', false, null)
         );
 
         // if document does not exist, and we have If-Match header set we should
@@ -310,7 +310,7 @@ class ApiModule
         }
 
         $ifMatch = $this->stripQuotes(
-            $request->getHeader('If-Match', false, null)
+            $request->getHeader('HTTP_IF_MATCH', false, null)
         );
         if (null !== $ifMatch && !in_array($documentVersion, $ifMatch)) {
             throw new HttpException('version mismatch', 412);
