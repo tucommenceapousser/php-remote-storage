@@ -54,7 +54,7 @@ class Controller
                 case 'OPTIONS':
                     return $this->apiModule->options($request);
                 case 'HEAD':
-                    $tokenInfo = $this->bearerAuth->requireAuth($request);
+                    $tokenInfo = $this->bearerAuth->optionalAuth($request);
 
                     return $this->apiModule->head($request, $tokenInfo);
                 default:
