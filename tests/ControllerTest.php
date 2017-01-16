@@ -17,17 +17,16 @@
 
 namespace fkooman\RemoteStorage;
 
+use fkooman\RemoteStorage\Http\Controller;
 use fkooman\RemoteStorage\Http\Request;
-use fkooman\RemoteStorage\Http\Service;
-use fkooman\RemoteStorage\OAuth\BearerAuthenticationHook;
 use fkooman\RemoteStorage\OAuth\TokenStorage;
 use PDO;
 use PHPUnit_Framework_TestCase;
 
-class ApiModuleTest extends PHPUnit_Framework_TestCase
+class ControllerTest extends PHPUnit_Framework_TestCase
 {
-    /** @var \fkooman\RemoteStorage\Http\Service */
-    private $service;
+    /** @var \fkooman\RemoteStorage\Http\Controller */
+    private $controller;
 
     /** @var string */
     private $tmpDir;
@@ -52,23 +51,50 @@ class ApiModuleTest extends PHPUnit_Framework_TestCase
         $documentStorage = new DocumentStorage($this->tmpDir);
         $remoteStorage = new RemoteStorage($metaDataStorage, $documentStorage);
 
-        $apiModule = new ApiModule(
-            $remoteStorage,
+        $tpl = $this->getMockBuilder('\fkooman\RemoteStorage\TplInterface')->getMock();
+        $tpl->method('render')->willReturn($this->returnValue(json_encode($this->returnArgument(0))));
+
+        $session = $this->getMockBuilder('\fkooman\RemoteStorage\Http\SessionInterface')->getMock();
+//        $tpl->method('render')->willReturn($this->returnValue(json_encode($this->returnArgument(0))));
+
+        $this->controller = new Controller(
+            $tpl,
+            $session,
             $tokenStorage,
-            'development'
+            $random,
+            $remoteStorage,
+            ['foo' => 'bar']
         );
+    }
 
-        $bearerAuthenticationHook = new BearerAuthenticationHook($tokenStorage);
-
-        $this->service = new Service();
-        $this->service->addBeforeHook('bearer', $bearerAuthenticationHook);
-        $this->service->addModule($apiModule);
+    public function testWebfinger()
+    {
+        $request = new Request(
+            [
+                'REQUEST_METHOD' => 'GET',
+                'SERVER_NAME' => 'localhost',
+                'SERVER_PORT' => 80,
+                'REQUEST_URI' => '/.well-known/webfinger?resource=acct:foo@www.example.org',
+                'SCRIPT_NAME' => '/index.php',
+            ],
+            [
+                'resource' => 'acct:foo@www.example.org',
+            ]
+        );
+        $response = $this->controller->run($request);
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame('application/jrd+json', $response->getHeader('Content-Type'));
+        $this->assertSame('*', $response->getHeader('Access-Control-Allow-Origin'));
+        $this->assertSame(
+            '{"links":[{"href":"http:\/\/localhost\/foo","properties":{"http:\/\/remotestorage.io\/spec\/version":"draft-dejong-remotestorage-05","http:\/\/remotestorage.io\/spec\/web-authoring":null,"http:\/\/tools.ietf.org\/html\/rfc6749#section-4.2":"http:\/\/localhost\/_oauth\/authorize?login_hint=foo","http:\/\/tools.ietf.org\/html\/rfc6750#section-2.3":"true","http:\/\/tools.ietf.org\/html\/rfc7233":null},"rel":"http:\/\/tools.ietf.org\/id\/draft-dejong-remotestorage"},{"href":"http:\/\/localhost\/foo","properties":{"http:\/\/remotestorage.io\/spec\/version":"draft-dejong-remotestorage-03","http:\/\/tools.ietf.org\/html\/rfc2616#section-14.16":false,"http:\/\/tools.ietf.org\/html\/rfc6749#section-4.2":"http:\/\/localhost\/_oauth\/authorize?login_hint=foo","http:\/\/tools.ietf.org\/html\/rfc6750#section-2.3":true},"rel":"remotestorage"}]}',
+            $response->getBody()
+        );
     }
 
     public function testPutDocument()
     {
         $request = $this->getPutRequest('/admin/foo/bar/baz.txt');
-        $response = $this->service->run($request);
+        $response = $this->controller->run($request);
         $this->assertSame(
             [
                 200,
@@ -428,6 +454,7 @@ class ApiModuleTest extends PHPUnit_Framework_TestCase
                     'SCRIPT_NAME' => '/index.php',
                     'REQUEST_METHOD' => 'PUT',
                     'HTTP_AUTHORIZATION' => 'Bearer 1234.abcd',
+                    'HTTP_CONTENT_TYPE' => 'text/plain',
 //                    'HTTP_ORIGIN' => 'https://foo.bar.example.org',
                     'Content-Type' => 'text/plain',
                 ]
