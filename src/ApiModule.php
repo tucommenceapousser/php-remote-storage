@@ -220,6 +220,7 @@ class ApiModule
                         )
                     )
                 );
+                $rsr->addHeader('Content-Length', strlen($rsr->getBody()));
             } else {
                 // use X-SendFile
                 $rsr->setFile(
