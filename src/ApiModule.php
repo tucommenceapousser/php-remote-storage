@@ -108,7 +108,7 @@ class ApiModule
         }
 
         // past this point we MUST be authenticated
-        if (!$tokenInfo) {
+        if (false === $tokenInfo) {
             throw new HttpException(
                 'no_token',
                 401,
@@ -172,7 +172,7 @@ class ApiModule
 
     public function getDocument(Path $path, Request $request, $tokenInfo)
     {
-        if ($tokenInfo) {
+        if (false !== $tokenInfo) {
             if ($path->getUserId() !== $tokenInfo->getUserId()) {
                 throw new HttpException('path does not match authorized subject', 403);
             }
@@ -181,7 +181,7 @@ class ApiModule
             }
         }
         $documentVersion = $this->remoteStorage->getVersion($path);
-        if (null === $documentVersion) {
+        if (is_null($documentVersion)) {
             throw new HttpException(
                 sprintf('document "%s" not found', $path->getPath()),
                 404
@@ -193,7 +193,7 @@ class ApiModule
         );
         $documentContentType = $this->remoteStorage->getContentType($path);
 
-        if (null !== $requestedVersion) {
+        if (!is_null($requestedVersion)) {
             if (in_array($documentVersion, $requestedVersion)) {
                 $response = new Response(304, $documentContentType);
                 $response->addHeader('ETag', '"'.$documentVersion.'"');

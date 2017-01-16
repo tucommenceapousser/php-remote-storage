@@ -35,6 +35,7 @@ try {
     );
 
     $request = new Request($_SERVER, $_GET, $_POST, file_get_contents('php://input'));
+    error_log((string) $request);
 
     $templateCache = null;
     if ('development' !== $serverMode) {

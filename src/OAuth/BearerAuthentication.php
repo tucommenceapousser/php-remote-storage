@@ -40,7 +40,7 @@ class BearerAuthentication
         $authorizationHeader = $request->getHeader('HTTP_AUTHORIZATION', false, null);
 
         // is authorization header there?
-        if (is_null($authorizationHeader)) {
+        if (is_null($authorizationHeader) || empty($authorizationHeader)) {
             return false;
         }
 
