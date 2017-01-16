@@ -21,111 +21,76 @@ use fkooman\RemoteStorage\Exception\PathException;
 use fkooman\RemoteStorage\Http\Exception\HttpException;
 use fkooman\RemoteStorage\Http\Request;
 use fkooman\RemoteStorage\Http\Response;
-use fkooman\RemoteStorage\Http\Service;
-use fkooman\RemoteStorage\Http\ServiceModuleInterface;
 use fkooman\RemoteStorage\OAuth\TokenInfo;
-use fkooman\RemoteStorage\OAuth\TokenStorage;
 use InvalidArgumentException;
 
-class ApiModule implements ServiceModuleInterface
+class ApiModule
 {
     /** @var RemoteStorage */
     private $remoteStorage;
 
-    /** @var \fkooman\RemoteStorage\OAuth\TokenStorage */
-    private $tokenStorage;
-
     /** @var string */
     private $serverMode;
 
-    public function __construct(RemoteStorage $remoteStorage, TokenStorage $tokenStorage, $serverMode)
+    public function __construct(RemoteStorage $remoteStorage, $serverMode)
     {
         $this->remoteStorage = $remoteStorage;
-        $this->tokenStorage = $tokenStorage;
+        $this->serverMode = $serverMode;
     }
 
-    public function init(Service $service)
+    /**
+     * @param Request      $request
+     * @param string|false $tokenInfo
+     */
+    public function get(Request $request, $tokenInfo)
     {
-        // ApiAuth OPTIONAL??
-        // maybe for "public" files it is optional?
-        $service->addRoute(
-            'GET',
-            '*',
-            function (Request $request, array $hookData) {
-                $tokenInfo = $hookData['bearer'];
+        $response = $this->getObject($request, $tokenInfo);
+        $this->addNoCache($response);
+        $this->addCors($response);
 
-                $response = $this->getObject($request, $tokenInfo);
-                $this->addNoCache($response);
-                $this->addCors($response);
+        return $response;
+    }
 
-                return $response;
-            }
+    public function head(Request $request, $tokenInfo)
+    {
+        // XXX return headers only?
+        $response = $this->getObject($request, $tokenInfo);
+        $this->addNoCache($response);
+        $this->addCors($response);
+
+        return $response;
+    }
+
+    public function put(Request $request, TokenInfo $tokenInfo)
+    {
+        $response = $this->putDocument($request, $tokenInfo);
+        $this->addCors($response);
+
+        return $response;
+    }
+
+    public function delete(Request $request, TokenInfo $tokenInfo)
+    {
+        $response = $this->deleteDocument($request, $tokenInfo);
+        $this->addCors($response);
+
+        return $response;
+    }
+
+    public function options(Request $request)
+    {
+        $response = new Response();
+        $response->addHeader(
+            'Access-Control-Allow-Methods',
+            'GET, PUT, DELETE, HEAD, OPTIONS'
         );
-
-        $service->addRoute(
-            'HEAD',
-            '*',
-            function (Request $request, array $hookData) {
-                $tokenInfo = $hookData['bearer'];
-
-                $response = $this->getObject($request, $tokenInfo);
-                $this->addNoCache($response);
-                $this->addCors($response);
-
-                return $response;
-            }
+        $response->addHeader(
+            'Access-Control-Allow-Headers',
+            'Authorization, Content-Length, Content-Type, Origin, X-Requested-With, If-Match, If-None-Match'
         );
+        $this->addCors($response);
 
-        // put a document
-        // ApiAuth
-        $service->addRoute(
-            'PUT',
-            '*',
-            function (Request $request, array $hookData) {
-                $tokenInfo = $hookData['bearer'];
-
-                $response = $this->putDocument($request, $tokenInfo);
-                $this->addCors($response);
-
-                return $response;
-            }
-        );
-
-        // delete a document
-        // ApiAuth
-        $service->addRoute(
-            'DELETE',
-            '*',
-            function (Request $request, array $hookData) {
-                $tokenInfo = $hookData['bearer'];
-
-                $response = $this->deleteDocument($request, $tokenInfo);
-                $this->addCors($response);
-
-                return $response;
-            }
-        );
-
-        // options request
-        // NoAuth
-        $service->addRoute(
-            'OPTIONS',
-            '*',
-            function (Request $request) {
-                $response = new Response();
-                $response->addHeader(
-                    'Access-Control-Allow-Methods',
-                    'GET, PUT, DELETE, HEAD, OPTIONS'
-                );
-                $response->addHeader(
-                    'Access-Control-Allow-Headers',
-                    'Authorization, Content-Length, Content-Type, Origin, X-Requested-With, If-Match, If-None-Match'
-                );
-                $this->addCors($response);
-
-                return $response;
-            }
-        );
+        return $response;
     }
 
     /**
@@ -298,7 +263,7 @@ class ApiModule implements ServiceModuleInterface
 
         $x = $this->remoteStorage->putDocument(
             $path,
-            $request->getHeader('Content-Type'),
+            $request->getHeader('HTTP_CONTENT_TYPE'),
             $request->getBody(),
             $ifMatch,
             $ifNoneMatch

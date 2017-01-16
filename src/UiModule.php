@@ -20,13 +20,10 @@ namespace fkooman\RemoteStorage;
 use fkooman\RemoteStorage\Http\HtmlResponse;
 use fkooman\RemoteStorage\Http\RedirectResponse;
 use fkooman\RemoteStorage\Http\Request;
-use fkooman\RemoteStorage\Http\Service;
-use fkooman\RemoteStorage\Http\ServiceModuleInterface;
 use fkooman\RemoteStorage\OAuth\TokenStorage;
 
-class UiModule implements ServiceModuleInterface
+class UiModule
 {
-    /** @var RemoteStorage */
     private $remoteStorage;
 
     /** @var TplInterface */
@@ -42,60 +39,56 @@ class UiModule implements ServiceModuleInterface
         $this->tokenStorage = $tokenStorage;
     }
 
-    public function init(Service $service)
+    /**
+     * @param Request      $request
+     * @param string|false $userId
+     */
+    public function getRootPage(Request $request, $userId)
     {
-        // FormAuth
-        $service->get(
-            '/_account',
-            function (Request $request, array $hookData) {
-                $userId = $hookData['auth'];
-                $approvalList = $this->tokenStorage->getAuthorizedClients($userId);
-
-                return new HtmlResponse(
-                    $this->tpl->render(
-                        'getAccountPage',
-                        [
-                            'approval_list' => $approvalList,
-                            'host' => $request->getServerName(),
-                            'user_id' => $userId,
-                            'disk_usage' => $this->remoteStorage->getFolderSize(new Path('/'.$userId.'/')),
-                            'request_url' => $request->getUri(),
-                            'show_account_icon' => true,
-                        ]
-                    )
-                );
-            }
+        return new HtmlResponse(
+            $this->tpl->render(
+                'indexPage',
+                [
+                    'user_id' => $userId,
+                    'show_account_icon' => true,
+                ]
+            )
         );
+    }
 
-        // FormAuth
-        $service->post(
-            '/_account',
-            function (Request $request, array $hookData) {
-                $userId = $hookData['auth'];
-                // XXX InputValidation
-                $clientId = $request->getPostParameter('client_id');
-                $this->tokenStorage->removeClientTokens($userId, $clientId);
+    /**
+     * @param Request $request
+     * @param string  $userId
+     */
+    public function getAccountPage(Request $request, $userId)
+    {
+        $approvalList = $this->tokenStorage->getAuthorizedClients($userId);
 
-                return new RedirectResponse($request->getUri(), 302);
-            }
+        return new HtmlResponse(
+            $this->tpl->render(
+                'getAccountPage',
+                [
+                    'approval_list' => $approvalList,
+                    'host' => $request->getServerName(),
+                    'user_id' => $userId,
+                    'disk_usage' => $this->remoteStorage->getFolderSize(new Path('/'.$userId.'/')),
+                    'request_url' => $request->getUri(),
+                    'show_account_icon' => true,
+                ]
+            )
         );
+    }
 
-        // FormAuth OPTIONAL
-        $service->get(
-            '/',
-            function (Request $request, array $hookData) {
-                $userId = $hookData['auth'];
+    /**
+     * @param Request $request
+     * @param string  $userId
+     */
+    public function postAccountPage(Request $request, $userId)
+    {
+        // XXX InputValidation
+        $clientId = $request->getPostParameter('client_id');
+        $this->tokenStorage->removeClientTokens($userId, $clientId);
 
-                return new HtmlResponse(
-                    $this->tpl->render(
-                        'indexPage',
-                        [
-                            'user_id' => $userId,
-                            'show_account_icon' => true,
-                        ]
-                    )
-                );
-            }
-        );
+        return new RedirectResponse($request->getUri(), 302);
     }
 }

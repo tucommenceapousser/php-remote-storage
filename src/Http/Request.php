@@ -57,6 +57,11 @@ class Request
         $this->rawData = $rawData;
     }
 
+    public function __toString()
+    {
+        return var_export($this->serverData, true);
+    }
+
     public function getAuthority()
     {
         // scheme

@@ -22,12 +22,10 @@ use fkooman\RemoteStorage\Http\Exception\HttpException;
 use fkooman\RemoteStorage\Http\HtmlResponse;
 use fkooman\RemoteStorage\Http\RedirectResponse;
 use fkooman\RemoteStorage\Http\Request;
-use fkooman\RemoteStorage\Http\Service;
-use fkooman\RemoteStorage\Http\ServiceModuleInterface;
 use fkooman\RemoteStorage\RandomInterface;
 use fkooman\RemoteStorage\TplInterface;
 
-class OAuthModule implements ServiceModuleInterface
+class OAuthModule
 {
     /** @var \fkooman\RemoteStorage\TplInterface */
     private $tpl;
@@ -45,74 +43,65 @@ class OAuthModule implements ServiceModuleInterface
         $this->tokenStorage = $tokenStorage;
     }
 
-    public function init(Service $service)
+    public function getAuthorize(Request $request, $userId)
     {
-        $service->get(
-            '/_oauth/authorize',
-            function (Request $request) {
-                $this->validateRequest($request);
-                $this->validateClient($request);
+        $this->validateRequest($request);
+        $this->validateClient($request);
 
-                // ask for approving this client/scope
-                return new HtmlResponse(
-                    $this->tpl->render(
-                        'authorizeOAuthClient',
-                        [
-                            'client_id' => $request->getQueryParameter('client_id'),
-                            'scope' => $request->getQueryParameter('scope'),
-                            'redirect_uri' => $request->getQueryParameter('redirect_uri'),
-                        ]
-                    )
-                );
+        // ask for approving this client/scope
+        return new HtmlResponse(
+            $this->tpl->render(
+                'authorizeOAuthClient',
+                [
+                    'client_id' => $request->getQueryParameter('client_id'),
+                    'scope' => $request->getQueryParameter('scope'),
+                    'redirect_uri' => $request->getQueryParameter('redirect_uri'),
+                ]
+            )
+        );
+    }
+
+    public function postAuthorize(Request $request, $userId)
+    {
+        $this->validateRequest($request);
+        $this->validateClient($request);
+
+        // state is OPTIONAL in remoteStorage specification
+        $state = $request->getQueryParameter('state', false, null);
+        $returnUriPattern = '%s#%s';
+
+        if ('no' === $request->getPostParameter('approve')) {
+            $redirectParameters = [
+                'error' => 'access_denied',
+                'error_description' => 'user refused authorization',
+            ];
+            if (!is_null($state)) {
+                $redirectParameters['state'] = $state;
             }
+            $redirectQuery = http_build_query($redirectParameters);
+
+            $redirectUri = sprintf($returnUriPattern, $request->getQueryParameter('redirect_uri'), $redirectQuery);
+
+            return new RedirectResponse($redirectUri, 302);
+        }
+
+        $accessToken = $this->getAccessToken(
+            $userId,
+            $request->getQueryParameter('client_id'),
+            $request->getQueryParameter('scope')
         );
 
-        $service->post(
-            '/_oauth/authorize',
-            function (Request $request, array $hookData) {
-                $userId = $hookData['auth'];
+        // add access_token (and optionally state) to redirect_uri
+        $redirectParameters = [
+            'access_token' => $accessToken,
+        ];
+        if (!is_null($state)) {
+            $redirectParameters['state'] = $state;
+        }
+        $redirectQuery = http_build_query($redirectParameters);
+        $redirectUri = sprintf($returnUriPattern, $request->getQueryParameter('redirect_uri'), $redirectQuery);
 
-                $this->validateRequest($request);
-                $this->validateClient($request);
-
-                // state is OPTIONAL in remoteStorage specification
-                $state = $request->getQueryParameter('state', false, null);
-                $returnUriPattern = '%s#%s';
-
-                if ('no' === $request->getPostParameter('approve')) {
-                    $redirectParameters = [
-                        'error' => 'access_denied',
-                        'error_description' => 'user refused authorization',
-                    ];
-                    if (!is_null($state)) {
-                        $redirectParameters['state'] = $state;
-                    }
-                    $redirectQuery = http_build_query($redirectParameters);
-
-                    $redirectUri = sprintf($returnUriPattern, $request->getQueryParameter('redirect_uri'), $redirectQuery);
-
-                    return new RedirectResponse($redirectUri, 302);
-                }
-
-                $accessToken = $this->getAccessToken(
-                    $userId,
-                    $request->getQueryParameter('client_id'),
-                    $request->getQueryParameter('scope')
-                );
-
-                // add access_token (and optionally state) to redirect_uri
-                $redirectParameters = [
-                    'access_token' => $accessToken,
-                ];
-                if (!is_null($state)) {
-                    $redirectParameters['state'] = $state;
-                }
-                $redirectQuery = http_build_query($redirectParameters);
-                $redirectUri = sprintf($returnUriPattern, $request->getQueryParameter('redirect_uri'), $redirectQuery);
-
-                return new RedirectResponse($redirectUri, 302);
-            }
-        );
+        return new RedirectResponse($redirectUri, 302);
     }
 
     private function getAccessToken($userId, $clientId, $scope)

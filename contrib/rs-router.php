@@ -12,13 +12,7 @@
 
 if (file_exists($_SERVER['DOCUMENT_ROOT'].$_SERVER['REQUEST_URI'])) {
     return false;
-} elseif (0 === strpos($_SERVER['REQUEST_URI'], '/.well-known/webfinger')) {
-    $_SERVER['SCRIPT_NAME'] = '/webfinger.php';
-    require 'web/webfinger.php';
-} elseif (0 === strpos($_SERVER['REQUEST_URI'], '/store')) {
-    $_SERVER['SCRIPT_NAME'] = '/api.php';
-    require 'web/api.php';
-} else {
-    $_SERVER['SCRIPT_NAME'] = '/index.php';
-    require 'web/index.php';
 }
+
+$_SERVER['SCRIPT_NAME'] = '/index.php';
+require 'web/index.php';

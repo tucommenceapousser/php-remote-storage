@@ -18,11 +18,10 @@
 
 namespace fkooman\RemoteStorage\OAuth;
 
-use fkooman\RemoteStorage\Http\BeforeHookInterface;
 use fkooman\RemoteStorage\Http\Exception\HttpException;
 use fkooman\RemoteStorage\Http\Request;
 
-class BearerAuthenticationHook implements BeforeHookInterface
+class BearerAuthentication
 {
     /** @var TokenStorage */
     private $tokenStorage;
@@ -36,7 +35,7 @@ class BearerAuthenticationHook implements BeforeHookInterface
         $this->realm = $realm;
     }
 
-    public function executeBefore(Request $request, array $hookData)
+    public function optionalAuth(Request $request)
     {
         $authorizationHeader = $request->getHeader('HTTP_AUTHORIZATION', false, null);
 
@@ -44,6 +43,13 @@ class BearerAuthenticationHook implements BeforeHookInterface
         if (is_null($authorizationHeader)) {
             return false;
         }
+
+        return $this->requireAuth($request);
+    }
+
+    public function requireAuth(Request $request)
+    {
+        $authorizationHeader = $request->getHeader('HTTP_AUTHORIZATION');
 
         // validate the HTTP_AUTHORIZATION header
         if (false === $bearerToken = self::getBearerToken($authorizationHeader)) {
