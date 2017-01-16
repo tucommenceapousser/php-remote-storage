@@ -155,14 +155,17 @@ class OAuthModule implements ServiceModuleInterface
 
         // XXX we also should enforce HTTPS
         $redirectUri = $request->getQueryParameter('redirect_uri');
-        // XXX MUST not have "?"
         if (false === filter_var($redirectUri, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED | FILTER_FLAG_HOST_REQUIRED | FILTER_FLAG_PATH_REQUIRED)) {
+            throw new HttpException('invalid redirect_uri', 400);
+        }
+        if (false !== strpos($redirectUri, '?')) {
             throw new HttpException('invalid redirect_uri', 400);
         }
         $responseType = $request->getQueryParameter('response_type');
         if ('token' !== $responseType) {
             throw new HttpException('invalid response_type', 400);
         }
+        // XXX make sure this regexp/code is actually correct!
         $scope = $request->getQueryParameter('scope');
         $scopeTokens = explode(' ', $scope);
         foreach ($scopeTokens as $scopeToken) {
@@ -171,6 +174,7 @@ class OAuthModule implements ServiceModuleInterface
             }
         }
 
+        // state is OPTIONAL in remoteStorage
         $state = $request->getQueryParameter('state', false, null);
         if (!is_null($state)) {
             if (1 !== preg_match('/^[\x20-\x7E]+$/', $state)) {
