@@ -246,6 +246,11 @@ class ApiModule
             throw new HttpException('path does not match authorized scope', 403);
         }
 
+        // https://tools.ietf.org/html/rfc7231#section-4.3.4
+        if (!is_null($request->getHeader('HTTP_CONTENT_RANGE', false, null))) {
+            throw new HttpException('PUT MUST NOT have Content-Range', 400);
+        }
+
         $ifMatch = $this->stripQuotes(
             $request->getHeader('HTTP_IF_MATCH', false, null)
         );
