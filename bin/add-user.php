@@ -1,7 +1,7 @@
 #!/usr/bin/php
 <?php
 
-require_once dirname(__DIR__).'/vendor/autoload.php';
+require_once sprintf('%s/vendor/autoload.php', dirname(__DIR__));
 
 use fkooman\RemoteStorage\Config;
 
