@@ -158,7 +158,7 @@ class OAuthModule
         $scope = $request->getQueryParameter('scope');
         $scopeTokens = explode(' ', $scope);
         foreach ($scopeTokens as $scopeToken) {
-            if (1 !== preg_match('/^\x21|[\x23-\x5B]|[\x5D-\x7E]+$/', $scopeToken)) {
+            if (1 !== preg_match('/^[\x21\x23-\x5B\x5D-\x7E]+$/', $scopeToken)) {
                 throw new HttpException('invalid scope', 400);
             }
         }
