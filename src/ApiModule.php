@@ -17,12 +17,10 @@
 
 namespace fkooman\RemoteStorage;
 
-use fkooman\RemoteStorage\Exception\PathException;
 use fkooman\RemoteStorage\Http\Exception\HttpException;
 use fkooman\RemoteStorage\Http\Request;
 use fkooman\RemoteStorage\Http\Response;
 use fkooman\RemoteStorage\OAuth\TokenInfo;
-use InvalidArgumentException;
 
 class ApiModule
 {
@@ -363,30 +361,6 @@ class ApiModule
 
         return $versions;
     }
-
-//    public function run(Request $request = null)
-//    {
-//        if (null === $request) {
-//            throw new InvalidArgumentException('must provide Request object');
-//        }
-
-//        $response = null;
-//        try {
-//            $response = parent::run($request);
-//        } catch (PathException $e) {
-//            $e = new BadRequestException($e->getMessage());
-//            $response = $e->getJsonResponse();
-//        }
-
-//        // if error, add CORS
-//        $statusCode = $response->getStatusCode();
-//        if (400 <= $statusCode && 500 > $statusCode) {
-//            $this->addCors($response);
-//            $this->addNoCache($response);
-//        }
-
-//        return $response;
-//    }
 
     private function hasReadScope($scope, $moduleName)
     {
