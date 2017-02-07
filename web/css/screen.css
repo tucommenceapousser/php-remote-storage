@@ -9,31 +9,35 @@ body {
     text-align: justify;
 }
 
-h1 {
-    display: none;
+.text-right {
+    text-align: right;
 }
-
+    
 a {
     color: #222;
 }
 
-dt {
-    margin: 0.5em 0;
-    font-weight: bold;
+ul.menu {
+    padding: 0;
 }
 
-.text-right {
-    text-align: right;
+ul.menu li {
+    display: inline-block;
+/*    border: 1px solid #000;*/
+    height: 48px;
+}
+
+ul li.logo {
+    color: transparent; /* hide text */
+    background-size: 42px 48px;
+    background-image: url("../img/rs.svg");
+    background-repeat: no-repeat;
 }
 
 fieldset {
     border: 0;
     margin: 0;
     padding: 0;
-}
-
-fieldset textarea {
-    width: 100%;
 }
 
 fieldset button {
@@ -78,35 +82,6 @@ p.plain, p.success, p.warning, p.error {
     padding: 1em;
 }
 
-ul.simple {
-    padding: 0 1em;
-    margin: 0;
-}
-
-ul.menu {
-    margin-bottom: 2em;
-    padding: 0;
-}
-
-ul.menu li {
-    display: inline;
-    font-weight: bold;
-}
-
-ul.menu li.active a {
-    color: #fff;
-    background-color: #555;
-    border-radius: 0.5em;
-
-}
-
-ul.menu li a {
-    display: inline-block;
-    padding: 0.7em;
-    text-decoration: none;
-    color: #555;
-}
-
 table {
     border: 1px solid #ccc;
     width: 100%;
@@ -143,16 +118,9 @@ hr {
 div.footer {
     margin-top: 2em;
     text-align: center;
+    color: #aaa;
 }
 
-div.footer form {
-    display: inline;
-}
-
-div.footer button {
-    border: 0;
-    background-color: #fff;
-    color: #888;
-    text-decoration: underline;
-    cursor: pointer;
+div.footer a {
+    color: #aaa;
 }

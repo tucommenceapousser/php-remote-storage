@@ -114,4 +114,11 @@ class FormAuthentication
 
         return $response;
     }
+
+    public function logout(Request $request)
+    {
+        $this->session->delete('_form_auth_user');
+
+        return new RedirectResponse($request->getRootUri(), 302);
+    }
 }

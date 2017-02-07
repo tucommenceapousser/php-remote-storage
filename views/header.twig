@@ -1,14 +1,12 @@
-<div class="header">
-    <!-- logo from https://github.com/remotestorage/design (Creative Commons Attribution Share-Alike 4.0) -->
-    <!-- <a href="{{ requestRoot }}"><img src="{{ requestRoot }}img/rs.svg" title="remoteStorage" alt="remoteStorage"></a> -->
-
+<ul class="menu">
+  <li class="logo">remoteStorage</li>
     {% if show_account_icon is defined and show_account_icon %}
-    <a href="{{ requestRoot }}account">
+    <li>
         {% if user_id is defined and user_id %}
-            <span>{{ user_id }}</span>
+            <a href="account">{{ user_id }}</a>
         {% else %}
-            <span>Sign In</span>
+            <a href="account">Sign In</a>
         {% endif %}
-    </a>
+    </li>
     {% endif %}
-</div>
+</ul>

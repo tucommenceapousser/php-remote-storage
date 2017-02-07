@@ -58,7 +58,7 @@ class Controller
 
                     return $this->apiModule->head($request, $tokenInfo);
                 default:
-                    throw new HttpException('', 405);
+                    throw new HttpException('method not allowed', 405);
            }
         } catch (HttpException $e) {
             if ($request->isBrowser()) {
@@ -124,18 +124,16 @@ class Controller
                 $userId = $this->formAuth->requireAuth($request);
 
                 return $this->uiModule->postAccountPage($request, $userId);
-
             case '/_oauth/authorize':
                 $userId = $this->formAuth->requireAuth($request);
 
                 return $this->oauthModule->postAuthorize($request, $userId);
             case '/_auth/form/verify':
-
                 return $this->formAuth->verifyAuth($request);
+            case '/_auth/form/logout':
+                return $this->formAuth->logout($request);
             default:
-                throw new HttpException('', 404);
+                throw new HttpException('not found', 404);
         }
     }
 }
-
-//$request = new Request($_SERVER, $_GET, $_POST, file_get_contents('php://input'));
