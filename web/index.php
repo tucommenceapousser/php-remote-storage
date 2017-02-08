@@ -67,6 +67,7 @@ try {
     );
 
     $tokenStorage = new TokenStorage($db);
+    $tokenStorage->init();
 
     $controller = new Controller(
         $templateManager,
@@ -80,7 +81,6 @@ try {
     $response = $controller->run($request);
 
     if ('development' === $serverMode && !$response->isOkay()) {
-        // log all non 2xx responses
         // log all non 2xx responses
         error_log((string) $response);
     }
