@@ -267,7 +267,7 @@ class ApiModule
 
         $x = $this->remoteStorage->putDocument(
             $path,
-            $request->getHeader('HTTP_CONTENT_TYPE'),
+            $request->getHeader('CONTENT_TYPE'),
             $request->getBody(),
             $ifMatch,
             $ifNoneMatch

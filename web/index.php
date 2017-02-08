@@ -35,7 +35,6 @@ try {
     );
 
     $request = new Request($_SERVER, $_GET, $_POST, file_get_contents('php://input'));
-    error_log((string) $request);
 
     $templateCache = null;
     if ('development' !== $serverMode) {
@@ -79,6 +78,12 @@ try {
     );
 
     $response = $controller->run($request);
+
+    if (!$response->isOkay()) {
+        // log the response body if there was a problem to make it easier to
+        // debug what is going on
+        error_log($response->getBody());
+    }
 
     if ('development' === $serverMode && !$response->isOkay()) {
         // log all non 2xx responses

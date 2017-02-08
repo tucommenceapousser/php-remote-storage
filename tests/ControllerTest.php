@@ -454,9 +454,7 @@ class ControllerTest extends PHPUnit_Framework_TestCase
                     'SCRIPT_NAME' => '/index.php',
                     'REQUEST_METHOD' => 'PUT',
                     'HTTP_AUTHORIZATION' => 'Bearer 1234.abcd',
-                    'HTTP_CONTENT_TYPE' => 'text/plain',
-//                    'HTTP_ORIGIN' => 'https://foo.bar.example.org',
-                    'Content-Type' => 'text/plain',
+                    'CONTENT_TYPE' => 'text/plain',
                 ]
             ),
             [],
