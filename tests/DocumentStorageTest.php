@@ -17,9 +17,9 @@
 
 namespace fkooman\RemoteStorage;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
-class DocumentStorageTest extends PHPUnit_Framework_TestCase
+class DocumentStorageTest extends TestCase
 {
     private $document;
     private $tempFile;

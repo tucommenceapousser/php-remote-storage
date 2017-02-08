@@ -18,9 +18,9 @@
 namespace fkooman\RemoteStorage;
 
 use fkooman\RemoteStorage\Exception\PathException;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
-class PathTest extends PHPUnit_Framework_TestCase
+class PathTest extends TestCase
 {
     public function testPrivateDocument()
     {

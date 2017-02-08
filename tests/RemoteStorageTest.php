@@ -19,9 +19,9 @@ namespace fkooman\RemoteStorage;
 
 use fkooman\RemoteStorage\Exception\DocumentStorageException;
 use PDO;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
-class RemoteStorageTest extends PHPUnit_Framework_TestCase
+class RemoteStorageTest extends TestCase
 {
     /** @var \fkooman\RemoteStorage\RemoteStorage */
     private $r;
