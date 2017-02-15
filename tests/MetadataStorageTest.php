@@ -18,9 +18,9 @@
 namespace fkooman\RemoteStorage;
 
 use PDO;
-use PHPUnit\Framework\TestCase;
+use PHPUnit_Framework_TestCase;
 
-class MetadataStorageTest extends TestCase
+class MetadataStorageTest extends PHPUnit_Framework_TestCase
 {
     private $md;
 

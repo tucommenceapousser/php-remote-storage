@@ -21,9 +21,9 @@ use fkooman\RemoteStorage\Http\Controller;
 use fkooman\RemoteStorage\Http\Request;
 use fkooman\RemoteStorage\OAuth\TokenStorage;
 use PDO;
-use PHPUnit\Framework\TestCase;
+use PHPUnit_Framework_TestCase;
 
-class ControllerTest extends TestCase
+class ControllerTest extends PHPUnit_Framework_TestCase
 {
     /** @var \fkooman\RemoteStorage\Http\Controller */
     private $controller;
