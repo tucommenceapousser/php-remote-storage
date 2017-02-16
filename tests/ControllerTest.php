@@ -17,6 +17,7 @@
 
 namespace fkooman\RemoteStorage;
 
+use DateTime;
 use fkooman\RemoteStorage\Http\Controller;
 use fkooman\RemoteStorage\Http\Request;
 use fkooman\RemoteStorage\OAuth\TokenStorage;
@@ -42,7 +43,7 @@ class ControllerTest extends PHPUnit_Framework_TestCase
 
         $tokenStorage = new TokenStorage($db);
         $tokenStorage->init();
-        $tokenStorage->store('admin', '1234', 'abcd', 'https://example.org', 'foo:rw');
+        $tokenStorage->store('admin', '1234', 'abcd', 'https://example.org', 'foo:rw', new DateTime('2016-01-01'));
 
         // just create a directory, and leave the OS to delete it (eventually)
         $this->tmpDir = sprintf('%s/%s', sys_get_temp_dir(), bin2hex(random_bytes(16)));

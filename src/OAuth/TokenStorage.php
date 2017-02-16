@@ -18,8 +18,8 @@
 
 namespace fkooman\RemoteStorage\OAuth;
 
+use DateTime;
 use PDO;
-use PDOException;
 
 class TokenStorage
 {
@@ -29,11 +29,10 @@ class TokenStorage
     public function __construct(PDO $db)
     {
         $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        // $db->query('PRAGMA foreign_keys = ON');
         $this->db = $db;
     }
 
-    public function store($userId, $accessTokenKey, $accessToken, $clientId, $scope)
+    public function store($userId, $accessTokenKey, $accessToken, $clientId, $scope, DateTime $expiresAt)
     {
         $stmt = $this->db->prepare(
             'INSERT INTO tokens (
@@ -41,14 +40,16 @@ class TokenStorage
                 access_token_key,
                 access_token,
                 client_id,
-                scope
+                scope,
+                expires_at
              ) 
              VALUES(
                 :user_id, 
                 :access_token_key,
                 :access_token,
                 :client_id,
-                :scope
+                :scope,
+                :expires_at
              )'
         );
 
@@ -57,13 +58,8 @@ class TokenStorage
         $stmt->bindValue(':access_token', $accessToken, PDO::PARAM_STR);
         $stmt->bindValue(':client_id', $clientId, PDO::PARAM_STR);
         $stmt->bindValue(':scope', $scope, PDO::PARAM_STR);
-        try {
-            $stmt->execute();
-        } catch (PDOException $e) {
-            return false;
-        }
-
-        return true;
+        $stmt->bindValue(':expires_at', $expiresAt->format('Y-m-d H:i:s'), PDO::PARAM_STR);
+        $stmt->execute();
     }
 
     public function getExistingToken($userId, $clientId, $scope)
@@ -71,7 +67,8 @@ class TokenStorage
         $stmt = $this->db->prepare(
             'SELECT
                 access_token_key,
-                access_token
+                access_token,
+                expires_at
              FROM tokens
              WHERE
                 user_id = :user_id AND
@@ -82,7 +79,6 @@ class TokenStorage
         $stmt->bindValue(':user_id', $userId, PDO::PARAM_STR);
         $stmt->bindValue(':client_id', $clientId, PDO::PARAM_STR);
         $stmt->bindValue(':scope', $scope, PDO::PARAM_STR);
-
         $stmt->execute();
 
         return $stmt->fetch(PDO::FETCH_ASSOC);
@@ -95,7 +91,8 @@ class TokenStorage
                 user_id,    
                 access_token,
                 client_id,
-                scope
+                scope,
+                expires_at
              FROM tokens
              WHERE
                 access_token_key = :access_token_key'
@@ -133,13 +130,7 @@ class TokenStorage
 
         $stmt->bindValue(':user_id', $userId, PDO::PARAM_STR);
         $stmt->bindValue(':client_id', $clientId, PDO::PARAM_STR);
-        try {
-            $stmt->execute();
-        } catch (PDOException $e) {
-            return false;
-        }
-
-        return true;
+        $stmt->execute();
     }
 
     public function init()
@@ -151,6 +142,7 @@ class TokenStorage
                 access_token VARCHAR(255) NOT NULL,
                 client_id VARCHAR(255) NOT NULL,
                 scope VARCHAR(255) NOT NULL,
+                expires_at VARCHAR(255) NOT NULL,
                 UNIQUE(access_token_key)
             )',
         ];

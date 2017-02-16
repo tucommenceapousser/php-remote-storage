@@ -4,6 +4,9 @@
 
 serverMode: development
 
+# validity of OAuth token (90 days)
+tokenValidity: 7776000
+
 # Users
 Users:
     # foo:bar

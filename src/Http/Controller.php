@@ -26,6 +26,7 @@ class Controller
     public function __construct(TplInterface $tpl, SessionInterface $session, TokenStorage $tokenStorage, RandomInterface $random, RemoteStorage $remoteStorage, array $userPass)
     {
         $this->tpl = $tpl;
+        // XXX fix this!
         $serverMode = 'development';
         $this->formAuth = new FormAuthentication($session, $tpl, $userPass);
         $this->bearerAuth = new BearerAuthentication($tokenStorage);

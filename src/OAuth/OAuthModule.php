@@ -18,6 +18,8 @@
 
 namespace fkooman\RemoteStorage\OAuth;
 
+use DateInterval;
+use DateTime;
 use fkooman\RemoteStorage\Http\Exception\HttpException;
 use fkooman\RemoteStorage\Http\HtmlResponse;
 use fkooman\RemoteStorage\Http\RedirectResponse;
@@ -36,11 +38,29 @@ class OAuthModule
     /** @var TokenStorage */
     private $tokenStorage;
 
-    public function __construct(TplInterface $tpl, RandomInterface $random, TokenStorage $tokenStorage)
+    /** @var \DateTime */
+    private $dateTime;
+
+    /** @var int */
+    private $expiresIn = 7776000;   /* 90 days */
+
+    public function __construct(TplInterface $tpl, RandomInterface $random, TokenStorage $tokenStorage, DateTime $dateTime = null)
     {
         $this->tpl = $tpl;
         $this->random = $random;
         $this->tokenStorage = $tokenStorage;
+        if (is_null($dateTime)) {
+            $dateTime = new DateTime();
+        }
+        $this->dateTime = $dateTime;
+    }
+
+    /**
+     * @param int $expiresIn
+     */
+    public function setExpiresIn($expiresIn)
+    {
+        $this->expiresIn = (int) $expiresIn;
     }
 
     public function getAuthorize(Request $request, $userId)
@@ -91,9 +111,10 @@ class OAuthModule
             $request->getQueryParameter('scope')
         );
 
-        // add access_token (and optionally state) to redirect_uri
+        // add access_token, expires_in (and optionally state) to redirect_uri
         $redirectParameters = [
             'access_token' => $accessToken,
+            'expires_in' => $this->expiresIn,
         ];
         if (!is_null($state)) {
             $redirectParameters['state'] = $state;
@@ -112,22 +133,25 @@ class OAuthModule
             $scope
         );
 
-        if (false !== $existingToken) {
+        if (false !== $existingToken && $this->dateTime < new DateTime($existingToken['expires_at'])) {
             // if the user already has an access_token for this client and
             // scope, reuse it
             $accessTokenKey = $existingToken['access_token_key'];
             $accessToken = $existingToken['access_token'];
         } else {
             // generate a new one
-            $accessTokenKey = $this->random->get(8);
+            $accessTokenKey = $this->random->get(16);
             $accessToken = $this->random->get(16);
+            $expiresAt = date_add(clone $this->dateTime, new DateInterval(sprintf('PT%dS', $this->expiresIn)));
+
             // store it
             $this->tokenStorage->store(
                 $userId,
                 $accessTokenKey,
                 $accessToken,
                 $clientId,
-                $scope
+                $scope,
+                $expiresAt
             );
         }
 
