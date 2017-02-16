@@ -1,6 +1,6 @@
 <?php
 /**
- *  Copyright (C) 2016 SURFnet.
+ *  Copyright (C) 2017 SURFnet.
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License as
@@ -24,51 +24,57 @@ use Symfony\Component\Yaml\Yaml;
 class Config
 {
     /** @var array */
-    protected $configData;
+    private $data;
 
-    public function __construct(array $configData)
+    /**
+     * @param array $data
+     */
+    public function __construct(array $data)
     {
-        $this->configData = $configData;
-        $this->configData = array_merge(static::defaultConfig(), $configData);
+        $this->data = $data;
     }
 
-    public static function defaultConfig()
+    /**
+     * @param string $key
+     */
+    public function __isset($key)
     {
-        return [];
+        return array_key_exists($key, $this->data);
     }
 
-    public function hasSection($key)
+    /**
+     * @param string $key
+     *
+     * @return object|string|array
+     */
+    public function __get($key)
     {
-        if (!array_key_exists($key, $this->configData)) {
-            throw new ConfigException(sprintf('section "%s" not available', $key));
+        if (!array_key_exists($key, $this->data)) {
+            // consumers MUST check first if a field is available before
+            // requesting it
+            throw new ConfigException(sprintf('missing field "%s" in configuration', $key));
         }
 
-        return is_array($this->configData[$key]);
-    }
+        if (is_array($this->data[$key])) {
+            // if all we get is a "flat" array with sequential numeric keys
+            // return the array instead of an object
+            $k = array_keys($this->data[$key]);
+            if ($k === range(0, count($k) - 1)) {
+                return $this->data[$key];
+            }
 
-    public function getSection($key)
-    {
-        if (false === $this->hasSection($key)) {
-            throw new ConfigException(sprintf('"%s" is not a section', $key));
+            return new self($this->data[$key]);
         }
 
-        // do not return the parent object if we were subclassed, but an actual
-        // "Config" object to avoid copying in the defaults if set
-        return new self($this->configData[$key]);
+        return $this->data[$key];
     }
 
-    public function hasItem($key)
+    /**
+     * @return array
+     */
+    public function asArray()
     {
-        return array_key_exists($key, $this->configData);
-    }
-
-    public function getItem($key)
-    {
-        if (false === $this->hasItem($key)) {
-            throw new ConfigException(sprintf('item "%s" not available', $key));
-        }
-
-        return $this->configData[$key];
+        return $this->data;
     }
 
     public static function fromFile($configFile)
@@ -78,11 +84,6 @@ class Config
         }
 
         return new static(Yaml::parse($fileContent));
-    }
-
-    public function toArray()
-    {
-        return $this->configData;
     }
 
     public static function toFile($configFile, array $configData)

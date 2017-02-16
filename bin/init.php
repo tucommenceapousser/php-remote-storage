@@ -17,13 +17,11 @@
  */
 require_once sprintf('%s/vendor/autoload.php', dirname(__DIR__));
 
-use fkooman\RemoteStorage\Config;
 use fkooman\RemoteStorage\MetadataStorage;
 use fkooman\RemoteStorage\OAuth\TokenStorage;
 use fkooman\RemoteStorage\Random;
 
 try {
-    $config = Config::fromFile(dirname(__DIR__).'/config/server.yaml');
     $db = new PDO(sprintf('sqlite:%s/data/rs.sqlite', dirname(__DIR__)));
 
     $metadataStorage = new MetadataStorage($db, new Random());

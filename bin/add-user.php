@@ -16,7 +16,7 @@ try {
     $passwordHash = password_hash($secret, PASSWORD_DEFAULT);
 
     $config = Config::fromFile(dirname(__DIR__).'/config/server.yaml');
-    $configData = $config->toArray();
+    $configData = $config->asArray();
     $configData['Users'][$userName] = $passwordHash;
 
     Config::toFile(dirname(__DIR__).'/config/server.yaml', $configData);

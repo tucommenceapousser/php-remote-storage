@@ -20,11 +20,6 @@ namespace fkooman\RemoteStorage;
 
 use ParagonIE\ConstantTime\Hex;
 
-/**
- * Random implementation using `random_bytes`.
- *
- * Uses polyfill on PHP < 7.
- */
 class Random implements RandomInterface
 {
     public function get($length)

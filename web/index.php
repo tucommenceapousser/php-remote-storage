@@ -29,7 +29,7 @@ use fkooman\RemoteStorage\TwigTpl;
 
 try {
     $config = Config::fromFile(dirname(__DIR__).'/config/server.yaml');
-    $serverMode = $config->getItem('serverMode');
+    $serverMode = $config->serverMode;
     $document = new DocumentStorage(
         sprintf('%s/data/storage', dirname(__DIR__))
     );
@@ -74,7 +74,7 @@ try {
         $tokenStorage,
         new Random(),
         $remoteStorage,
-        $config->getSection('Users')->toArray()
+        $config->Users->asArray()
     );
 
     $response = $controller->run($request);
