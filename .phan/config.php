@@ -7,6 +7,7 @@ return [
         'bin',
         'vendor/symfony',
         'vendor/twig',
+        'vendor/paragonie/constant_time_encoding',
     ],
     'exclude_analysis_directory_list' => [
         'vendor/',

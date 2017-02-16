@@ -18,6 +18,8 @@
 
 namespace fkooman\RemoteStorage;
 
+use ParagonIE\ConstantTime\Hex;
+
 /**
  * Random implementation using `random_bytes`.
  *
@@ -27,6 +29,8 @@ class Random implements RandomInterface
 {
     public function get($length)
     {
-        return bin2hex(random_bytes($length));
+        return Hex::encode(
+            random_bytes($length)
+        );
     }
 }
