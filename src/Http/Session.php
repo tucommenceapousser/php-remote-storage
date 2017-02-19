@@ -31,14 +31,8 @@ class Session implements SessionInterface
     public function startSession()
     {
         if ('' === session_id()) {
-            session_start(
-                [
-                    'use_cookies' => true,
-                    'cookie_secure' => $this->secureOnly,
-                    'cookie_httponly' => true,
-                    'use_only_cookies' => true,
-                ]
-            );
+            session_set_cookie_params(0, '/', '', $this->secureOnly, true);
+            session_start();
         }
 
         // https://paragonie.com/blog/2015/04/fast-track-safe-and-secure-php-sessions
