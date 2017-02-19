@@ -32,19 +32,23 @@ class ControllerTest extends PHPUnit_Framework_TestCase
         // set up the directory structure
         $projectDir = dirname(__DIR__);
         $tmpDir = sprintf('%s/%s', sys_get_temp_dir(), bin2hex(random_bytes(16)));
-//        echo $tmpDir;
         mkdir($tmpDir);
         mkdir(sprintf('%s/config', $tmpDir));
         copy(
             sprintf('%s/config/server.dev.yaml.example', $projectDir),
             sprintf('%s/config/server.yaml', $tmpDir)
         );
-        mkdir(sprintf('%s/data', $tmpDir));
-//        mkdir(sprintf('%s/data/storage', $tmpDir));
-//        mkdir(sprintf('%s/data/storage/foo', $tmpDir));
-//        mkdir(sprintf('%s/data/storage/foo/public', $tmpDir));
-//        file_put_contents(sprintf('%s/data/storage/foo/public/hello.txt', $tmpDir), 'Hello World!');
 
+        // copy the templates
+        mkdir(sprintf('%s/views', $tmpDir));
+        foreach (glob(sprintf('%s/views/*', $projectDir)) as $templateFile) {
+            copy(
+                $templateFile,
+                sprintf('%s/views/%s', $tmpDir, basename($templateFile))
+            );
+        }
+
+        mkdir(sprintf('%s/data', $tmpDir));
         $db = new PDO(sprintf('sqlite:%s/data/rs.sqlite', $tmpDir));
         $metadataStorage = new MetadataStorage($db);
         $metadataStorage->init();
@@ -86,6 +90,57 @@ class ControllerTest extends PHPUnit_Framework_TestCase
     }
 
     public function testPutFile()
+    {
+    }
+
+    public function testDeleteFile()
+    {
+    }
+
+    public function testGetAuthorizationNotLoggedIn()
+    {
+        $queryParameters = [
+            'client_id' => 'https://app.example.org',
+            'redirect_uri' => 'https://app.example.org/callback.html',
+            'response_type' => 'token',
+            'scope' => 'foo:r',
+        ];
+
+        $request = new Request(
+            [
+                'SERVER_NAME' => 'example.org',
+                'SERVER_PORT' => 80,
+                'REQUEST_URI' => sprintf('/authorize?%s', http_build_query($queryParameters)),
+                'SCRIPT_NAME' => '/index.php',
+                'REQUEST_METHOD' => 'GET',
+            ],
+            $queryParameters,
+            [],
+            ''
+        );
+        $response = $this->controller->run($request);
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame(
+            file_get_contents(
+                sprintf('%s/data/testGetAuthorizationNotLoggedIn', __DIR__)
+            ),
+            $response->getBody()
+        );
+    }
+
+    public function testPostAuthorizationNotLoggedIn()
+    {
+    }
+
+    public function testGetAuthorizationLoggedIn()
+    {
+    }
+
+    public function testPostAuthorization()
+    {
+    }
+
+    public function testGetWebfinger()
     {
     }
 }
