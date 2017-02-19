@@ -57,7 +57,7 @@ class WebfingerModule
                     'properties' => [
                         'http://remotestorage.io/spec/version' => 'draft-dejong-remotestorage-05',
                         'http://remotestorage.io/spec/web-authoring' => null,
-                        'http://tools.ietf.org/html/rfc6749#section-4.2' => sprintf('%s_oauth/authorize?login_hint=%s', $request->getRootUri(), $user),
+                        'http://tools.ietf.org/html/rfc6749#section-4.2' => sprintf('%sauthorize?login_hint=%s', $request->getRootUri(), $user),
                         'http://tools.ietf.org/html/rfc6750#section-2.3' => 'true',
                         'http://tools.ietf.org/html/rfc7233' => 'development' !== $this->serverMode ? 'GET' : null,
                     ],
@@ -69,7 +69,7 @@ class WebfingerModule
                     'properties' => [
                         'http://remotestorage.io/spec/version' => 'draft-dejong-remotestorage-03',
                         'http://tools.ietf.org/html/rfc2616#section-14.16' => 'development' !== $this->serverMode ? 'GET' : false,
-                        'http://tools.ietf.org/html/rfc6749#section-4.2' => sprintf('%s_oauth/authorize?login_hint=%s', $request->getRootUri(), $user),
+                        'http://tools.ietf.org/html/rfc6749#section-4.2' => sprintf('%sauthorize?login_hint=%s', $request->getRootUri(), $user),
                         'http://tools.ietf.org/html/rfc6750#section-2.3' => true,
                     ],
                     'rel' => 'remotestorage',

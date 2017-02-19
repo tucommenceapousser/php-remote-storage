@@ -18,40 +18,51 @@
 
 namespace fkooman\RemoteStorage\Http;
 
-use fkooman\RemoteStorage\Http\Exception\HttpException;
-
 class Session implements SessionInterface
 {
-    public function __construct($serverName, $requestRoot, $secureOnly)
-    {
-        session_set_cookie_params(0, $requestRoot, $serverName, $secureOnly, true);
-        session_start();
+    /** @var bool */
+    private $secureOnly = true;
 
+    public function setSecureOnly($secureOnly)
+    {
+        $this->secureOnly = (bool) $secureOnly;
+    }
+
+    public function startSession()
+    {
+        if ('' === session_id()) {
+            session_start(
+                [
+                    'use_cookies' => true,
+                    'cookie_secure' => $this->secureOnly,
+                    'cookie_httponly' => true,
+                    'use_only_cookies' => true,
+                ]
+            );
+        }
+
+        // https://paragonie.com/blog/2015/04/fast-track-safe-and-secure-php-sessions
         // Make sure we have a canary set
         if (!isset($_SESSION['canary'])) {
-            $this->setCanary($serverName, $requestRoot);
+            session_regenerate_id(true);
+            $_SESSION['canary'] = time();
         }
         // Regenerate session ID every five minutes:
         if ($_SESSION['canary'] < time() - 300) {
-            $this->setCanary($serverName, $requestRoot);
-        }
-
-        if ($serverName !== $_SESSION['serverName']) {
-            throw new HttpException('session error (serverName)', 400);
-        }
-
-        if ($requestRoot !== $_SESSION['requestRoot']) {
-            throw new HttpException('session error (requestRoot)', 400);
+            session_regenerate_id(true);
+            $_SESSION['canary'] = time();
         }
     }
 
     public function set($key, $value)
     {
+        $this->startSession();
         $_SESSION[$key] = $value;
     }
 
     public function delete($key)
     {
+        $this->startSession();
         if ($this->has($key)) {
             unset($_SESSION[$key]);
         }
@@ -59,11 +70,14 @@ class Session implements SessionInterface
 
     public function has($key)
     {
+        $this->startSession();
+
         return array_key_exists($key, $_SESSION);
     }
 
     public function get($key)
     {
+        $this->startSession();
         if ($this->has($key)) {
             return $_SESSION[$key];
         }
@@ -73,14 +87,7 @@ class Session implements SessionInterface
 
     public function destroy()
     {
+        $this->startSession();
         session_destroy();
-    }
-
-    private function setCanary($serverName, $requestRoot)
-    {
-        session_regenerate_id(true);
-        $_SESSION['canary'] = time();
-        $_SESSION['serverName'] = $serverName;
-        $_SESSION['requestRoot'] = $requestRoot;
     }
 }

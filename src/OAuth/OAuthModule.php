@@ -44,14 +44,11 @@ class OAuthModule
     /** @var int */
     private $expiresIn = 7776000;   /* 90 days */
 
-    public function __construct(TplInterface $tpl, RandomInterface $random, TokenStorage $tokenStorage, DateTime $dateTime = null)
+    public function __construct(TplInterface $tpl, TokenStorage $tokenStorage, RandomInterface $random, DateTime $dateTime)
     {
         $this->tpl = $tpl;
-        $this->random = $random;
         $this->tokenStorage = $tokenStorage;
-        if (is_null($dateTime)) {
-            $dateTime = new DateTime();
-        }
+        $this->random = $random;
         $this->dateTime = $dateTime;
     }
 

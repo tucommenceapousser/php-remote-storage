@@ -20,6 +20,11 @@ namespace fkooman\RemoteStorage\Http;
 
 interface SessionInterface
 {
+    /**
+     * @var bool
+     */
+    public function setSecureOnly($secureOnly);
+
     public function set($key, $value);
 
     public function delete($key);

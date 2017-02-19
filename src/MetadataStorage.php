@@ -28,11 +28,14 @@ class MetadataStorage
     /** @var RandomInterface */
     private $random;
 
-    public function __construct(PDO $db, RandomInterface $random)
+    public function __construct(PDO $db, RandomInterface $random = null)
     {
         $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         // $db->query('PRAGMA foreign_keys = ON');
         $this->db = $db;
+        if (is_null($random)) {
+            $random = new Random();
+        }
         $this->random = $random;
     }
 
@@ -118,7 +121,7 @@ class MetadataStorage
         ];
     }
 
-    public function initDatabase()
+    public function init()
     {
         $queries = self::createTableQueries();
         foreach ($queries as $q) {

@@ -15,7 +15,7 @@
         </p>
     {% endif %}
 
-    <form method="post" action="{{ requestRoot }}_auth/form/verify">
+    <form method="post" action="authenticate">
         <fieldset>
             {% if _form_auth_invalid_credentials %}
                 <label for="userName">Username</label>

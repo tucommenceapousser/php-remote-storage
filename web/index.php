@@ -16,77 +16,23 @@
  */
 require_once sprintf('%s/vendor/autoload.php', dirname(__DIR__));
 
-use fkooman\RemoteStorage\Config;
-use fkooman\RemoteStorage\DocumentStorage;
-use fkooman\RemoteStorage\Http\Controller;
+use fkooman\RemoteStorage\Controller;
 use fkooman\RemoteStorage\Http\Request;
 use fkooman\RemoteStorage\Http\Session;
-use fkooman\RemoteStorage\MetadataStorage;
-use fkooman\RemoteStorage\OAuth\TokenStorage;
 use fkooman\RemoteStorage\Random;
-use fkooman\RemoteStorage\RemoteStorage;
-use fkooman\RemoteStorage\TwigTpl;
 
 try {
-    $config = Config::fromFile(dirname(__DIR__).'/config/server.yaml');
-    $serverMode = $config->serverMode;
-    $document = new DocumentStorage(
-        sprintf('%s/data/storage', dirname(__DIR__))
+    $appDir = dirname(__DIR__);
+    $controller = new Controller(
+        $appDir,
+        new Session(),
+        new Random(),
+        new DateTime()
     );
 
     $request = new Request($_SERVER, $_GET, $_POST, file_get_contents('php://input'));
-
-    $templateCache = null;
-    if ('development' !== $serverMode) {
-        $templateCache = sprintf('%s/data/tpl', dirname(__DIR__));
-    }
-    $templateManager = new TwigTpl(
-        [
-            dirname(__DIR__).'/views',
-            dirname(__DIR__).'/config/views',
-        ],
-        $templateCache
-    );
-    $templateManager->setDefault(
-        [
-            'requestRoot' => $request->getRoot(),
-            'serverMode' => $serverMode,
-        ]
-    );
-
-    $db = new PDO(sprintf('sqlite:%s/data/rs.sqlite', dirname(__DIR__)));
-    $md = new MetadataStorage($db, new Random());
-    $md->initDatabase();
-    $remoteStorage = new RemoteStorage($md, $document);
-
-    $session = new Session(
-        $request->getServerName(),
-        $request->getRoot(),
-        'development' !== $serverMode
-    );
-
-    $tokenStorage = new TokenStorage($db);
-    $tokenStorage->init();
-
-    $controller = new Controller(
-        $templateManager,
-        $session,
-        $tokenStorage,
-        new Random(),
-        $remoteStorage,
-        $config->Users->asArray()
-    );
-
     $response = $controller->run($request);
-
     if (!$response->isOkay()) {
-        // log the response body if there was a problem to make it easier to
-        // debug what is going on
-        error_log($response->getBody());
-    }
-
-    if ('development' === $serverMode && !$response->isOkay()) {
-        // log all non 2xx responses
         error_log((string) $response);
     }
     $response->send();
