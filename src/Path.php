@@ -29,8 +29,6 @@ class Path
 
     public function __construct($p)
     {
-        //        error_log($p);
-
         if (!is_string($p)) {
             throw new PathException('invalid path: not a string');
         }
