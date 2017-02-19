@@ -37,8 +37,8 @@ class ApiModule
     }
 
     /**
-     * @param Request      $request
-     * @param string|false $tokenInfo
+     * @param Request                                      $request
+     * @param \fkooman\RemoteStorage\OAuth\TokenInfo|false $tokenInfo
      */
     public function get(Request $request, $tokenInfo)
     {
