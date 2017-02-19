@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>remoteStorage</title>
+  <link rel="stylesheet" type="text/css" href="css/normalize.css">
+  <link rel="stylesheet" type="text/css" href="css/screen.css">
+</head>
+<body>
+    <ul class="menu">
+  <li class="logo">remoteStorage</li>
+    </ul>
+
+    <p>
+        Please sign in with your username and password.
+    </p>
+
+    
+    <form method="post" action="authenticate">
+        <fieldset>
+                            <label for="userName">Username</label>
+                <input type="text"     id="userName" name="userName" autocapitalize="off" placeholder="Username" autofocus required>
+                <label for="userPass">Password</label>
+                <input type="password" id="userPass" name="userPass" placeholder="Password" required>
+             
+        </fieldset>
+        <fieldset>
+            <input type="hidden" name="_form_auth_redirect_to" value="http://example.org/authorize?client_id=https%3A%2F%2Fapp.example.org&amp;redirect_uri=https%3A%2F%2Fapp.example.org%2Fcallback.html&amp;response_type=token&amp;scope=foo%3Ar">
+            <button type="submit">Sign In</button>
+        </fieldset>
+    </form>
+
+    <div class="footer">
+            <p>
+            <span class="error">development mode</span>
+        </p>
+        Powered by <a href="https://github.com/fkooman/php-remote-storage">php-remote-storage</a>
+</div>
+</body>
+</html>
