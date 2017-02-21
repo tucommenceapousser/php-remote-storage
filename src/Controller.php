@@ -109,7 +109,7 @@ class Controller
                 $response = new Response($e->getCode(), 'text/html');
                 $response->setBody(
                     $this->templateManager->render(
-                        'errorPage',
+                        'error',
                         [
                             'code' => $e->getCode(),
                             'message' => $e->getMessage(),
@@ -144,16 +144,14 @@ class Controller
 
                 return $this->oauthModule->getAuthorize($request, $userId);
             case '/':
-                $userId = $this->auth['form']->optionalAuth($request);
-
-                return $this->uiModule->getRootPage($request, $userId);
-            case '/account':
                 $userId = $this->auth['form']->requireAuth($request);
                 if ($userId instanceof Response) {
                     return $userId;
                 }
 
-                return $this->uiModule->getAccountPage($request, $userId);
+                return $this->uiModule->getHome($request, $userId);
+            case '/logout':
+                return $this->auth['form']->logout($request);
             default:
                 $tokenInfo = $this->auth['bearer']->optionalAuth($request);
 
@@ -164,10 +162,10 @@ class Controller
     private function handlePost(Request $request)
     {
         switch ($request->getPathInfo()) {
-            case '/account':
+            case '/':
                 $userId = $this->auth['form']->requireAuth($request);
 
-                return $this->uiModule->postAccountPage($request, $userId);
+                return $this->uiModule->postHome($request, $userId);
             case '/authorize':
                 $userId = $this->auth['form']->requireAuth($request);
 

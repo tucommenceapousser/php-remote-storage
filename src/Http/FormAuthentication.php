@@ -58,7 +58,7 @@ class FormAuthentication
         $response = new Response(200, 'text/html');
         $response->setBody(
             $this->tpl->render(
-                'formAuthentication',
+                'authenticate',
                 [
                     '_form_auth_invalid_credentials' => false,
                     '_form_auth_redirect_to' => $request->getUri(),
@@ -102,7 +102,7 @@ class FormAuthentication
         $response = new Response(200, 'text/html');
         $response->setBody(
             $this->tpl->render(
-                'formAuthentication',
+                'authenticate',
                 [
                     '_form_auth_invalid_credentials' => true,
                     '_form_auth_invalid_credentials_user' => $authUser,

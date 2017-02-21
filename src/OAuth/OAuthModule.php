@@ -68,8 +68,9 @@ class OAuthModule
         // ask for approving this client/scope
         return new HtmlResponse(
             $this->tpl->render(
-                'authorizeOAuthClient',
+                'authorize',
                 [
+                    'user_id' => $userId,
                     'client_id' => $request->getQueryParameter('client_id'),
                     'scope' => $request->getQueryParameter('scope'),
                     'redirect_uri' => $request->getQueryParameter('redirect_uri'),

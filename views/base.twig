@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>php-remote-storage</title>
+  <link rel="stylesheet" type="text/css" href="css/screen.css">
+</head>
+<body>
+    <div class="nav">
+        <span class="left">
+            <img src="img/rs.svg" width="48" height="45">
+        </span>
+        <span class="right">
+            {% if user_id is defined %}
+                {{ user_id }}
+                <span><a href="logout">Sign Out</a></span>
+            {% endif %}
+        </span>
+    </div>
+    <h2>{% block title %}{% endblock %}</h2>
+    <div class="content">{% block content %}{% endblock %}</div>
+    <div class="footer">
+        Powered by <a href="https://github.com/fkooman/php-remote-storage">php-remote-storage</a>
+    </div>
+</body>
+</html>

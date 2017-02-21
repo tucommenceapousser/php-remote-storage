@@ -1,21 +1,14 @@
-<!DOCTYPE html>
+{% extends "base.twig" %}
 
-<html lang="en">
-{% include 'head.twig' %}
-<body>
-    {% include 'header.twig' %}
-
-    <p>
-        Please sign in with your username and password.
-    </p>
-
+{% block title %}Sign In{% endblock %}
+{% block content %}
     {% if _form_auth_invalid_credentials %}
         <p class="error">
             The credentials you provided are not correct. Please try again!
         </p>
     {% endif %}
 
-    <form method="post" action="authenticate">
+    <form method="post" class="signin" action="authenticate">
         <fieldset>
             {% if _form_auth_invalid_credentials %}
                 <label for="userName">Username</label>
@@ -31,10 +24,7 @@
         </fieldset>
         <fieldset>
             <input type="hidden" name="_form_auth_redirect_to" value="{{ _form_auth_redirect_to }}">
-            <button type="submit">Sign In</button>
+            <button class="success" type="submit">Sign In</button>
         </fieldset>
     </form>
-
-    {% include 'footer.twig' %}
-</body>
-</html>
+{% endblock %}

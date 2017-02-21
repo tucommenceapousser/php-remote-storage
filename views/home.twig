@@ -1,15 +1,8 @@
-<!DOCTYPE html>
+{% extends "base.twig" %}
 
-<html lang="en">
-{% include 'head.twig' %}
-<body>
-    {% include 'header.twig' %}
-
-    <p>
-        Welcome to your account page! Here you can find some account information and a list of applications you authorized.
-    </p>
-
-    <h2>Info</h2>
+{% block title %}Home{% endblock %}
+{% block content %}
+    <h3>Info</h3>
     <table> 
         <tr>
             <th>
@@ -23,20 +16,7 @@
         </tr>
     </table>
 
-    <!-- logout -->
-    <form method="post" action="logout">
-        <fieldset>
-            <button type="submit">Sign Out</button>
-        </fieldset>    
-    </form>
-
-    <h2>Applications</h2>
-    <p>
-        <a href="https://wiki.remotestorage.io/Apps">Here</a> you can find 
-        a list of applications supporting 
-        <a href="https://remotestorage.io/">remoteStorage</a>.
-    </p>
-    
+    <h3>Authorized Applications</h3>
     <p>
     This is the list of applications that have access to your remoteStorage
     data. You can revoke their access here.
@@ -44,18 +24,18 @@
     
     {% if not approval_list %}
         <p class="plain">
-            No permissions granted yet! You need to use an application first ☺
+            No permissions granted yet!
         </p>
     {% else %}
         <table class="striped">
             <thead>
-                <tr><th>Application</th><th>Permissions</th><th></th></tr>
+                <tr><th>Application</th><th>Permission(s)</th><th></th></tr>
             </thead>
             <tbody>
             {% for approval in approval_list %}
                 <tr>
-                    <td><a href="{{ approval.client_id }}"><code>{{ approval.client_id }}</code></a></td>                    
-                    <td><code>{{ approval.scope }}</code></td>
+                    <td><a href="{{ approval.client_id }}">{{ approval.client_id }}</a></td>                    
+                    <td>{{ approval.scope }}</td>
                     <td class="text-right">
                         <form method="post">
                             <input type="hidden" name="client_id" value="{{ approval.client_id }}">
@@ -68,8 +48,4 @@
             </tbody>
         </table>
     {% endif %}
-
-    {% include 'footer.twig' %}
-
-</body>
-</html>
+{% endblock %}

@@ -40,38 +40,21 @@ class UiModule
     }
 
     /**
-     * @param Request      $request
-     * @param string|false $userId
-     */
-    public function getRootPage(Request $request, $userId)
-    {
-        return new HtmlResponse(
-            $this->tpl->render(
-                'indexPage',
-                [
-                    'user_id' => $userId,
-                    'show_account_icon' => true,
-                ]
-            )
-        );
-    }
-
-    /**
      * @param Request $request
      * @param string  $userId
      */
-    public function getAccountPage(Request $request, $userId)
+    public function getHome(Request $request, $userId)
     {
         $approvalList = $this->tokenStorage->getAuthorizedClients($userId);
 
         return new HtmlResponse(
             $this->tpl->render(
-                'getAccountPage',
+                'home',
                 [
                     'approval_list' => $approvalList,
                     'host' => $request->getServerName(),
                     'user_id' => $userId,
-                    'disk_usage' => $this->remoteStorage->getFolderSize(new Path('/'.$userId.'/')),
+                    'disk_usage' => $this->remoteStorage->getFolderSize(new Path(sprintf('/%s/', $userId))),
                     'request_url' => $request->getUri(),
                     'show_account_icon' => true,
                 ]
@@ -83,7 +66,7 @@ class UiModule
      * @param Request $request
      * @param string  $userId
      */
-    public function postAccountPage(Request $request, $userId)
+    public function postHome(Request $request, $userId)
     {
         // XXX InputValidation
         $clientId = $request->getPostParameter('client_id');

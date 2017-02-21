@@ -1,12 +1,7 @@
-<!DOCTYPE html>
+{% extends "base.twig" %}
 
-<html lang="en">
-{% include 'head.twig' %}
-<body>
-    {% include 'header.twig' %}
-    
-    <h2>Approval</h2>
-
+{% block title %}Approval{% endblock %}
+{% block content %}
     <p>An application wants to act on your behalf.</p>
 
     <dl>
@@ -19,7 +14,4 @@
         <button class="error" type="submit" name="approve" value="no">Reject</button>
         <button class="success" type="submit" name="approve" value="yes">Approve</button>
     </form>
-
-    {% include 'footer.twig' %}
-</body>
-</html>
+{% endblock %}
