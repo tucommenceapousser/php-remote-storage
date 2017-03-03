@@ -16,17 +16,17 @@
         </tr>
     </table>
 
-    <h3>Authorized Applications</h3>
-    <p>
-    This is the list of applications that have access to your remoteStorage
-    data. You can revoke their access here.
-    </p>
-    
+    <h3>Authorized Applications</h3>    
     {% if not approval_list %}
         <p class="plain">
-            No permissions granted yet!
+            No applications have been granted permissions yet!
         </p>
     {% else %}
+        <p>
+        This is the list of applications that have access to your remoteStorage
+        data. You can revoke their access here.
+        </p>
+
         <table class="striped">
             <thead>
                 <tr><th>Application</th><th>Permission(s)</th><th></th></tr>

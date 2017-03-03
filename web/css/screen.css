@@ -13,12 +13,21 @@ a {
     color: #000;
 }
 
+code {
+    font-family: monospace, monospace;
+    font-size: 1em;
+}
+
 div.nav {
     background-color: #333;
     color: #fff;
     text-align: right;
-/*    height: 60px;*/
-    line-height: 4;
+    line-height: 3em;
+}
+
+div.nav img {
+    margin-top: 0.5em;
+    height: 2em;
 }
 
 div.nav a {
@@ -121,6 +130,5 @@ button.error {
 button.success {
     background-color: #063;
     border: 1px solid #052;
-/*    background-color: #0b0;*/
     color: #fff;
 }
