@@ -36,7 +36,7 @@ I use both these services:
 
 ## Ubuntu/Debian
 
-    $ sudo apt-get install apache2 php5 php5-curl libapache2-mod-xsendfile php5-sqlite
+    $ sudo apt-get install apache2 php5 php5-mbstring php5-curl libapache2-mod-xsendfile php5-sqlite
 
 # Downloading
 
