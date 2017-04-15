@@ -17,7 +17,7 @@ configuration as much as possible.
 
 ## Ubuntu/Debian
 
-    $ sudo apt-get install php5-cli php5-curl php5-sqlite
+    $ sudo apt-get install php5-cli php5-curl php5-sqlite php5-mbstring
 
 ## Arch Linux
 

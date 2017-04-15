@@ -20,7 +20,7 @@ to set up integration testing.
 
 ## Ubuntu
 
-    $ sudo apt-get install php5-cli php5-curl php5-sqlite git
+    $ sudo apt-get install php5-cli php5-curl php5-sqlite git php5-mbstring
 
 On Ubuntu you need to manually install [Composer](https://getcomposer.org). 
 
