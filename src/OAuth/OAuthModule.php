@@ -93,7 +93,7 @@ class OAuthModule
                 'error' => 'access_denied',
                 'error_description' => 'user refused authorization',
             ];
-            if (!is_null($state)) {
+            if (null !== $state) {
                 $redirectParameters['state'] = $state;
             }
             $redirectQuery = http_build_query($redirectParameters);
@@ -114,7 +114,7 @@ class OAuthModule
             'access_token' => $accessToken,
             'expires_in' => $this->expiresIn,
         ];
-        if (!is_null($state)) {
+        if (null !== $state) {
             $redirectParameters['state'] = $state;
         }
         $redirectQuery = http_build_query($redirectParameters);
@@ -187,7 +187,7 @@ class OAuthModule
 
         // state is OPTIONAL in remoteStorage
         $state = $request->getQueryParameter('state', false, null);
-        if (!is_null($state)) {
+        if (null !== $state) {
             if (1 !== preg_match('/^[\x20-\x7E]+$/', $state)) {
                 throw new HttpException('invalid state', 400);
             }

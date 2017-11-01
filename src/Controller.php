@@ -38,6 +38,7 @@ class Controller
      * @param string $storageRoot
      * @param string $dbDsn
      * @param array  $templateFolders
+     * @param mixed  $appDir
      */
     public function __construct($appDir, SessionInterface $session, RandomInterface $random, DateTime $dateTime)
     {

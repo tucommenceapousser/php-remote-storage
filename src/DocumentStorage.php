@@ -79,6 +79,8 @@ class DocumentStorage
      * Store a new document.
      *
      * @returns an array of all created objects
+     *
+     * @param mixed $documentContent
      */
     public function putDocument(Path $p, $documentContent)
     {

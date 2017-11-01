@@ -33,7 +33,7 @@ class MetadataStorage
         $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         // $db->query('PRAGMA foreign_keys = ON');
         $this->db = $db;
-        if (is_null($random)) {
+        if (null === $random) {
             $random = new Random();
         }
         $this->random = $random;
@@ -69,6 +69,8 @@ class MetadataStorage
      * thus make it possible to have files with different content to have the same
      * sequence number in the same location, but in order to check if all versions
      * are updated up to the root we have to do this this way...
+     *
+     * @param mixed $contentType
      */
     public function updateDocument(Path $p, $contentType)
     {

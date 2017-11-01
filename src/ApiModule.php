@@ -142,7 +142,7 @@ class ApiModule
         );
 
         if (null !== $requestedVersion) {
-            if (in_array($folderVersion, $requestedVersion)) {
+            if (in_array($folderVersion, $requestedVersion, true)) {
                 //return new RemoteStorageResponse($request, 304, $folderVersion);
                 $response = new Response(304, 'application/ld+json');
                 $response->addHeader('ETag', '"'.$folderVersion.'"');
@@ -179,7 +179,7 @@ class ApiModule
             }
         }
         $documentVersion = $this->remoteStorage->getVersion($path);
-        if (is_null($documentVersion)) {
+        if (null === $documentVersion) {
             throw new HttpException(
                 sprintf('document "%s" not found', $path->getPath()),
                 404
@@ -191,8 +191,8 @@ class ApiModule
         );
         $documentContentType = $this->remoteStorage->getContentType($path);
 
-        if (!is_null($requestedVersion)) {
-            if (in_array($documentVersion, $requestedVersion)) {
+        if (null !== $requestedVersion) {
+            if (in_array($documentVersion, $requestedVersion, true)) {
                 $response = new Response(304, $documentContentType);
                 $response->addHeader('ETag', '"'.$documentVersion.'"');
 
@@ -245,7 +245,7 @@ class ApiModule
         }
 
         // https://tools.ietf.org/html/rfc7231#section-4.3.4
-        if (!is_null($request->getHeader('HTTP_CONTENT_RANGE', false, null))) {
+        if (null !== $request->getHeader('HTTP_CONTENT_RANGE', false, null)) {
             throw new HttpException('PUT MUST NOT have Content-Range', 400);
         }
 
@@ -257,11 +257,11 @@ class ApiModule
         );
 
         $documentVersion = $this->remoteStorage->getVersion($path);
-        if (null !== $ifMatch && !in_array($documentVersion, $ifMatch)) {
+        if (null !== $ifMatch && !in_array($documentVersion, $ifMatch, true)) {
             throw new HttpException('version mismatch', 412);
         }
 
-        if (null !== $ifNoneMatch && in_array('*', $ifNoneMatch) && null !== $documentVersion) {
+        if (null !== $ifNoneMatch && in_array('*', $ifNoneMatch, true) && null !== $documentVersion) {
             throw new HttpException('document already exists', 412);
         }
 
@@ -302,7 +302,7 @@ class ApiModule
 
         // if document does not exist, and we have If-Match header set we should
         // return a 412 instead of a 404
-        if (null !== $ifMatch && !in_array($documentVersion, $ifMatch)) {
+        if (null !== $ifMatch && !in_array($documentVersion, $ifMatch, true)) {
             throw new HttpException('version mismatch', 412);
         }
 
@@ -316,7 +316,7 @@ class ApiModule
         $ifMatch = $this->stripQuotes(
             $request->getHeader('HTTP_IF_MATCH', false, null)
         );
-        if (null !== $ifMatch && !in_array($documentVersion, $ifMatch)) {
+        if (null !== $ifMatch && !in_array($documentVersion, $ifMatch, true)) {
             throw new HttpException('version mismatch', 412);
         }
 
@@ -334,6 +334,8 @@ class ApiModule
     /**
      * ETag/If-Match/If-None-Match are always quoted, this method removes
      * the quotes.
+     *
+     * @param mixed $versionHeader
      */
     public function stripQuotes($versionHeader)
     {
@@ -373,7 +375,7 @@ class ApiModule
         ];
 
         foreach ($requiredScopes as $requiredScope) {
-            if (in_array($requiredScope, $obtainedScopes)) {
+            if (in_array($requiredScope, $obtainedScopes, true)) {
                 return true;
             }
         }
@@ -390,7 +392,7 @@ class ApiModule
         ];
 
         foreach ($requiredScopes as $requiredScope) {
-            if (in_array($requiredScope, $obtainedScopes)) {
+            if (in_array($requiredScope, $obtainedScopes, true)) {
                 return true;
             }
         }

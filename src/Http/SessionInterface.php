@@ -22,6 +22,8 @@ interface SessionInterface
 {
     /**
      * @var bool
+     *
+     * @param mixed $secureOnly
      */
     public function setSecureOnly($secureOnly);
 
