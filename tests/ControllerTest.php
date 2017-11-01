@@ -15,11 +15,17 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace fkooman\RemoteStorage;
+namespace fkooman\RemoteStorage\Tests;
 
 use DateTime;
 use fkooman\RemoteStorage\Http\Request;
 use fkooman\RemoteStorage\OAuth\TokenStorage;
+use fkooman\RemoteStorage\MetadataStorage;
+use fkooman\RemoteStorage\RemoteStorage;
+use fkooman\RemoteStorage\DocumentStorage;
+use fkooman\RemoteStorage\Path;
+use fkooman\RemoteStorage\Controller;
+
 use PDO;
 use PHPUnit_Framework_TestCase;
 

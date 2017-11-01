@@ -8,7 +8,8 @@
     ],
     "autoload": {
         "psr-4": {
-            "fkooman\\RemoteStorage\\": "src/"
+            "fkooman\\RemoteStorage\\": "src/",
+            "fkooman\\RemoteStorage\\Tests\\": "tests/"
         }
     },
     "description": "remoteStorage Server",
