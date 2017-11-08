@@ -1,6 +1,3 @@
-[![Build Status](https://travis-ci.org/fkooman/php-remote-storage.png?branch=master)](https://travis-ci.org/fkooman/php-remote-storage)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/fkooman/php-remote-storage/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/fkooman/php-remote-storage/?branch=master)
-
 # Introduction
 This is a [remoteStorage](https://remotestorage.io/) server implementation 
 written in PHP. It aims at implementing `draft-dejong-remotestorage-03.txt` 
