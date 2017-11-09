@@ -18,18 +18,17 @@
 namespace fkooman\RemoteStorage\Tests;
 
 use DateTime;
-use fkooman\RemoteStorage\Http\Request;
-use fkooman\RemoteStorage\OAuth\TokenStorage;
-use fkooman\RemoteStorage\MetadataStorage;
-use fkooman\RemoteStorage\RemoteStorage;
-use fkooman\RemoteStorage\DocumentStorage;
-use fkooman\RemoteStorage\Path;
 use fkooman\RemoteStorage\Controller;
-
+use fkooman\RemoteStorage\DocumentStorage;
+use fkooman\RemoteStorage\Http\Request;
+use fkooman\RemoteStorage\MetadataStorage;
+use fkooman\RemoteStorage\OAuth\TokenStorage;
+use fkooman\RemoteStorage\Path;
+use fkooman\RemoteStorage\RemoteStorage;
 use PDO;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
-class ControllerTest extends PHPUnit_Framework_TestCase
+class ControllerTest extends TestCase
 {
     /** @var Controller */
     private $controller;

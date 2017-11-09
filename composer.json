@@ -8,7 +8,11 @@
     ],
     "autoload": {
         "psr-4": {
-            "fkooman\\RemoteStorage\\": "src/",
+            "fkooman\\RemoteStorage\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
             "fkooman\\RemoteStorage\\Tests\\": "tests/"
         }
     },
@@ -33,6 +37,6 @@
         "twig/twig": "^1"
     },
     "require-dev": {
-        "phpunit/phpunit": "^4|^5"
+        "phpunit/phpunit": "^4.8.35|^5|^6"
     }
 }
