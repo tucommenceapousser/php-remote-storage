@@ -18,6 +18,7 @@
 namespace fkooman\RemoteStorage\Tests;
 
 use DateTime;
+use fkooman\RemoteStorage\Config;
 use fkooman\RemoteStorage\Controller;
 use fkooman\RemoteStorage\DocumentStorage;
 use fkooman\RemoteStorage\Http\Request;
@@ -76,9 +77,9 @@ class ControllerTest extends TestCase
 
         $random = $this->getMockBuilder('\fkooman\RemoteStorage\RandomInterface')->getMock();
         $random->method('get')->will($this->onConsecutiveCalls('random_1', 'random_2'));
-        $session = $this->getMockBuilder('\fkooman\RemoteStorage\Http\SessionInterface')->getMock();
 
-        $this->controller = new Controller($tmpDir, $session, $random, new DateTime('2016-01-01'));
+        $config = Config::fromFile(sprintf('%s/config/server.yaml', $tmpDir));
+        $this->controller = new Controller($tmpDir, $config, new TestSession(), $random, new DateTime('2016-01-01'));
     }
 
     public function testGetPublicFile()

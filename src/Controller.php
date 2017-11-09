@@ -7,10 +7,10 @@ use fkooman\RemoteStorage\Http\Exception\HttpException;
 use fkooman\RemoteStorage\Http\FormAuthentication;
 use fkooman\RemoteStorage\Http\Request;
 use fkooman\RemoteStorage\Http\Response;
-use fkooman\RemoteStorage\Http\SessionInterface;
 use fkooman\RemoteStorage\OAuth\BearerAuthentication;
 use fkooman\RemoteStorage\OAuth\OAuthModule;
 use fkooman\RemoteStorage\OAuth\TokenStorage;
+use fkooman\SeCookie\SessionInterface;
 use PDO;
 
 class Controller
@@ -33,18 +33,9 @@ class Controller
     /** @var array */
     private $auth = [];
 
-    /**
-     * @param string $configFile
-     * @param string $storageRoot
-     * @param string $dbDsn
-     * @param array  $templateFolders
-     * @param mixed  $appDir
-     */
-    public function __construct($appDir, SessionInterface $session, RandomInterface $random, DateTime $dateTime)
+    public function __construct($appDir, Config $config, SessionInterface $session, RandomInterface $random, DateTime $dateTime)
     {
-        $config = Config::fromFile(sprintf('%s/config/server.yaml', $appDir));
         $serverMode = $config->serverMode;
-
         $this->templateManager = new TwigTpl(
             [
                 sprintf('%s/views', $appDir),
@@ -74,8 +65,6 @@ class Controller
         $this->uiModule = new UiModule($remoteStorage, $this->templateManager, $tokenStorage);
         $this->webfingerModule = new WebfingerModule($config->serverMode);
         $this->oauthModule = new OAuthModule($this->templateManager, $tokenStorage, $random, $dateTime);
-
-        $session->setSecureOnly('development' !== $serverMode);
         $this->auth['form'] = new FormAuthentication($session, $this->templateManager, $config->Users->asArray());
         $this->auth['bearer'] = new BearerAuthentication($tokenStorage);
     }

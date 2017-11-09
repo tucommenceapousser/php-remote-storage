@@ -20,10 +20,11 @@ namespace fkooman\RemoteStorage\Http;
 
 use fkooman\RemoteStorage\Http\Exception\HttpException;
 use fkooman\RemoteStorage\TplInterface;
+use fkooman\SeCookie\SessionInterface;
 
 class FormAuthentication
 {
-    /** @var SessionInterface */
+    /** @var \fkooman\SeCookie\SessionInterface */
     private $session;
 
     /** @var \fkooman\RemoteStorage\TplInterface */

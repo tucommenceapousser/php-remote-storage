@@ -16,16 +16,21 @@
  */
 require_once sprintf('%s/vendor/autoload.php', dirname(__DIR__));
 
+use fkooman\RemoteStorage\Config;
 use fkooman\RemoteStorage\Controller;
 use fkooman\RemoteStorage\Http\Request;
-use fkooman\RemoteStorage\Http\Session;
 use fkooman\RemoteStorage\Random;
+use fkooman\SeCookie\Cookie;
+use fkooman\SeCookie\Session;
+
+$appDir = dirname(__DIR__);
 
 try {
-    $appDir = dirname(__DIR__);
+    $config = Config::fromFile(sprintf('%s/config/server.yaml', $appDir));
     $controller = new Controller(
         $appDir,
-        new Session(),
+        $config,
+        new Session([], new Cookie(['Secure' => 'development' !== $config->serverMode])),
         new Random(),
         new DateTime()
     );
