@@ -1,7 +1,15 @@
 #!/usr/bin/php
 <?php
 
-require_once sprintf('%s/vendor/autoload.php', dirname(__DIR__));
+$baseDir = dirname(__DIR__);
+
+// find the autoloader (package installs, composer)
+foreach (['src', 'vendor'] as $autoloadDir) {
+    if (@file_exists(sprintf('%s/%s/autoload.php', $baseDir, $autoloadDir))) {
+        require_once sprintf('%s/%s/autoload.php', $baseDir, $autoloadDir);
+        break;
+    }
+}
 
 use fkooman\RemoteStorage\Config;
 
@@ -15,11 +23,11 @@ try {
     $secret = $argv[2];
     $passwordHash = password_hash($secret, PASSWORD_DEFAULT);
 
-    $config = Config::fromFile(dirname(__DIR__).'/config/server.yaml');
+    $config = Config::fromFile(sprintf('%s/config/server.yaml', $baseDir));
     $configData = $config->asArray();
     $configData['Users'][$userName] = $passwordHash;
 
-    Config::toFile(dirname(__DIR__).'/config/server.yaml', $configData);
+    Config::toFile(sprintf('%s/config/server.yaml', $baseDir), $configData);
 } catch (Exception $e) {
     echo $e->getMessage().PHP_EOL;
     exit(1);

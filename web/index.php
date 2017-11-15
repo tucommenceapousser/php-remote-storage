@@ -14,7 +14,15 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-require_once sprintf('%s/vendor/autoload.php', dirname(__DIR__));
+$baseDir = dirname(__DIR__);
+
+// find the autoloader (package installs, composer)
+foreach (['src', 'vendor'] as $autoloadDir) {
+    if (@file_exists(sprintf('%s/%s/autoload.php', $baseDir, $autoloadDir))) {
+        require_once sprintf('%s/%s/autoload.php', $baseDir, $autoloadDir);
+        break;
+    }
+}
 
 use fkooman\RemoteStorage\Config;
 use fkooman\RemoteStorage\Controller;
@@ -23,12 +31,10 @@ use fkooman\RemoteStorage\Random;
 use fkooman\SeCookie\Cookie;
 use fkooman\SeCookie\Session;
 
-$appDir = dirname(__DIR__);
-
 try {
-    $config = Config::fromFile(sprintf('%s/config/server.yaml', $appDir));
+    $config = Config::fromFile(sprintf('%s/config/server.yaml', $baseDir));
     $controller = new Controller(
-        $appDir,
+        $baseDir,
         $config,
         new Session([], new Cookie(['Secure' => 'development' !== $config->serverMode])),
         new Random(),
