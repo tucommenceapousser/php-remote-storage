@@ -1,4 +1,4 @@
-/vendor/
+/vendor
 /config/*.yaml
 /config/views/*
-/data/
+/data
