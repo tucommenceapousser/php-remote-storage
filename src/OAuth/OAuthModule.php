@@ -63,7 +63,7 @@ class OAuthModule
     public function getAuthorize(Request $request, $userId)
     {
         $this->validateRequest($request);
-        $this->validateClient($request);
+        $clientOrigin = $this->validateClient($request);
 
         // ask for approving this client/scope
         return new HtmlResponse(
@@ -71,9 +71,8 @@ class OAuthModule
                 'authorize',
                 [
                     'user_id' => $userId,
-                    'client_id' => $request->getQueryParameter('client_id'),
+                    'client_origin' => $clientOrigin,
                     'scope' => $request->getQueryParameter('scope'),
-                    'redirect_uri' => $request->getQueryParameter('redirect_uri'),
                 ]
             )
         );
@@ -194,14 +193,43 @@ class OAuthModule
         }
     }
 
+    /**
+     * @return string
+     */
     private function validateClient(Request $request)
     {
         $clientId = $request->getQueryParameter('client_id');
         $redirectUri = $request->getQueryParameter('redirect_uri');
 
-        // redirectUri has to start with clientId (or be equal)
-        if (0 !== strpos($redirectUri, $clientId)) {
-            throw new HttpException('"redirect_uri" does not match "client_id"', 400);
+        if (false === $clientIdOrigin = self::determineOrigin($clientId)) {
+            throw new HttpException('unable to determine Origin for "client_id"', 400);
         }
+        if (false === $redirectUriOrigin = self::determineOrigin($redirectUri)) {
+            throw new HttpException('unable to determine Origin for "redirect_uri"', 400);
+        }
+        if ($clientIdOrigin !== $redirectUriOrigin) {
+            throw new HttpException('"client_id" and "redirect_uri" do not have the same Origin', 400);
+        }
+
+        return $clientIdOrigin;
+    }
+
+    /**
+     * @param string $inputUrl
+     *
+     * @return string|false
+     */
+    private static function determineOrigin($inputUrl)
+    {
+        if (false === filter_var($inputUrl, FILTER_VALIDATE_URL)) {
+            return false;
+        }
+        $parsedInputUrl = parse_url($inputUrl);
+        $originUrl = $parsedInputUrl['scheme'].'://'.$parsedInputUrl['host'];
+        if (\array_key_exists('port', $parsedInputUrl)) {
+            $originUrl .= ':'.(string) $parsedInputUrl['port'];
+        }
+
+        return $originUrl;
     }
 }
