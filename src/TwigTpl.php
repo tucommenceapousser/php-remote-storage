@@ -19,13 +19,12 @@
 namespace fkooman\RemoteStorage;
 
 use RuntimeException;
-use Twig_Environment;
-use Twig_Loader_Filesystem;
+use Twig\Environment;
+use Twig\Loader\FilesystemLoader;
 
 class TwigTpl implements TplInterface
 {
-    /** @var Twig_Environment */
-    private $twig;
+    private Environment $twig;
 
     /** @var array */
     private $defaultVariables;
@@ -60,8 +59,8 @@ class TwigTpl implements TplInterface
             $environmentOptions['cache'] = $cacheDir;
         }
 
-        $this->twig = new Twig_Environment(
-            new Twig_Loader_Filesystem(
+        $this->twig = new Environment(
+            new FilesystemLoader(
                 $existingTemplateDirs
             ),
             $environmentOptions
