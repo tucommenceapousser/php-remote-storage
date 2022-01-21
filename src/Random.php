@@ -20,7 +20,7 @@ namespace fkooman\RemoteStorage;
 
 class Random implements RandomInterface
 {
-    public function get($length)
+    public function get(int $length): string
     {
         return sodium_bin2hex(
             random_bytes($length)

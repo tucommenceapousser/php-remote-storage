@@ -118,11 +118,8 @@ class DocumentStorage
 
     /**
      * Delete a document and all empty parent directories if there are any.
-     *
-     * @param $p the path of a document to delete
-     * @returns an array of all deleted objects
      */
-    public function deleteDocument(Path $p)
+    public function deleteDocument(Path $p): array
     {
         $documentPath = $this->baseDir.$p->getPath();
         if (false === @unlink($documentPath)) {
