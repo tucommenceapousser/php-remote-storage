@@ -29,7 +29,7 @@ class InputValidation
      */
     public static function displayName($displayName)
     {
-        $displayName = filter_var($displayName, FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW);
+        $displayName = filter_var($displayName, \FILTER_UNSAFE_RAW, \FILTER_FLAG_STRIP_LOW);
 
         if (0 === mb_strlen($displayName)) {
             throw new InputValidationException('invalid "display_name"');
@@ -102,7 +102,7 @@ class InputValidation
     public static function languageCode($languageCode)
     {
         $supportedLanguages = ['en_US', 'nl_NL', 'de_DE', 'fr_FR'];
-        if (!in_array($languageCode, $supportedLanguages, true)) {
+        if (!\in_array($languageCode, $supportedLanguages, true)) {
             throw new InputValidationException('invalid "language_code"');
         }
 
@@ -209,7 +209,7 @@ class InputValidation
      */
     public static function ipAddress($ipAddress)
     {
-        if (false === filter_var($ipAddress, FILTER_VALIDATE_IP)) {
+        if (false === filter_var($ipAddress, \FILTER_VALIDATE_IP)) {
             throw new InputValidationException('invalid "ip_address"');
         }
 
@@ -238,7 +238,7 @@ class InputValidation
      */
     public static function ip4($ip4)
     {
-        if (false === filter_var($ip4, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
+        if (false === filter_var($ip4, \FILTER_VALIDATE_IP, \FILTER_FLAG_IPV4)) {
             throw new InputValidationException('invalid "ip4"');
         }
 
@@ -252,7 +252,7 @@ class InputValidation
      */
     public static function ip6($ip6)
     {
-        if (false === filter_var($ip6, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
+        if (false === filter_var($ip6, \FILTER_VALIDATE_IP, \FILTER_FLAG_IPV6)) {
             throw new InputValidationException('invalid "ip6"');
         }
 
@@ -323,7 +323,7 @@ class InputValidation
      */
     public static function twoFactorValue($twoFactorValue)
     {
-        if (!is_string($twoFactorValue) || 0 >= strlen($twoFactorValue)) {
+        if (!\is_string($twoFactorValue) || 0 >= \strlen($twoFactorValue)) {
             throw new InputValidationException('invalid "two_factor_value"');
         }
 

@@ -8,7 +8,8 @@
 >
     <projectFiles>
         <directory name="src" />
-        <ignoreFiles>
+	<directory name="web" />
+	<ignoreFiles>
             <directory name="vendor" />
         </ignoreFiles>
     </projectFiles>

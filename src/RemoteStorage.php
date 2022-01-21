@@ -36,11 +36,11 @@ class RemoteStorage
 
     public function putDocument(Path $p, $contentType, $documentData, array $ifMatch = null, array $ifNoneMatch = null)
     {
-        if (null !== $ifMatch && !in_array($this->md->getVersion($p), $ifMatch, true)) {
+        if (null !== $ifMatch && !\in_array($this->md->getVersion($p), $ifMatch, true)) {
             throw new HttpException('version mismatch', 412);
         }
 
-        if (null !== $ifNoneMatch && in_array('*', $ifNoneMatch, true) && null !== $this->md->getVersion($p)) {
+        if (null !== $ifNoneMatch && \in_array('*', $ifNoneMatch, true) && null !== $this->md->getVersion($p)) {
             throw new HttpException('document already exists', 412);
         }
 
@@ -53,7 +53,7 @@ class RemoteStorage
 
     public function deleteDocument(Path $p, array $ifMatch = null)
     {
-        if (null !== $ifMatch && !in_array($this->md->getVersion($p), $ifMatch, true)) {
+        if (null !== $ifMatch && !\in_array($this->md->getVersion($p), $ifMatch, true)) {
             throw new HttpException('version mismatch', 412);
         }
         $deletedEntities = $this->d->deleteDocument($p);
@@ -83,7 +83,7 @@ class RemoteStorage
 
     public function getDocument(Path $p, array $ifNoneMatch = null)
     {
-        if (null !== $ifNoneMatch && in_array($this->md->getVersion($p), $ifNoneMatch, true)) {
+        if (null !== $ifNoneMatch && \in_array($this->md->getVersion($p), $ifNoneMatch, true)) {
             throw new RemoteStorageException('document not modified');
         }
 
@@ -92,7 +92,7 @@ class RemoteStorage
 
     public function getFolder(Path $p, array $ifNoneMatch = null)
     {
-        if (null !== $ifNoneMatch && in_array($this->md->getVersion($p), $ifNoneMatch, true)) {
+        if (null !== $ifNoneMatch && \in_array($this->md->getVersion($p), $ifNoneMatch, true)) {
             throw new RemoteStorageException('folder not modified');
         }
 
@@ -104,12 +104,12 @@ class RemoteStorage
             $f['items'][$name]['ETag'] = $this->md->getVersion(new Path($p->getFolderPath().$name));
 
             // if item is a folder we don't want Content-Type
-            if (strrpos($name, '/') !== strlen($name) - 1) {
+            if (strrpos($name, '/') !== \strlen($name) - 1) {
                 $f['items'][$name]['Content-Type'] = $this->md->getContentType(new Path($p->getFolderPath().$name));
             }
         }
 
-        return json_encode($f, JSON_FORCE_OBJECT);
+        return json_encode($f, \JSON_FORCE_OBJECT);
     }
 
     public function getFolderSize(Path $p)

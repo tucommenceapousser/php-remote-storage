@@ -40,11 +40,11 @@ class Response
 
     public function __toString()
     {
-        $output = $this->statusCode.PHP_EOL;
+        $output = $this->statusCode.\PHP_EOL;
         foreach ($this->headers as $k => $v) {
-            $output .= sprintf('%s: %s', $k, $v).PHP_EOL;
+            $output .= sprintf('%s: %s', $k, $v).\PHP_EOL;
         }
-        $output .= PHP_EOL;
+        $output .= \PHP_EOL;
         $output .= $this->body;
 
         return $output;
@@ -62,7 +62,7 @@ class Response
 
     public function getHeader($key)
     {
-        if (array_key_exists($key, $this->headers)) {
+        if (\array_key_exists($key, $this->headers)) {
             return $this->headers[$key];
         }
     }

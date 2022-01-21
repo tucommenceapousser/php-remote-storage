@@ -165,7 +165,7 @@ class OAuthModule
 
         // XXX we also should enforce HTTPS
         $redirectUri = $request->getQueryParameter('redirect_uri');
-        if (false === filter_var($redirectUri, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED | FILTER_FLAG_HOST_REQUIRED | FILTER_FLAG_PATH_REQUIRED)) {
+        if (false === filter_var($redirectUri, \FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED | FILTER_FLAG_HOST_REQUIRED | \FILTER_FLAG_PATH_REQUIRED)) {
             throw new HttpException('invalid redirect_uri', 400);
         }
         if (false !== strpos($redirectUri, '?')) {
@@ -221,7 +221,7 @@ class OAuthModule
      */
     private static function determineOrigin($inputUrl)
     {
-        if (false === filter_var($inputUrl, FILTER_VALIDATE_URL)) {
+        if (false === filter_var($inputUrl, \FILTER_VALIDATE_URL)) {
             return false;
         }
         $parsedInputUrl = parse_url($inputUrl);

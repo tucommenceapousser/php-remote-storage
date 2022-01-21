@@ -36,15 +36,15 @@ class TokenStorage
     {
         $stmt = $this->db->prepare(
             'INSERT INTO tokens (
-                user_id,    
+                user_id,
                 access_token_key,
                 access_token,
                 client_id,
                 scope,
                 expires_at
-             ) 
+             )
              VALUES(
-                :user_id, 
+                :user_id,
                 :access_token_key,
                 :access_token,
                 :client_id,
@@ -88,7 +88,7 @@ class TokenStorage
     {
         $stmt = $this->db->prepare(
             'SELECT
-                user_id,    
+                user_id,
                 access_token,
                 client_id,
                 scope,

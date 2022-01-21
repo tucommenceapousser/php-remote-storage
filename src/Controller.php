@@ -7,10 +7,10 @@ use fkooman\RemoteStorage\Http\Exception\HttpException;
 use fkooman\RemoteStorage\Http\FormAuthentication;
 use fkooman\RemoteStorage\Http\Request;
 use fkooman\RemoteStorage\Http\Response;
+use fkooman\RemoteStorage\Http\SessionInterface;
 use fkooman\RemoteStorage\OAuth\BearerAuthentication;
 use fkooman\RemoteStorage\OAuth\OAuthModule;
 use fkooman\RemoteStorage\OAuth\TokenStorage;
-use fkooman\SeCookie\SessionInterface;
 use PDO;
 
 class Controller
@@ -124,7 +124,6 @@ class Controller
     {
         switch ($request->getPathInfo()) {
             case '/.well-known/webfinger':
-
                 return $this->webfingerModule->getWebfinger($request);
             case '/authorize':
                 $userId = $this->auth['form']->requireAuth($request);

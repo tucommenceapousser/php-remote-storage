@@ -34,10 +34,10 @@ class ControllerTest extends TestCase
     /** @var Controller */
     private $controller;
 
-    public function setUp() : void
+    protected function setUp(): void
     {
         // set up the directory structure
-        $projectDir = dirname(__DIR__);
+        $projectDir = \dirname(__DIR__);
         $tmpDir = sprintf('%s/%s', sys_get_temp_dir(), bin2hex(random_bytes(16)));
         mkdir($tmpDir);
         mkdir(sprintf('%s/config', $tmpDir));

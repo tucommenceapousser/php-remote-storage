@@ -27,16 +27,23 @@ foreach (['src', 'vendor'] as $autoloadDir) {
 use fkooman\RemoteStorage\Config;
 use fkooman\RemoteStorage\Controller;
 use fkooman\RemoteStorage\Http\Request;
+use fkooman\RemoteStorage\Http\SeSession;
 use fkooman\RemoteStorage\Random;
-use fkooman\SeCookie\Cookie;
+use fkooman\SeCookie\CookieOptions;
 use fkooman\SeCookie\Session;
 
 try {
     $config = Config::fromFile(sprintf('%s/config/server.yaml', $baseDir));
+
+    $cookieOptions = CookieOptions::init();
+    if ('development' === $config->serverMode) {
+        $cookieOptions = $cookieOptions->withoutSecure();
+    }
+
     $controller = new Controller(
         $baseDir,
         $config,
-        new Session([], new Cookie(['Secure' => 'development' !== $config->serverMode])),
+        new SeSession(new Session(null, $cookieOptions)),
         new Random(),
         new DateTime()
     );
@@ -49,5 +56,5 @@ try {
     $response->send();
 } catch (Exception $e) {
     error_log($e->getMessage());
-    die(sprintf('ERROR: %s', $e->getMessage()));
+    exit(sprintf('ERROR: %s', $e->getMessage()));
 }

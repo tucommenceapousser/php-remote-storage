@@ -20,11 +20,10 @@ namespace fkooman\RemoteStorage\Http;
 
 use fkooman\RemoteStorage\Http\Exception\HttpException;
 use fkooman\RemoteStorage\TplInterface;
-use fkooman\SeCookie\SessionInterface;
 
 class FormAuthentication
 {
-    /** @var \fkooman\SeCookie\SessionInterface */
+    /** @var SessionInterface */
     private $session;
 
     /** @var \fkooman\RemoteStorage\TplInterface */
@@ -80,18 +79,18 @@ class FormAuthentication
         $redirectTo = $request->getPostParameter('_form_auth_redirect_to');
 
         // validate the URL
-        if (false === filter_var($redirectTo, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED | FILTER_FLAG_HOST_REQUIRED | FILTER_FLAG_PATH_REQUIRED)) {
+        if (false === filter_var($redirectTo, \FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED | FILTER_FLAG_HOST_REQUIRED | \FILTER_FLAG_PATH_REQUIRED)) {
             throw new HttpException('invalid redirect_to URL', 400);
         }
         // extract the "host" part of the URL
-        if (false === $redirectToHost = parse_url($redirectTo, PHP_URL_HOST)) {
+        if (false === $redirectToHost = parse_url($redirectTo, \PHP_URL_HOST)) {
             throw new HttpException('invalid redirect_to URL, unable to extract host', 400);
         }
         if ($request->getServerName() !== $redirectToHost) {
             throw new HttpException('redirect_to does not match expected host', 400);
         }
 
-        if (array_key_exists($authUser, $this->userPass)) {
+        if (\array_key_exists($authUser, $this->userPass)) {
             if (false !== password_verify($authPass, $this->userPass[$authUser])) {
                 $this->session->set('_form_auth_user', $authUser);
 

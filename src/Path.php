@@ -29,7 +29,7 @@ class Path
 
     public function __construct($p)
     {
-        if (!is_string($p)) {
+        if (!\is_string($p)) {
             throw new PathException('invalid path: not a string');
         }
 
@@ -65,7 +65,7 @@ class Path
 
         // MUST contain a user
         $pathParts = explode('/', $p);
-        if (count($pathParts) < 3) {
+        if (\count($pathParts) < 3) {
             throw new PathException('invalid path: no user specified');
         }
 
@@ -82,7 +82,7 @@ class Path
 
     public function getIsPublic()
     {
-        return count($this->pathParts) > 3 && 'public' === $this->pathParts[2];
+        return \count($this->pathParts) > 3 && 'public' === $this->pathParts[2];
     }
 
     public function getUserId()
@@ -92,7 +92,7 @@ class Path
 
     public function getIsFolder()
     {
-        return empty($this->pathParts[count($this->pathParts) - 1]);
+        return empty($this->pathParts[\count($this->pathParts) - 1]);
     }
 
     public function getIsDocument()
@@ -103,7 +103,7 @@ class Path
     public function getModuleName()
     {
         $moduleNamePosition = $this->getIsPublic() ? 3 : 2;
-        if (count($this->pathParts) > $moduleNamePosition + 1) {
+        if (\count($this->pathParts) > $moduleNamePosition + 1) {
             return $this->pathParts[$moduleNamePosition];
         }
 
@@ -129,7 +129,7 @@ class Path
             // "/foo/bar/baz/" -> "/foo/bar/"
 
             // remove the last "/"
-            $p = substr($p, 0, strlen($p) - 1);
+            $p = substr($p, 0, \strlen($p) - 1);
             // remove everything after the now last "/"
             $p = substr($p, 0, strrpos($p, '/') + 1);
         } while (substr_count($p, '/') > 1);

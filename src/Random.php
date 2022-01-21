@@ -18,8 +18,6 @@
 
 namespace fkooman\RemoteStorage;
 
-use ParagonIE\ConstantTime\Hex;
-
 class Random implements RandomInterface
 {
     public function get($length)

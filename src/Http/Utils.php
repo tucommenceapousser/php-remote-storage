@@ -24,15 +24,12 @@ class Utils
 {
     public static function getValueFromArray(array $sourceData, $key, $isRequired, $defaultValue)
     {
-        if (array_key_exists($key, $sourceData)) {
+        if (\array_key_exists($key, $sourceData)) {
             return $sourceData[$key];
         }
 
         if ($isRequired) {
-            throw new HttpException(
-                sprintf('missing required field "%s"', $key),
-                400
-            );
+            throw new HttpException(sprintf('missing required field "%s"', $key), 400);
         }
 
         return $defaultValue;

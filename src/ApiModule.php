@@ -37,7 +37,6 @@ class ApiModule
     }
 
     /**
-     * @param Request                                      $request
      * @param \fkooman\RemoteStorage\OAuth\TokenInfo|false $tokenInfo
      */
     public function get(Request $request, $tokenInfo)
@@ -92,7 +91,6 @@ class ApiModule
     }
 
     /**
-     * @param Request         $request
      * @param TokenInfo|false $tokenInfo
      */
     public function getObject(Request $request, $tokenInfo)
@@ -107,11 +105,7 @@ class ApiModule
 
         // past this point we MUST be authenticated
         if (false === $tokenInfo) {
-            throw new HttpException(
-                'no_token',
-                401,
-                ['WWW-Authenticate' => 'Bearer realm="remoteStorage API"']
-            );
+            throw new HttpException('no_token', 401, ['WWW-Authenticate' => 'Bearer realm="remoteStorage API"']);
         }
 
         if ($path->getIsFolder()) {
@@ -142,7 +136,7 @@ class ApiModule
         );
 
         if (null !== $requestedVersion) {
-            if (in_array($folderVersion, $requestedVersion, true)) {
+            if (\in_array($folderVersion, $requestedVersion, true)) {
                 //return new RemoteStorageResponse($request, 304, $folderVersion);
                 $response = new Response(304, 'application/ld+json');
                 $response->addHeader('ETag', '"'.$folderVersion.'"');
@@ -180,10 +174,7 @@ class ApiModule
         }
         $documentVersion = $this->remoteStorage->getVersion($path);
         if (null === $documentVersion) {
-            throw new HttpException(
-                sprintf('document "%s" not found', $path->getPath()),
-                404
-            );
+            throw new HttpException(sprintf('document "%s" not found', $path->getPath()), 404);
         }
 
         $requestedVersion = $this->stripQuotes(
@@ -192,7 +183,7 @@ class ApiModule
         $documentContentType = $this->remoteStorage->getContentType($path);
 
         if (null !== $requestedVersion) {
-            if (in_array($documentVersion, $requestedVersion, true)) {
+            if (\in_array($documentVersion, $requestedVersion, true)) {
                 $response = new Response(304, $documentContentType);
                 $response->addHeader('ETag', '"'.$documentVersion.'"');
 
@@ -218,7 +209,7 @@ class ApiModule
                         )
                     )
                 );
-                $rsr->addHeader('Content-Length', (string) strlen($rsr->getBody()));
+                $rsr->addHeader('Content-Length', (string) \strlen($rsr->getBody()));
             } else {
                 // use X-SendFile
                 $rsr->setFile(
@@ -257,11 +248,11 @@ class ApiModule
         );
 
         $documentVersion = $this->remoteStorage->getVersion($path);
-        if (null !== $ifMatch && !in_array($documentVersion, $ifMatch, true)) {
+        if (null !== $ifMatch && !\in_array($documentVersion, $ifMatch, true)) {
             throw new HttpException('version mismatch', 412);
         }
 
-        if (null !== $ifNoneMatch && in_array('*', $ifNoneMatch, true) && null !== $documentVersion) {
+        if (null !== $ifNoneMatch && \in_array('*', $ifNoneMatch, true) && null !== $documentVersion) {
             throw new HttpException('document already exists', 412);
         }
 
@@ -302,21 +293,18 @@ class ApiModule
 
         // if document does not exist, and we have If-Match header set we should
         // return a 412 instead of a 404
-        if (null !== $ifMatch && !in_array($documentVersion, $ifMatch, true)) {
+        if (null !== $ifMatch && !\in_array($documentVersion, $ifMatch, true)) {
             throw new HttpException('version mismatch', 412);
         }
 
         if (null === $documentVersion) {
-            throw new HttpException(
-                sprintf('document "%s" not found', $path->getPath()),
-                404
-            );
+            throw new HttpException(sprintf('document "%s" not found', $path->getPath()), 404);
         }
 
         $ifMatch = $this->stripQuotes(
             $request->getHeader('HTTP_IF_MATCH', false, null)
         );
-        if (null !== $ifMatch && !in_array($documentVersion, $ifMatch, true)) {
+        if (null !== $ifMatch && !\in_array($documentVersion, $ifMatch, true)) {
             throw new HttpException('version mismatch', 412);
         }
 
@@ -353,7 +341,7 @@ class ApiModule
             $v = trim($v);
             $startQuote = strpos($v, '"');
             $endQuote = strrpos($v, '"');
-            $length = strlen($v);
+            $length = \strlen($v);
 
             if (0 !== $startQuote || $length - 1 !== $endQuote) {
                 throw new HttpException('version header must start and end with a double quote', 400);
@@ -375,7 +363,7 @@ class ApiModule
         ];
 
         foreach ($requiredScopes as $requiredScope) {
-            if (in_array($requiredScope, $obtainedScopes, true)) {
+            if (\in_array($requiredScope, $obtainedScopes, true)) {
                 return true;
             }
         }
@@ -392,7 +380,7 @@ class ApiModule
         ];
 
         foreach ($requiredScopes as $requiredScope) {
-            if (in_array($requiredScope, $obtainedScopes, true)) {
+            if (\in_array($requiredScope, $obtainedScopes, true)) {
                 return true;
             }
         }

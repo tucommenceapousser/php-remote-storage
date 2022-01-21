@@ -74,7 +74,7 @@ class BearerAuthentication
 
     private static function getBearerToken($authorizationHeader)
     {
-        if (1 !== \preg_match('|^Bearer ([a-zA-Z0-9-._~+/]+=*)$|', $authorizationHeader, $m)) {
+        if (1 !== preg_match('|^Bearer ([a-zA-Z0-9-._~+/]+=*)$|', $authorizationHeader, $m)) {
             return false;
         }
 

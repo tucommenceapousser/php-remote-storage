@@ -40,8 +40,7 @@ class UiModule
     }
 
     /**
-     * @param Request $request
-     * @param string  $userId
+     * @param string $userId
      */
     public function getHome(Request $request, $userId)
     {
@@ -63,8 +62,7 @@ class UiModule
     }
 
     /**
-     * @param Request $request
-     * @param string  $userId
+     * @param string $userId
      */
     public function postHome(Request $request, $userId)
     {

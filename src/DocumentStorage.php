@@ -87,7 +87,7 @@ class DocumentStorage
         $folderTree = $p->getFolderTreeFromUserRoot();
         foreach ($folderTree as $pathItem) {
             $folderPath = $this->baseDir.$pathItem;
-            $folderPathAsFile = substr($folderPath, 0, strlen($folderPath) - 1);
+            $folderPathAsFile = substr($folderPath, 0, \strlen($folderPath) - 1);
             if (file_exists($folderPathAsFile) && is_file($folderPathAsFile)) {
                 throw new HttpException('file already exists in path preventing folder creation', 409);
             }
@@ -103,7 +103,7 @@ class DocumentStorage
         if (file_exists($documentPath) && is_dir($documentPath)) {
             throw new HttpException('document path is already a folder', 409);
         }
-        if (false === @file_put_contents($documentPath, $documentContent, LOCK_EX)) {
+        if (false === @file_put_contents($documentPath, $documentContent, \LOCK_EX)) {
             throw new DocumentStorageException('unable to write document');
         }
         // PHP caches files and doesn't flush on getting file size, so we
@@ -157,7 +157,7 @@ class DocumentStorage
     public function getFolder(Path $p)
     {
         $folderPath = $this->baseDir.$p->getPath();
-        $entries = glob($folderPath.'*', GLOB_ERR | GLOB_MARK);
+        $entries = glob($folderPath.'*', \GLOB_ERR | \GLOB_MARK);
         if (false === $entries) {
             // directory does not exist, return empty list
             return [];
@@ -194,12 +194,12 @@ class DocumentStorage
     {
         $folderPath = $this->baseDir.$p->getPath();
 
-        $entries = glob($folderPath.'*', GLOB_ERR);
+        $entries = glob($folderPath.'*', \GLOB_ERR);
         if (false === $entries) {
             throw new DocumentStorageException('unable to read folder');
         }
 
-        return 0 === count($entries);
+        return 0 === \count($entries);
     }
 
     private function deleteFolder(Path $p)

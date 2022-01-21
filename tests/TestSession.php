@@ -2,8 +2,7 @@
 
 namespace fkooman\RemoteStorage\Tests;
 
-use fkooman\SeCookie\Exception\SessionException;
-use fkooman\SeCookie\SessionInterface;
+use fkooman\RemoteStorage\Http\SessionInterface;
 
 class TestSession implements SessionInterface
 {
@@ -12,81 +11,40 @@ class TestSession implements SessionInterface
 
     /**
      * Get the session ID.
-     *
-     * @return string
      */
-    public function id()
+    public function id(): string
     {
         return '12345';
     }
 
-    /**
-     * Regenerate the session ID.
-     *
-     * @param bool $deleteOldSession
-     */
-    public function regenerate($deleteOldSession = false)
+    public function set(string $k, string $v): void
     {
-        // NOP
+        $this->sessionData[$k] = $v;
     }
 
-    /**
-     * Set session value.
-     *
-     * @param string $key
-     * @param mixed  $value
-     */
-    public function set($key, $value)
+    public function delete(string $k): void
     {
-        $this->sessionData[$key] = $value;
-    }
-
-    /**
-     * Delete session key/value.
-     *
-     * @param string $key
-     */
-    public function delete($key)
-    {
-        if ($this->has($key)) {
-            unset($this->sessionData[$key]);
+        if ($this->has($k)) {
+            unset($this->sessionData[$k]);
         }
     }
 
-    /**
-     * Test if session key exists.
-     *
-     * @param string $key
-     *
-     * @return bool
-     */
-    public function has($key)
+    public function has(string $k): bool
     {
-        return array_key_exists($key, $this->sessionData);
+        return \array_key_exists($k, $this->sessionData);
     }
 
-    /**
-     * Get session value.
-     *
-     * @param string $key
-     *
-     * @return mixed
-     */
-    public function get($key)
+    public function get(string $k): ?string
     {
-        if (!$this->has($key)) {
-            throw new SessionException(sprintf('key "%s" not available in session', $key));
+        if (!$this->has($k)) {
+            return null;
         }
 
-        return $this->sessionData[$key];
+        return $this->sessionData[$k];
     }
 
-    /**
-     * Empty the session.
-     */
-    public function destroy()
+    public function destroy(): void
     {
         $this->sessionData = [];
-        $this->regenerate(true);
     }
 }
