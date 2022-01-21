@@ -11,6 +11,7 @@ class SeSession implements SessionInterface
     public function __construct(Session $session)
     {
         $this->session = $session;
+        $this->session->start();
     }
 
     public function set(string $k, string $v): void
