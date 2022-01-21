@@ -16,6 +16,12 @@
             "fkooman\\RemoteStorage\\Tests\\": "tests/"
         }
     },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://git.sr.ht/~fkooman/php-secookie"
+        }
+    ],
     "description": "remoteStorage Server",
     "license": "AGPL-3.0-or-later",
     "name": "fkooman/remote-storage",
