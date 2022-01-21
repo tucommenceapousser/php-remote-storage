@@ -34,7 +34,7 @@ class ControllerTest extends TestCase
     /** @var Controller */
     private $controller;
 
-    public function setUp()
+    public function setUp() : void
     {
         // set up the directory structure
         $projectDir = dirname(__DIR__);
