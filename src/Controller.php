@@ -109,6 +109,7 @@ class Controller
             } else {
                 // not a browser
                 $response = new Response($e->getCode(), 'application/json');
+                $response->addHeader('Access-Control-Allow-Origin', '*');
                 $response->setBody(json_encode(['error' => $e->getMessage()]));
             }
 
