@@ -2,7 +2,7 @@
     "authors": [
         {
             "email": "fkooman@tuxed.net",
-            "name": "Fran\u00e7ois Kooman",
+            "name": "François Kooman",
             "role": "Developer"
         }
     ],
@@ -16,33 +16,33 @@
             "fkooman\\RemoteStorage\\Tests\\": "tests/"
         }
     },
+    "description": "remoteStorage Server",
+    "license": "AGPL-3.0-or-later",
+    "name": "fkooman/remote-storage",
     "repositories": [
         {
             "type": "vcs",
             "url": "https://git.sr.ht/~fkooman/php-secookie"
         }
     ],
-    "description": "remoteStorage Server",
-    "license": "AGPL-3.0-or-later",
-    "name": "fkooman/remote-storage",
     "require": {
         "ext-date": "*",
         "ext-filter": "*",
         "ext-hash": "*",
         "ext-json": "*",
-        "ext-sodium": "*",
         "ext-mbstring": "*",
         "ext-pcre": "*",
         "ext-pdo": "*",
         "ext-session": "*",
+        "ext-sodium": "*",
         "ext-spl": "*",
         "fkooman/secookie": "^6",
         "php": ">=7.4",
-        "twig/twig": "^3",
-        "symfony/yaml": "^5"
+        "symfony/yaml": "^5",
+        "twig/twig": "^3"
     },
     "require-dev": {
-        "phpunit/phpunit": "^9",
-        "friendsofphp/php-cs-fixer": "^2"
+        "friendsofphp/php-cs-fixer": "^2",
+        "phpunit/phpunit": "^9"
     }
 }
