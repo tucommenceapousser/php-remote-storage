@@ -79,7 +79,7 @@ class ControllerTest extends TestCase
         $random->method('get')->will($this->onConsecutiveCalls('random_1', 'random_2'));
 
         $config = Config::fromFile(sprintf('%s/config/server.yaml', $tmpDir));
-        $this->controller = new Controller($tmpDir, $config, new TestSession(), $random, new DateTime('2016-01-01'));
+        $this->controller = new Controller($tmpDir, '/', $config, new TestSession(), $random, new DateTime('2016-01-01'));
     }
 
     public function testGetPublicFile()

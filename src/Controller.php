@@ -33,7 +33,7 @@ class Controller
     /** @var array */
     private $auth = [];
 
-    public function __construct($appDir, Config $config, SessionInterface $session, RandomInterface $random, DateTime $dateTime)
+    public function __construct(string $appDir, string $requestRoot, Config $config, SessionInterface $session, RandomInterface $random, DateTime $dateTime)
     {
         $serverMode = $config->serverMode;
         $this->templateManager = new TwigTpl(
@@ -45,6 +45,7 @@ class Controller
         );
         $this->templateManager->setDefault(
             [
+                'requestRoot' => $requestRoot,
                 'serverMode' => $serverMode,
             ]
         );

@@ -18,7 +18,7 @@
 
     <h3>Authorized Applications</h3>    
     {% if not approval_list %}
-        <p class="plain">
+        <p>
             No applications have been granted permissions yet!
         </p>
     {% else %}
@@ -27,7 +27,7 @@
         data. You can revoke their access here.
         </p>
 
-        <table class="striped">
+        <table>
             <thead>
                 <tr><th>Application</th><th>Permission(s)</th><th></th></tr>
             </thead>
@@ -36,11 +36,11 @@
                 <tr>
                     <td><a href="{{ approval.client_id }}">{{ approval.client_id }}</a></td>                    
                     <td>{{ approval.scope }}</td>
-                    <td class="text-right">
+                    <td>
                         <form method="post">
                             <input type="hidden" name="client_id" value="{{ approval.client_id }}">
                             <input type="hidden" name="scope" value="{{ approval.scope }}">
-                            <button type="submit" class="error">Revoke</button>
+                            <button type="submit">Revoke</button>
                         </form>
                     </td>
                 </tr>                

@@ -40,15 +40,16 @@ try {
         $cookieOptions = $cookieOptions->withoutSecure();
     }
 
+    $request = new Request($_SERVER, $_GET, $_POST, file_get_contents('php://input'));
     $controller = new Controller(
         $baseDir,
+        $request->getRoot(),
         $config,
         new SeSession(new Session(null, $cookieOptions)),
         new Random(),
         new DateTime()
     );
 
-    $request = new Request($_SERVER, $_GET, $_POST, file_get_contents('php://input'));
     $response = $controller->run($request);
     if (!$response->isOkay()) {
         error_log((string) $response);

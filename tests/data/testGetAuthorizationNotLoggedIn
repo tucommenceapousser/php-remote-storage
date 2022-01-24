@@ -4,35 +4,37 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>php-remote-storage</title>
-  <link rel="stylesheet" type="text/css" href="css/screen.css">
+  <title>remoteStorage</title>
+  <link rel="stylesheet" type="text/css" href="/css/simple.min.css">
+  <link rel="stylesheet" type="text/css" href="/css/screen.css">
 </head>
 <body>
-    <div class="nav">
-        <span class="left">
-            <img src="img/rs.svg" width="48" height="45">
-        </span>
-        <span class="right">
-                    </span>
-    </div>
-    <h2>Sign In</h2>
-    <div class="content">    
-    <form method="post" class="signin" action="authenticate">
-        <fieldset>
-                            <label for="userName">Username</label>
+    <header>
+        <nav>
+        </nav>
+    </header>
+    <main>
+        <h2>Sign In</h2>
+        <div>    
+    <form method="post" action="authenticate">
+        <p>
+                <label for="userName">Username</label><br>
                 <input type="text"     id="userName" name="userName" autocapitalize="off" placeholder="Username" autofocus required>
-                <label for="userPass">Password</label>
+        </p>
+        <p>
+                <label for="userPass">Password</label><br>
                 <input type="password" id="userPass" name="userPass" placeholder="Password" required>
-             
-        </fieldset>
-        <fieldset>
+        </p>
+ 
+        <p>
             <input type="hidden" name="_form_auth_redirect_to" value="http://example.org/authorize?client_id=https%3A%2F%2Fapp.example.org&amp;redirect_uri=https%3A%2F%2Fapp.example.org%2Fcallback.html&amp;response_type=token&amp;scope=foo%3Ar">
-            <button class="success" type="submit">Sign In</button>
-        </fieldset>
+            <button type="submit">Sign In</button>
+        </p>
     </form>
 </div>
-    <div class="footer">
+    </main>
+    <footer>
         Powered by <a href="https://github.com/fkooman/php-remote-storage">php-remote-storage</a>
-    </div>
+    </footer>
 </body>
 </html>

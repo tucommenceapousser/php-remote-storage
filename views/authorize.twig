@@ -5,12 +5,12 @@
     <p>An application wants to act on your behalf.</p>
 
     <dl>
-        <dt>Application</dt><dd>{{ client_origin }}</dd>
-        <dt>Permissions</dt><dd>{{ scope }}</dd>
+        <dt>Application</dt><dd><code>{{ client_origin }}</code></dd>
+        <dt>Permissions</dt><dd><code>{{ scope }}</code></dd>
     </dl>
 
     <form method="post">
-        <button class="error" type="submit" name="approve" value="no">Reject</button>
-        <button class="success" type="submit" name="approve" value="yes">Approve</button>
+        <button type="submit" name="approve" value="no">Reject</button>
+        <button type="submit" name="approve" value="yes">Approve</button>
     </form>
 {% endblock %}
