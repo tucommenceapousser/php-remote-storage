@@ -32,11 +32,15 @@ I use both these services:
 
 ## Fedora
 
-    $ sudo dnf -y install httpd php php-pdo php-mbstring mod_ssl mod_xsendfile /usr/sbin/semanage
+```bash
+$ sudo dnf -y install httpd php php-pdo php-mbstring mod_ssl mod_xsendfile /usr/sbin/semanage
+```
 
 ## Ubuntu/Debian
 
-    $ sudo apt-get install apache2 php php-mbstring php-curl libapache2-mod-xsendfile php-sqlite3
+```bash
+$ sudo apt install apache2 php php-mbstring php-curl php-intl libapache2-mod-xsendfile php-sqlite3
+```
 
 # Downloading
 
@@ -55,15 +59,19 @@ only available from my remoteStorage server instance:
 
 After downloading, extract the software in `/var/www`:
 
-    $ cd /var/www
-    $ sudo tar -xJf /path/to/php-remote-storage-VERSION.tar.xz
-    $ sudo mv php-remote-storage-VERSION php-remote-storage
-    $ cd php-remote-storage
-    $ sudo cp config/server.yaml.example config/server.yaml
+```bash
+$ cd /var/www
+$ sudo tar -xJf /path/to/php-remote-storage-VERSION.tar.xz
+$ sudo mv php-remote-storage-VERSION php-remote-storage
+$ cd php-remote-storage
+$ sudo cp config/server.yaml.example config/server.yaml
+```
 
 Now add a user, by default no users are set up in the production template:
 
-    $ sudo php bin/add-user.php me p4ssw0rd
+```bash
+$ sudo php bin/add-user.php me p4ssw0rd
+```
 
 ## Fedora
 
@@ -72,27 +80,35 @@ The instructions here are specific for Fedora.
 Prepare the `data` directory for storing files, the database and template 
 cache:
 
-    $ sudo mkdir data
-    $ sudo chown apache.apache data
-    $ sudo semanage fcontext -a -t httpd_sys_rw_content_t "/var/www/php-remote-storage/data(/.*)?"
-    $ sudo restorecon -R data
+```bash
+$ sudo mkdir data
+$ sudo chown apache.apache data
+$ sudo semanage fcontext -a -t httpd_sys_rw_content_t "/var/www/php-remote-storage/data(/.*)?"
+$ sudo restorecon -R data
+```
 
 Generate the SSL certificate:
 
-    $ sudo openssl genrsa -out /etc/pki/tls/private/storage.local.key 2048
-    $ sudo chmod 600 /etc/pki/tls/private/storage.local.key
-    $ sudo openssl req -subj "/CN=storage.local" -sha256 -new -x509 \
-        -key /etc/pki/tls/private/storage.local.key \
-        -out /etc/pki/tls/certs/storage.local.crt
+```bash
+$ sudo openssl genrsa -out /etc/pki/tls/private/storage.local.key 2048
+$ sudo chmod 600 /etc/pki/tls/private/storage.local.key
+$ sudo openssl req -subj "/CN=storage.local" -sha256 -new -x509 \
+    -key /etc/pki/tls/private/storage.local.key \
+    -out /etc/pki/tls/certs/storage.local.crt
+```
 
 Install the Apache configuration file:
 
-    $ sudo cp contrib/storage.local.conf.fedora /etc/httpd/conf.d/storage.local.conf
+```bash
+$ sudo cp contrib/storage.local.conf.fedora /etc/httpd/conf.d/storage.local.conf
+```
 
 Enable the web server on boot and start it:
 
-    $ sudo systemctl enable httpd
-    $ sudo systemctl start httpd
+```bash
+$ sudo systemctl enable httpd
+$ sudo systemctl start httpd
+```
 
 You should now be able to go to 
 [https://storage.local/](https://storage.local/), accept the self signed
@@ -103,9 +119,11 @@ that you may have added above.
 If you want to have your certificate signed by a CA you can also generate a 
 CSR:
 
-    $ sudo openssl req -subj "/CN=storage.local" -sha256 -new \
-        -key /etc/pki/tls/private/storage.local.key \
-        -out storage.local.csr
+```bash
+$ sudo openssl req -subj "/CN=storage.local" -sha256 -new \
+    -key /etc/pki/tls/private/storage.local.key \
+    -out storage.local.csr
+```
 
 Once you obtain the resulting certificate, overwrite the file 
 `/etc/pki/tls/certs/storage.local.crt` with the new certificate, configure the
@@ -118,29 +136,37 @@ The instructions here are specific for Ubuntu/Debian.
 Prepare the `data` directory for storing files, the database and template 
 cache:
 
-    $ sudo mkdir data
-    $ sudo chown www-data.www-data data
+```bash
+$ sudo mkdir data
+$ sudo chown www-data.www-data data
+```
 
 Generate the SSL certificate:
 
-    $ sudo openssl genrsa -out /etc/ssl/private/storage.local.key 2048
-    $ sudo chmod 600 /etc/ssl/private/storage.local.key
-    $ sudo openssl req -subj "/CN=storage.local" -sha256 -new -x509 \
-        -key /etc/ssl/private/storage.local.key \
-        -out /etc/ssl/certs/storage.local.crt
+```bash
+$ sudo openssl genrsa -out /etc/ssl/private/storage.local.key 2048
+$ sudo chmod 600 /etc/ssl/private/storage.local.key
+$ sudo openssl req -subj "/CN=storage.local" -sha256 -new -x509 \
+    -key /etc/ssl/private/storage.local.key \
+    -out /etc/ssl/certs/storage.local.crt
+```
 
 Install the Apache configuration file:
 
-    $ sudo cp contrib/storage.local.conf.ubuntu /etc/apache2/sites-available/storage.local.conf
+```
+$ sudo cp contrib/storage.local.conf.ubuntu /etc/apache2/sites-available/storage.local.conf
+```
 
 Enable some web server modules and enable the site:
 
-    $ sudo a2enmod rewrite
-    $ sudo a2enmod headers
-    $ sudo a2enmod ssl
-    $ sudo a2ensite default-ssl
-    $ sudo a2ensite storage.local
-    $ sudo service apache2 restart
+```bash
+$ sudo a2enmod rewrite
+$ sudo a2enmod headers
+$ sudo a2enmod ssl
+$ sudo a2ensite default-ssl
+$ sudo a2ensite storage.local
+$ sudo service apache2 restart
+```
 
 You should now be able to go to 
 [https://storage.local/](https://storage.local/), accept the self signed
@@ -151,9 +177,11 @@ that you may have added above.
 If you want to have your certificate signed by a CA you can also generate a 
 CSR:
 
-    $ sudo openssl req -subj "/CN=storage.local" -sha256 -new \
-        -key /etc/ssl/private/storage.local.key \
-        -out storage.local.csr
+```bash
+$ sudo openssl req -subj "/CN=storage.local" -sha256 -new \
+    -key /etc/ssl/private/storage.local.key \
+    -out storage.local.csr
+```
 
 Once you obtain the resulting certificate, overwrite the file 
 `/etc/ssl/certs/storage.local.crt` with the new certificate, configure the
