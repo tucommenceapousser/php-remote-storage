@@ -33,7 +33,6 @@
         "ext-mbstring": "*",
         "ext-pcre": "*",
         "ext-pdo": "*",
-        "ext-session": "*",
         "ext-sodium": "*",
         "ext-spl": "*",
         "fkooman/secookie": "^6",

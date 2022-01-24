@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "080655945f06a26504670f22e35877dd",
+    "content-hash": "07a1b5c2a11483fd999943c04964ae84",
     "packages": [
         {
             "name": "fkooman/secookie",
@@ -4415,7 +4415,6 @@
         "ext-mbstring": "*",
         "ext-pcre": "*",
         "ext-pdo": "*",
-        "ext-session": "*",
         "ext-sodium": "*",
         "ext-spl": "*",
         "php": ">=7.4"
