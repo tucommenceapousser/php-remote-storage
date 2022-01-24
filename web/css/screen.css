@@ -1,10 +1,15 @@
 header {
     background-image: url("../img/rs.svg");
     background-repeat: no-repeat;
-    background-position: 1em 50%;
+    background-position: 1em 1em;
     background-size: 2em 2em;
 }
 
 dt {
     font-weight: bold;
 }
+
+nav {
+    text-align: end;
+    
+}   
