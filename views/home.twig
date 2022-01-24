@@ -8,7 +8,7 @@
             <th>
                 <span title="Use this address in the remoteStorage Widget to connect to this storage server.">User Address</span>
             </th>
-            <td>{{ user_id }}@{{ host }}</td>
+            <td><code>{{ user_address }}</code></td>
         </tr>
         <tr>
             <th><span title="The total amount of storage used on this storage server.">Usage</span></th>
@@ -35,7 +35,7 @@
             {% for approval in approval_list %}
                 <tr>
                     <td><a href="{{ approval.client_id }}">{{ approval.client_id }}</a></td>                    
-                    <td>{{ approval.scope }}</td>
+                    <td><code>{{ approval.scope }}</code></td>
                     <td>
                         <form method="post">
                             <input type="hidden" name="client_id" value="{{ approval.client_id }}">

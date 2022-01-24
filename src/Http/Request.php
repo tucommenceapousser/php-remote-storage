@@ -64,32 +64,36 @@ class Request
 
     public function getAuthority()
     {
-        // scheme
-        if (!\array_key_exists('REQUEST_SCHEME', $this->serverData)) {
-            $requestScheme = 'http';
-        } else {
-            $requestScheme = $this->serverData['REQUEST_SCHEME'];
-        }
-
         // server_name
         $serverName = $this->serverData['SERVER_NAME'];
 
-        // port
-        $serverPort = (int) $this->serverData['SERVER_PORT'];
-
         $usePort = false;
-        if ('https' === $requestScheme && 443 !== $serverPort) {
+        if ('https' === $this->getScheme() && 443 !== $this->getPort()) {
             $usePort = true;
         }
-        if ('http' === $requestScheme && 80 !== $serverPort) {
+        if ('http' === $this->getScheme() && 80 !== $this->getPort()) {
             $usePort = true;
         }
 
         if ($usePort) {
-            return sprintf('%s://%s:%d', $requestScheme, $serverName, $serverPort);
+            return sprintf('%s://%s:%d', $this->getScheme(), $serverName, $this->getPort());
         }
 
-        return sprintf('%s://%s', $requestScheme, $serverName);
+        return sprintf('%s://%s', $this->getScheme(), $serverName);
+    }
+
+    public function getPort(): int
+    {
+        return $this->serverData['SERVER_PORT'];
+    }
+
+    public function getScheme(): string
+    {
+        if (!\array_key_exists('REQUEST_SCHEME', $this->serverData)) {
+            return 'http';
+        }
+
+        return $this->serverData['REQUEST_SCHEME'];
     }
 
     public function getUri()

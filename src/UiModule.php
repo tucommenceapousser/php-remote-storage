@@ -45,14 +45,22 @@ class UiModule
     public function getHome(Request $request, $userId)
     {
         $approvalList = $this->tokenStorage->getAuthorizedClients($userId);
+        $userAddress = $userId.'@'.$request->getServerName();
+        if ('https' === $request->getScheme() && 443 === $request->getPort()) {
+            return $userAddress;
+        }
+        if ('http' === $request->getScheme() && 80 === $request->getPort()) {
+            return $userAddress;
+        }
+
+        $userAddress .= ':'.$request->getPort();
 
         return new HtmlResponse(
             $this->tpl->render(
                 'home',
                 [
                     'approval_list' => $approvalList,
-                    'host' => $request->getServerName(),
-                    'user_id' => $userId,
+                    'user_address' => $userAddress,
                     'disk_usage' => $this->remoteStorage->getFolderSize(new Path(sprintf('/%s/', $userId))),
                     'request_url' => $request->getUri(),
                     'show_account_icon' => true,
