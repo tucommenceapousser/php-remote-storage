@@ -79,7 +79,11 @@ class Request
 
     public function getPort(): int
     {
-        return $this->serverData['SERVER_PORT'];
+        if (!\array_key_exists('SERVER_PORT', $this->serverData)) {
+            throw new HttpException('unable to determine port', 500);
+        }
+
+        return (int) $this->serverData['SERVER_PORT'];
     }
 
     public function getScheme(): string
