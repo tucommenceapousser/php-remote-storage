@@ -7,6 +7,7 @@ $baseDir = dirname(__DIR__);
 foreach (['src', 'vendor'] as $autoloadDir) {
     if (@file_exists(sprintf('%s/%s/autoload.php', $baseDir, $autoloadDir))) {
         require_once sprintf('%s/%s/autoload.php', $baseDir, $autoloadDir);
+
         break;
     }
 }
@@ -28,5 +29,6 @@ try {
     Config::toFile(sprintf('%s/config/server.yaml', $baseDir), $configData);
 } catch (Exception $e) {
     echo $e->getMessage().\PHP_EOL;
+
     exit(1);
 }

@@ -1,5 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
+/*
+ * php-remote-storage - PHP remoteStorage implementation
+ *
+ * Copyright: 2016 SURFnet
+ * Copyright: 2022 François Kooman <fkooman@tuxed.net>
+ *
+ * SPDX-License-Identifier: AGPL-3.0+
+ */
+
 namespace fkooman\RemoteStorage;
 
 use DateTime;
@@ -76,22 +87,28 @@ class Controller
             switch ($request->getRequestMethod()) {
                 case 'GET':
                     return $this->handleGet($request);
+
                 case 'POST':
                     return $this->handlePost($request);
+
                 case 'PUT':
                     $tokenInfo = $this->auth['bearer']->requireAuth($request);
 
                     return $this->apiModule->put($request, $tokenInfo);
+
                 case 'DELETE':
                     $tokenInfo = $this->auth['bearer']->requireAuth($request);
 
                     return $this->apiModule->delete($request, $tokenInfo);
+
                 case 'OPTIONS':
                     return $this->apiModule->options($request);
+
                 case 'HEAD':
                     $tokenInfo = $this->auth['bearer']->optionalAuth($request);
 
                     return $this->apiModule->head($request, $tokenInfo);
+
                 default:
                     throw new HttpException('method not allowed', 405);
            }
@@ -127,6 +144,7 @@ class Controller
         switch ($request->getPathInfo()) {
             case '/.well-known/webfinger':
                 return $this->webfingerModule->getWebfinger($request);
+
             case '/authorize':
                 $userId = $this->auth['form']->requireAuth($request);
                 if ($userId instanceof Response) {
@@ -134,6 +152,7 @@ class Controller
                 }
 
                 return $this->oauthModule->getAuthorize($request, $userId);
+
             case '/':
                 $userId = $this->auth['form']->requireAuth($request);
                 if ($userId instanceof Response) {
@@ -141,8 +160,10 @@ class Controller
                 }
 
                 return $this->uiModule->getHome($request, $userId);
+
             case '/logout':
                 return $this->auth['form']->logout($request);
+
             default:
                 $tokenInfo = $this->auth['bearer']->optionalAuth($request);
 
@@ -157,14 +178,18 @@ class Controller
                 $userId = $this->auth['form']->requireAuth($request);
 
                 return $this->uiModule->postHome($request, $userId);
+
             case '/authorize':
                 $userId = $this->auth['form']->requireAuth($request);
 
                 return $this->oauthModule->postAuthorize($request, $userId);
+
             case '/authenticate':
                 return $this->auth['form']->verifyAuth($request);
+
             case '/logout':
                 return $this->auth['form']->logout($request);
+
             default:
                 throw new HttpException('not found', 404);
         }

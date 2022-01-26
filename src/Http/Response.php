@@ -1,19 +1,14 @@
 <?php
-/**
- *  Copyright (C) 2016 SURFnet.
+
+declare(strict_types=1);
+
+/*
+ * php-remote-storage - PHP remoteStorage implementation
  *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU Affero General Public License as
- *  published by the Free Software Foundation, either version 3 of the
- *  License, or (at your option) any later version.
+ * Copyright: 2016 SURFnet
+ * Copyright: 2022 François Kooman <fkooman@tuxed.net>
  *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU Affero General Public License for more details.
- *
- *  You should have received a copy of the GNU Affero General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * SPDX-License-Identifier: AGPL-3.0+
  */
 
 namespace fkooman\RemoteStorage\Http;
@@ -40,11 +35,11 @@ class Response
 
     public function __toString()
     {
-        $output = $this->statusCode.\PHP_EOL;
+        $output = $this->statusCode.PHP_EOL;
         foreach ($this->headers as $k => $v) {
-            $output .= sprintf('%s: %s', $k, $v).\PHP_EOL;
+            $output .= sprintf('%s: %s', $k, $v).PHP_EOL;
         }
-        $output .= \PHP_EOL;
+        $output .= PHP_EOL;
         $output .= $this->body;
 
         return $output;
@@ -55,7 +50,7 @@ class Response
         return 200 <= $this->statusCode && 300 > $this->statusCode;
     }
 
-    public function addHeader($key, $value)
+    public function addHeader($key, $value): void
     {
         $this->headers[$key] = $value;
     }
@@ -67,7 +62,7 @@ class Response
         }
     }
 
-    public function setBody($body)
+    public function setBody($body): void
     {
         $this->body = $body;
     }
@@ -94,12 +89,12 @@ class Response
         return $output;
     }
 
-    public function setFile($fileName)
+    public function setFile($fileName): void
     {
         $this->addHeader('X-SENDFILE', $fileName);
     }
 
-    public function send()
+    public function send(): void
     {
         http_response_code($this->statusCode);
         foreach ($this->headers as $key => $value) {

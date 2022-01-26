@@ -1,19 +1,14 @@
 <?php
-/**
- *  Copyright (C) 2017 SURFnet.
+
+declare(strict_types=1);
+
+/*
+ * php-remote-storage - PHP remoteStorage implementation
  *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU Affero General Public License as
- *  published by the Free Software Foundation, either version 3 of the
- *  License, or (at your option) any later version.
+ * Copyright: 2016 SURFnet
+ * Copyright: 2022 François Kooman <fkooman@tuxed.net>
  *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU Affero General Public License for more details.
- *
- *  You should have received a copy of the GNU Affero General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * SPDX-License-Identifier: AGPL-3.0+
  */
 
 namespace fkooman\RemoteStorage;
@@ -42,7 +37,7 @@ class Config
     /**
      * @param string $key
      *
-     * @return object|string|array
+     * @return array|object|string
      */
     public function __get($key)
     {
@@ -83,7 +78,7 @@ class Config
         return new static(Yaml::parse($fileContent));
     }
 
-    public static function toFile($configFile, array $configData)
+    public static function toFile($configFile, array $configData): void
     {
         $fileData = Yaml::dump($configData, 3);
         if (false === @file_put_contents($configFile, $fileData)) {

@@ -1,19 +1,14 @@
 <?php
-/**
- *  Copyright (C) 2016 SURFnet.
+
+declare(strict_types=1);
+
+/*
+ * php-remote-storage - PHP remoteStorage implementation
  *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU Affero General Public License as
- *  published by the Free Software Foundation, either version 3 of the
- *  License, or (at your option) any later version.
+ * Copyright: 2016 SURFnet
+ * Copyright: 2022 François Kooman <fkooman@tuxed.net>
  *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU Affero General Public License for more details.
- *
- *  You should have received a copy of the GNU Affero General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * SPDX-License-Identifier: AGPL-3.0+
  */
 
 namespace fkooman\RemoteStorage\OAuth;
@@ -42,7 +37,7 @@ class OAuthModule
     private $dateTime;
 
     /** @var int */
-    private $expiresIn = 7776000;   /* 90 days */
+    private $expiresIn = 7776000;   // 90 days
 
     public function __construct(TplInterface $tpl, TokenStorage $tokenStorage, RandomInterface $random, DateTime $dateTime)
     {
@@ -55,7 +50,7 @@ class OAuthModule
     /**
      * @param int $expiresIn
      */
-    public function setExpiresIn($expiresIn)
+    public function setExpiresIn($expiresIn): void
     {
         $this->expiresIn = (int) $expiresIn;
     }
@@ -155,7 +150,7 @@ class OAuthModule
         return sprintf('%s.%s', $accessTokenKey, $accessToken);
     }
 
-    private function validateRequest(Request $request)
+    private function validateRequest(Request $request): void
     {
         // we enforce that all parameter are set, nothing is "OPTIONAL"
         $clientId = $request->getQueryParameter('client_id');
@@ -165,7 +160,7 @@ class OAuthModule
 
         // XXX we also should enforce HTTPS
         $redirectUri = $request->getQueryParameter('redirect_uri');
-        if (false === filter_var($redirectUri, \FILTER_VALIDATE_URL, \FILTER_FLAG_PATH_REQUIRED)) {
+        if (false === filter_var($redirectUri, FILTER_VALIDATE_URL, FILTER_FLAG_PATH_REQUIRED)) {
             throw new HttpException('invalid redirect_uri', 400);
         }
         if (false !== strpos($redirectUri, '?')) {
@@ -217,11 +212,11 @@ class OAuthModule
     /**
      * @param string $inputUrl
      *
-     * @return string|false
+     * @return false|string
      */
     private static function determineOrigin($inputUrl)
     {
-        if (false === filter_var($inputUrl, \FILTER_VALIDATE_URL)) {
+        if (false === filter_var($inputUrl, FILTER_VALIDATE_URL)) {
             return false;
         }
         $parsedInputUrl = parse_url($inputUrl);

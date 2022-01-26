@@ -1,19 +1,14 @@
 <?php
-/**
- *  Copyright (C) 2016 SURFnet.
+
+declare(strict_types=1);
+
+/*
+ * php-remote-storage - PHP remoteStorage implementation
  *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU Affero General Public License as
- *  published by the Free Software Foundation, either version 3 of the
- *  License, or (at your option) any later version.
+ * Copyright: 2016 SURFnet
+ * Copyright: 2022 François Kooman <fkooman@tuxed.net>
  *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU Affero General Public License for more details.
- *
- *  You should have received a copy of the GNU Affero General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * SPDX-License-Identifier: AGPL-3.0+
  */
 
 namespace fkooman\RemoteStorage\Http;
@@ -29,7 +24,7 @@ class InputValidation
      */
     public static function displayName($displayName)
     {
-        $displayName = filter_var($displayName, \FILTER_UNSAFE_RAW, \FILTER_FLAG_STRIP_LOW);
+        $displayName = filter_var($displayName, FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW);
 
         if (0 === mb_strlen($displayName)) {
             throw new InputValidationException('invalid "display_name"');
@@ -209,7 +204,7 @@ class InputValidation
      */
     public static function ipAddress($ipAddress)
     {
-        if (false === filter_var($ipAddress, \FILTER_VALIDATE_IP)) {
+        if (false === filter_var($ipAddress, FILTER_VALIDATE_IP)) {
             throw new InputValidationException('invalid "ip_address"');
         }
 
@@ -238,7 +233,7 @@ class InputValidation
      */
     public static function ip4($ip4)
     {
-        if (false === filter_var($ip4, \FILTER_VALIDATE_IP, \FILTER_FLAG_IPV4)) {
+        if (false === filter_var($ip4, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
             throw new InputValidationException('invalid "ip4"');
         }
 
@@ -252,7 +247,7 @@ class InputValidation
      */
     public static function ip6($ip6)
     {
-        if (false === filter_var($ip6, \FILTER_VALIDATE_IP, \FILTER_FLAG_IPV6)) {
+        if (false === filter_var($ip6, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
             throw new InputValidationException('invalid "ip6"');
         }
 
@@ -323,7 +318,7 @@ class InputValidation
      */
     public static function twoFactorValue($twoFactorValue)
     {
-        if (!\is_string($twoFactorValue) || 0 >= \strlen($twoFactorValue)) {
+        if (!\is_string($twoFactorValue) || '' === $twoFactorValue) {
             throw new InputValidationException('invalid "two_factor_value"');
         }
 

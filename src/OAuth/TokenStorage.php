@@ -1,19 +1,14 @@
 <?php
-/**
- *  Copyright (C) 2016 SURFnet.
+
+declare(strict_types=1);
+
+/*
+ * php-remote-storage - PHP remoteStorage implementation
  *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU Affero General Public License as
- *  published by the Free Software Foundation, either version 3 of the
- *  License, or (at your option) any later version.
+ * Copyright: 2016 SURFnet
+ * Copyright: 2022 François Kooman <fkooman@tuxed.net>
  *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU Affero General Public License for more details.
- *
- *  You should have received a copy of the GNU Affero General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * SPDX-License-Identifier: AGPL-3.0+
  */
 
 namespace fkooman\RemoteStorage\OAuth;
@@ -32,7 +27,7 @@ class TokenStorage
         $this->db = $db;
     }
 
-    public function store($userId, $accessTokenKey, $accessToken, $clientId, $scope, DateTime $expiresAt)
+    public function store($userId, $accessTokenKey, $accessToken, $clientId, $scope, DateTime $expiresAt): void
     {
         $stmt = $this->db->prepare(
             'INSERT INTO tokens (
@@ -121,7 +116,7 @@ class TokenStorage
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function removeClientTokens($userId, $clientId)
+    public function removeClientTokens($userId, $clientId): void
     {
         $stmt = $this->db->prepare(
             'DELETE FROM tokens
@@ -133,7 +128,7 @@ class TokenStorage
         $stmt->execute();
     }
 
-    public function init()
+    public function init(): void
     {
         $queryList = [
             'CREATE TABLE IF NOT EXISTS tokens (

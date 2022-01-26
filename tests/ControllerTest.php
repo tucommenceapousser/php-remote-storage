@@ -1,18 +1,14 @@
 <?php
 
-/**
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU Lesser General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
+declare(strict_types=1);
+
+/*
+ * php-remote-storage - PHP remoteStorage implementation
  *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU Lesser General Public License for more details.
+ * Copyright: 2016 SURFnet
+ * Copyright: 2022 François Kooman <fkooman@tuxed.net>
  *
- *  You should have received a copy of the GNU Lesser General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * SPDX-License-Identifier: AGPL-3.0+
  */
 
 namespace fkooman\RemoteStorage\Tests;
@@ -29,7 +25,11 @@ use fkooman\RemoteStorage\RemoteStorage;
 use PDO;
 use PHPUnit\Framework\TestCase;
 
-class ControllerTest extends TestCase
+/**
+ * @internal
+ * @coversNothing
+ */
+final class ControllerTest extends TestCase
 {
     /** @var Controller */
     private $controller;
@@ -76,13 +76,13 @@ class ControllerTest extends TestCase
         $remoteStorage->putDocument(new Path('/foo/bar/hello.txt'), 'text/plain', 'Hello World!');
 
         $random = $this->getMockBuilder('\fkooman\RemoteStorage\RandomInterface')->getMock();
-        $random->method('get')->will($this->onConsecutiveCalls('random_1', 'random_2'));
+        $random->method('get')->will(static::onConsecutiveCalls('random_1', 'random_2'));
 
         $config = Config::fromFile(sprintf('%s/config/server.yaml', $tmpDir));
         $this->controller = new Controller($tmpDir, '/', $config, new TestSession(), $random, new DateTime('2016-01-01'));
     }
 
-    public function testGetPublicFile()
+    public function testGetPublicFile(): void
     {
         $request = new Request(
             [
@@ -97,11 +97,11 @@ class ControllerTest extends TestCase
             ''
         );
         $response = $this->controller->run($request);
-        $this->assertSame(200, $response->getStatusCode());
-        $this->assertSame('Hello World!', $response->getBody());
+        static::assertSame(200, $response->getStatusCode());
+        static::assertSame('Hello World!', $response->getBody());
     }
 
-    public function testGetFile()
+    public function testGetFile(): void
     {
         $request = new Request(
             [
@@ -117,11 +117,11 @@ class ControllerTest extends TestCase
             ''
         );
         $response = $this->controller->run($request);
-        $this->assertSame(200, $response->getStatusCode());
-        $this->assertSame('Hello World!', $response->getBody());
+        static::assertSame(200, $response->getStatusCode());
+        static::assertSame('Hello World!', $response->getBody());
     }
 
-    public function testGetFileNoCredential()
+    public function testGetFileNoCredential(): void
     {
         $request = new Request(
             [
@@ -136,11 +136,11 @@ class ControllerTest extends TestCase
             ''
         );
         $response = $this->controller->run($request);
-        $this->assertSame(401, $response->getStatusCode());
-        $this->assertSame('{"error":"no_token"}', $response->getBody());
+        static::assertSame(401, $response->getStatusCode());
+        static::assertSame('{"error":"no_token"}', $response->getBody());
     }
 
-    public function testPutFile()
+    public function testPutFile(): void
     {
         $request = new Request(
             [
@@ -157,11 +157,11 @@ class ControllerTest extends TestCase
             'Test'
         );
         $response = $this->controller->run($request);
-        $this->assertSame(200, $response->getStatusCode());
-        $this->assertNull($response->getBody());
+        static::assertSame(200, $response->getStatusCode());
+        static::assertNull($response->getBody());
     }
 
-    public function testDeleteFile()
+    public function testDeleteFile(): void
     {
         $request = new Request(
             [
@@ -178,11 +178,11 @@ class ControllerTest extends TestCase
             ''
         );
         $response = $this->controller->run($request);
-        $this->assertSame(200, $response->getStatusCode());
-        $this->assertNull($response->getBody());
+        static::assertSame(200, $response->getStatusCode());
+        static::assertNull($response->getBody());
     }
 
-    public function testGetAuthorizationNotLoggedIn()
+    public function testGetAuthorizationNotLoggedIn(): void
     {
         $queryParameters = [
             'client_id' => 'https://app.example.org',
@@ -204,8 +204,8 @@ class ControllerTest extends TestCase
             ''
         );
         $response = $this->controller->run($request);
-        $this->assertSame(200, $response->getStatusCode());
-        $this->assertSame(
+        static::assertSame(200, $response->getStatusCode());
+        static::assertSame(
             file_get_contents(
                 sprintf('%s/data/testGetAuthorizationNotLoggedIn', __DIR__)
             ),
@@ -213,19 +213,19 @@ class ControllerTest extends TestCase
         );
     }
 
-    public function testPostAuthorizationNotLoggedIn()
+    public function testPostAuthorizationNotLoggedIn(): void
     {
     }
 
-    public function testGetAuthorizationLoggedIn()
+    public function testGetAuthorizationLoggedIn(): void
     {
     }
 
-    public function testPostAuthorization()
+    public function testPostAuthorization(): void
     {
     }
 
-    public function testGetWebfinger()
+    public function testGetWebfinger(): void
     {
         $queryParameters = [
             'resource' => 'acct:foo@example.org',
@@ -246,7 +246,7 @@ class ControllerTest extends TestCase
             ''
         );
         $response = $this->controller->run($request);
-        $this->assertSame(200, $response->getStatusCode());
-        $this->assertSame('{"links":[{"href":"http:\/\/example.org\/foo","properties":{"http:\/\/remotestorage.io\/spec\/version":"draft-dejong-remotestorage-05","http:\/\/remotestorage.io\/spec\/web-authoring":null,"http:\/\/tools.ietf.org\/html\/rfc6749#section-4.2":"http:\/\/example.org\/authorize?login_hint=foo","http:\/\/tools.ietf.org\/html\/rfc6750#section-2.3":"true","http:\/\/tools.ietf.org\/html\/rfc7233":null},"rel":"http:\/\/tools.ietf.org\/id\/draft-dejong-remotestorage"},{"href":"http:\/\/example.org\/foo","properties":{"http:\/\/remotestorage.io\/spec\/version":"draft-dejong-remotestorage-03","http:\/\/tools.ietf.org\/html\/rfc2616#section-14.16":false,"http:\/\/tools.ietf.org\/html\/rfc6749#section-4.2":"http:\/\/example.org\/authorize?login_hint=foo","http:\/\/tools.ietf.org\/html\/rfc6750#section-2.3":true},"rel":"remotestorage"}]}', $response->getBody());
+        static::assertSame(200, $response->getStatusCode());
+        static::assertSame('{"links":[{"href":"http:\/\/example.org\/foo","properties":{"http:\/\/remotestorage.io\/spec\/version":"draft-dejong-remotestorage-05","http:\/\/remotestorage.io\/spec\/web-authoring":null,"http:\/\/tools.ietf.org\/html\/rfc6749#section-4.2":"http:\/\/example.org\/authorize?login_hint=foo","http:\/\/tools.ietf.org\/html\/rfc6750#section-2.3":"true","http:\/\/tools.ietf.org\/html\/rfc7233":null},"rel":"http:\/\/tools.ietf.org\/id\/draft-dejong-remotestorage"},{"href":"http:\/\/example.org\/foo","properties":{"http:\/\/remotestorage.io\/spec\/version":"draft-dejong-remotestorage-03","http:\/\/tools.ietf.org\/html\/rfc2616#section-14.16":false,"http:\/\/tools.ietf.org\/html\/rfc6749#section-4.2":"http:\/\/example.org\/authorize?login_hint=foo","http:\/\/tools.ietf.org\/html\/rfc6750#section-2.3":true},"rel":"remotestorage"}]}', $response->getBody());
     }
 }

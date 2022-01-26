@@ -1,18 +1,14 @@
 <?php
 
-/**
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU Lesser General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
+declare(strict_types=1);
+
+/*
+ * php-remote-storage - PHP remoteStorage implementation
  *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU Lesser General Public License for more details.
+ * Copyright: 2016 SURFnet
+ * Copyright: 2022 François Kooman <fkooman@tuxed.net>
  *
- *  You should have received a copy of the GNU Lesser General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * SPDX-License-Identifier: AGPL-3.0+
  */
 
 namespace fkooman\RemoteStorage;
@@ -72,7 +68,7 @@ class MetadataStorage
      *
      * @param mixed $contentType
      */
-    public function updateDocument(Path $p, $contentType)
+    public function updateDocument(Path $p, $contentType): void
     {
         $currentVersion = $this->getVersion($p);
         if (null === $currentVersion) {
@@ -98,7 +94,7 @@ class MetadataStorage
         }
     }
 
-    public function deleteNode(Path $p)
+    public function deleteNode(Path $p): void
     {
         $stmt = $this->db->prepare(
             'DELETE FROM md WHERE path = :path'
@@ -123,7 +119,7 @@ class MetadataStorage
         ];
     }
 
-    public function init()
+    public function init(): void
     {
         $queries = self::createTableQueries();
         foreach ($queries as $q) {
@@ -148,7 +144,5 @@ class MetadataStorage
         if (false !== $result) {
             return $result;
         }
-
-        return;
     }
 }
