@@ -70,7 +70,7 @@ class Controller
         $this->auth['bearer'] = new BearerAuthentication($tokenStorage);
     }
 
-    public function run(Request $request)
+    public function run(Request $request): Response
     {
         try {
             switch ($request->getRequestMethod()) {
@@ -122,7 +122,7 @@ class Controller
         }
     }
 
-    private function handleGet(Request $request)
+    private function handleGet(Request $request): Response
     {
         switch ($request->getPathInfo()) {
             case '/.well-known/webfinger':
@@ -150,7 +150,7 @@ class Controller
         }
     }
 
-    private function handlePost(Request $request)
+    private function handlePost(Request $request): Response
     {
         switch ($request->getPathInfo()) {
             case '/':
