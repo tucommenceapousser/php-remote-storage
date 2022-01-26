@@ -75,7 +75,7 @@ class Config
             throw new ConfigException(sprintf('unable to read "%s"', $configFile));
         }
 
-        return new static(Yaml::parse($fileContent));
+        return new self(Yaml::parse($fileContent));
     }
 
     public static function toFile($configFile, array $configData): void

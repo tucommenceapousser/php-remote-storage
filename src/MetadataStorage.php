@@ -49,13 +49,13 @@ class MetadataStorage
         return null !== $md ? $md['content_type'] : null;
     }
 
-    public function updateFolder(Path $p)
+    public function updateFolder(Path $p): void
     {
         if (!$p->getIsFolder()) {
             throw new MetadataStorageException('not a folder');
         }
 
-        return $this->updateDocument($p, null);
+        $this->updateDocument($p, null);
     }
 
     /**
@@ -70,15 +70,15 @@ class MetadataStorage
      */
     public function updateDocument(Path $p, $contentType): void
     {
-        $currentVersion = $this->getVersion($p);
-        if (null === $currentVersion) {
+        if (null === $currentVersion = $this->getVersion($p)) {
             $newVersion = '1:'.$this->random->get(8);
             $stmt = $this->db->prepare(
                 'INSERT INTO md (path, content_type, version) VALUES(:path, :content_type, :version)'
             );
         } else {
+            [$versionNumber,] = explode(':', $currentVersion, 2);
             $explodedData = explode(':', $currentVersion);
-            $newVersion = sprintf('%d:%s', $explodedData[0] + 1, $this->random->get(8));
+            $newVersion = sprintf('%d:%s', ((int) $versionNumber) + 1, $this->random->get(8));
             $stmt = $this->db->prepare(
                 'UPDATE md SET version = :version, content_type = :content_type WHERE path = :path'
             );
@@ -130,19 +130,22 @@ class MetadataStorage
     /**
      * Get the version of the path which can be either a folder or document.
      *
-     * @param $path The full path to the folder or document
-     * @returns the version of the path, or null if path does not exist
+     * @return array{version:string,content_type:string}
      */
-    private function getMetadata(Path $p)
+    private function getMetadata(Path $p): ?array
     {
         $stmt = $this->db->prepare(
             'SELECT version, content_type FROM md WHERE path = :path'
         );
         $stmt->bindValue(':path', $p->getPath(), PDO::PARAM_STR);
         $stmt->execute();
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        if (false !== $result) {
-            return $result;
+        if (false === $resultRow = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            return null;
         }
+
+        return [
+            'version' => (string) $resultRow['version'],
+            'content_type' => (string) $resultRow['content_type'],
+        ];
     }
 }
