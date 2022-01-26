@@ -16,6 +16,11 @@
             "fkooman\\RemoteStorage\\Tests\\": "tests/"
         }
     },
+    "config": {
+        "platform": {
+            "php": "7.4.0"
+        }
+    },
     "description": "remoteStorage Server",
     "license": "AGPL-3.0-or-later",
     "name": "fkooman/remote-storage",
