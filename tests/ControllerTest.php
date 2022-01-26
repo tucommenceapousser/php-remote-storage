@@ -158,7 +158,7 @@ final class ControllerTest extends TestCase
         );
         $response = $this->controller->run($request);
         static::assertSame(200, $response->getStatusCode());
-        static::assertNull($response->getBody());
+        static::assertSame('', $response->getBody());
     }
 
     public function testDeleteFile(): void
@@ -179,7 +179,7 @@ final class ControllerTest extends TestCase
         );
         $response = $this->controller->run($request);
         static::assertSame(200, $response->getStatusCode());
-        static::assertNull($response->getBody());
+        static::assertSame('', $response->getBody());
     }
 
     public function testGetAuthorizationNotLoggedIn(): void
@@ -213,17 +213,17 @@ final class ControllerTest extends TestCase
         );
     }
 
-    public function testPostAuthorizationNotLoggedIn(): void
-    {
-    }
+//    public function testPostAuthorizationNotLoggedIn(): void
+//    {
+//    }
 
-    public function testGetAuthorizationLoggedIn(): void
-    {
-    }
+//    public function testGetAuthorizationLoggedIn(): void
+//    {
+//    }
 
-    public function testPostAuthorization(): void
-    {
-    }
+//    public function testPostAuthorization(): void
+//    {
+//    }
 
     public function testGetWebfinger(): void
     {

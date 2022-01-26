@@ -252,7 +252,7 @@ class ApiModule
             throw new HttpException('document already exists', 412);
         }
 
-        $x = $this->remoteStorage->putDocument(
+        $this->remoteStorage->putDocument(
             $path,
             $request->getHeader('CONTENT_TYPE'),
             $request->getBody(),
@@ -264,7 +264,7 @@ class ApiModule
 
         $rsr = new Response();
         $rsr->addHeader('ETag', '"'.$documentVersion.'"');
-        $rsr->setBody($x);
+        $rsr->setBody('');
 
         return $rsr;
     }
@@ -304,13 +304,13 @@ class ApiModule
             throw new HttpException('version mismatch', 412);
         }
 
-        $x = $this->remoteStorage->deleteDocument(
+        $this->remoteStorage->deleteDocument(
             $path,
             $ifMatch
         );
         $rsr = new Response();
         $rsr->addHeader('ETag', '"'.$documentVersion.'"');
-        $rsr->setBody($x);
+        $rsr->setBody('');
 
         return $rsr;
     }

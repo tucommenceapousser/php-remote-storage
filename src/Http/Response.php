@@ -15,16 +15,13 @@ namespace fkooman\RemoteStorage\Http;
 
 class Response
 {
-    /** @var int */
-    private $statusCode;
+    private int $statusCode;
 
-    /** @var array */
-    private $headers;
+    /** @var array<string,string> */
+    private array $headers;
+    private string $body;
 
-    /** @var string */
-    private $body;
-
-    public function __construct($statusCode = 200, $contentType = 'text/plain')
+    public function __construct(int $statusCode = 200, string $contentType = 'text/plain')
     {
         $this->statusCode = $statusCode;
         $this->headers = [
@@ -33,7 +30,7 @@ class Response
         $this->body = '';
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         $output = $this->statusCode.PHP_EOL;
         foreach ($this->headers as $k => $v) {
@@ -45,39 +42,41 @@ class Response
         return $output;
     }
 
-    public function isOkay()
+    public function isOkay(): bool
     {
         return 200 <= $this->statusCode && 300 > $this->statusCode;
     }
 
-    public function addHeader($key, $value): void
+    public function addHeader(string $key, string $value): void
     {
         $this->headers[$key] = $value;
     }
 
-    public function getHeader($key)
+    public function getHeader($key): ?string
     {
         if (\array_key_exists($key, $this->headers)) {
             return $this->headers[$key];
         }
+
+        return null;
     }
 
-    public function setBody($body): void
+    public function setBody(string $body): void
     {
         $this->body = $body;
     }
 
-    public function getStatusCode()
+    public function getStatusCode(): int
     {
         return $this->statusCode;
     }
 
-    public function getBody()
+    public function getBody(): string
     {
         return $this->body;
     }
 
-    public function toArray()
+    public function toArray(): array
     {
         $output = [$this->statusCode];
         foreach ($this->headers as $key => $value) {
@@ -89,7 +88,7 @@ class Response
         return $output;
     }
 
-    public function setFile($fileName): void
+    public function setFile(string $fileName): void
     {
         $this->addHeader('X-SENDFILE', $fileName);
     }
