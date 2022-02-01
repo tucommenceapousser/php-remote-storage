@@ -160,7 +160,7 @@ class OAuthModule
 
         // XXX we also should enforce HTTPS
         $redirectUri = $request->getQueryParameter('redirect_uri');
-        if (false === filter_var($redirectUri, FILTER_VALIDATE_URL, FILTER_FLAG_PATH_REQUIRED)) {
+        if (false === filter_var($redirectUri, FILTER_VALIDATE_URL)) {
             throw new HttpException('invalid redirect_uri', 400);
         }
         if (false !== strpos($redirectUri, '?')) {
