@@ -18,31 +18,22 @@ use PDO;
 
 class MetadataStorage
 {
-    /** @var PDO */
-    private $db;
+    private PDO $db;
 
-    /** @var RandomInterface */
-    private $random;
-
-    public function __construct(PDO $db, RandomInterface $random = null)
+    public function __construct(PDO $db)
     {
         $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        // $db->query('PRAGMA foreign_keys = ON');
         $this->db = $db;
-        if (null === $random) {
-            $random = new Random();
-        }
-        $this->random = $random;
     }
 
-    public function getVersion(Path $p)
+    public function getVersion(Path $p): ?string
     {
         $md = $this->getMetadata($p);
 
         return null !== $md ? $md['version'] : null;
     }
 
-    public function getContentType(Path $p)
+    public function getContentType(Path $p): ?string
     {
         $md = $this->getMetadata($p);
 
@@ -71,14 +62,14 @@ class MetadataStorage
     public function updateDocument(Path $p, $contentType): void
     {
         if (null === $currentVersion = $this->getVersion($p)) {
-            $newVersion = '1:'.$this->random->get(8);
+            $newVersion = '1:'.sodium_bin2hex($this->randomBytes());
             $stmt = $this->db->prepare(
                 'INSERT INTO md (path, content_type, version) VALUES(:path, :content_type, :version)'
             );
         } else {
             [$versionNumber,] = explode(':', $currentVersion, 2);
             $explodedData = explode(':', $currentVersion);
-            $newVersion = sprintf('%d:%s', ((int) $versionNumber) + 1, $this->random->get(8));
+            $newVersion = sprintf('%d:%s', ((int) $versionNumber) + 1, sodium_bin2hex($this->randomBytes()));
             $stmt = $this->db->prepare(
                 'UPDATE md SET version = :version, content_type = :content_type WHERE path = :path'
             );
@@ -125,6 +116,11 @@ class MetadataStorage
         foreach ($queries as $q) {
             $this->db->query($q);
         }
+    }
+
+    protected function randomBytes(): string
+    {
+        return random_bytes(8);
     }
 
     /**

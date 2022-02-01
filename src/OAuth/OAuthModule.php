@@ -14,48 +14,30 @@ declare(strict_types=1);
 namespace fkooman\RemoteStorage\OAuth;
 
 use DateInterval;
-use DateTime;
+use DateTimeImmutable;
+use DateTimeZone;
 use fkooman\RemoteStorage\Http\Exception\HttpException;
 use fkooman\RemoteStorage\Http\HtmlResponse;
 use fkooman\RemoteStorage\Http\RedirectResponse;
 use fkooman\RemoteStorage\Http\Request;
-use fkooman\RemoteStorage\RandomInterface;
+use fkooman\RemoteStorage\Http\Response;
 use fkooman\RemoteStorage\TplInterface;
 
 class OAuthModule
 {
-    /** @var \fkooman\RemoteStorage\TplInterface */
-    private $tpl;
+    private const EXPIRES_IN = 'P90D'; // 90 days
+    protected DateTimeImmutable $dateTime;
+    private TplInterface $tpl;
+    private TokenStorage $tokenStorage;
 
-    /** @var \fkooman\RemoteStorage\RandomInterface */
-    private $random;
-
-    /** @var TokenStorage */
-    private $tokenStorage;
-
-    /** @var \DateTime */
-    private $dateTime;
-
-    /** @var int */
-    private $expiresIn = 7776000;   // 90 days
-
-    public function __construct(TplInterface $tpl, TokenStorage $tokenStorage, RandomInterface $random, DateTime $dateTime)
+    public function __construct(TplInterface $tpl, TokenStorage $tokenStorage)
     {
         $this->tpl = $tpl;
         $this->tokenStorage = $tokenStorage;
-        $this->random = $random;
-        $this->dateTime = $dateTime;
+        $this->dateTime = new DateTimeImmutable('now', new DateTimeZone('UTC'));
     }
 
-    /**
-     * @param int $expiresIn
-     */
-    public function setExpiresIn($expiresIn): void
-    {
-        $this->expiresIn = (int) $expiresIn;
-    }
-
-    public function getAuthorize(Request $request, $userId)
+    public function getAuthorize(Request $request, string $userId): Response
     {
         $this->validateRequest($request);
         $clientOrigin = $this->validateClient($request);
@@ -73,7 +55,7 @@ class OAuthModule
         );
     }
 
-    public function postAuthorize(Request $request, $userId)
+    public function postAuthorize(Request $request, string $userId): Response
     {
         $this->validateRequest($request);
         $this->validateClient($request);
@@ -91,7 +73,6 @@ class OAuthModule
                 $redirectParameters['state'] = $state;
             }
             $redirectQuery = http_build_query($redirectParameters);
-
             $redirectUri = sprintf($returnUriPattern, $request->getQueryParameter('redirect_uri'), $redirectQuery);
 
             return new RedirectResponse($redirectUri, 302);
@@ -106,7 +87,7 @@ class OAuthModule
         // add access_token, expires_in (and optionally state) to redirect_uri
         $redirectParameters = [
             'access_token' => $accessToken,
-            'expires_in' => $this->expiresIn,
+            'expires_in' => self::EXPIRES_IN,
         ];
         if (null !== $state) {
             $redirectParameters['state'] = $state;
@@ -117,7 +98,12 @@ class OAuthModule
         return new RedirectResponse($redirectUri, 302);
     }
 
-    private function getAccessToken($userId, $clientId, $scope)
+    protected function randomBytes(): string
+    {
+        return random_bytes(16);
+    }
+
+    private function getAccessToken(string $userId, string $clientId, string $scope): string
     {
         $existingToken = $this->tokenStorage->getExistingToken(
             $userId,
@@ -125,16 +111,16 @@ class OAuthModule
             $scope
         );
 
-        if (false !== $existingToken && $this->dateTime < new DateTime($existingToken['expires_at'])) {
+        if (false !== $existingToken && $this->dateTime < new DateTimeImmutable($existingToken['expires_at'])) {
             // if the user already has an access_token for this client and
             // scope, reuse it
             $accessTokenKey = $existingToken['access_token_key'];
             $accessToken = $existingToken['access_token'];
         } else {
             // generate a new one
-            $accessTokenKey = $this->random->get(16);
-            $accessToken = $this->random->get(16);
-            $expiresAt = date_add(clone $this->dateTime, new DateInterval(sprintf('PT%dS', $this->expiresIn)));
+            $accessTokenKey = sodium_bin2hex($this->randomBytes());
+            $accessToken = sodium_bin2hex($this->randomBytes());
+            $expiresAt = $this->dateTime->add(new DateInterval(self::EXPIRES_IN));
 
             // store it
             $this->tokenStorage->store(
@@ -188,10 +174,7 @@ class OAuthModule
         }
     }
 
-    /**
-     * @return string
-     */
-    private function validateClient(Request $request)
+    private function validateClient(Request $request): string
     {
         $clientId = $request->getQueryParameter('client_id');
         $redirectUri = $request->getQueryParameter('redirect_uri');
@@ -210,11 +193,9 @@ class OAuthModule
     }
 
     /**
-     * @param string $inputUrl
-     *
      * @return false|string
      */
-    private static function determineOrigin($inputUrl)
+    private static function determineOrigin(string $inputUrl)
     {
         if (false === filter_var($inputUrl, FILTER_VALIDATE_URL)) {
             return false;

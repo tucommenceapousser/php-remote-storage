@@ -13,13 +13,12 @@ declare(strict_types=1);
 
 namespace fkooman\RemoteStorage\OAuth;
 
-use DateTime;
+use DateTimeImmutable;
 use PDO;
 
 class TokenStorage
 {
-    /** @var PDO */
-    private $db;
+    private PDO $db;
 
     public function __construct(PDO $db)
     {
@@ -27,7 +26,7 @@ class TokenStorage
         $this->db = $db;
     }
 
-    public function store($userId, $accessTokenKey, $accessToken, $clientId, $scope, DateTime $expiresAt): void
+    public function store(string $userId, string $accessTokenKey, string $accessToken, string $clientId, string $scope, DateTimeImmutable $expiresAt): void
     {
         $stmt = $this->db->prepare(
             'INSERT INTO tokens (
@@ -57,7 +56,10 @@ class TokenStorage
         $stmt->execute();
     }
 
-    public function getExistingToken($userId, $clientId, $scope)
+    /**
+     * @return array|false
+     */
+    public function getExistingToken(string $userId, string $clientId, string $scope)
     {
         $stmt = $this->db->prepare(
             'SELECT
@@ -79,7 +81,10 @@ class TokenStorage
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function get($accessTokenKey)
+    /**
+     * @return array|false
+     */
+    public function get(string $accessTokenKey)
     {
         $stmt = $this->db->prepare(
             'SELECT
@@ -99,7 +104,7 @@ class TokenStorage
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function getAuthorizedClients($userId)
+    public function getAuthorizedClients(string $userId): array
     {
         $stmt = $this->db->prepare(
             'SELECT
@@ -116,7 +121,7 @@ class TokenStorage
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function removeClientTokens($userId, $clientId): void
+    public function removeClientTokens(string $userId, string $clientId): void
     {
         $stmt = $this->db->prepare(
             'DELETE FROM tokens

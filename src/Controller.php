@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace fkooman\RemoteStorage;
 
-use DateTime;
 use fkooman\RemoteStorage\Http\Exception\HttpException;
 use fkooman\RemoteStorage\Http\FormAuthentication;
 use fkooman\RemoteStorage\Http\Request;
@@ -44,7 +43,7 @@ class Controller
     /** @var array */
     private $auth = [];
 
-    public function __construct(string $appDir, string $requestRoot, Config $config, SessionInterface $session, RandomInterface $random, DateTime $dateTime)
+    public function __construct(string $appDir, string $requestRoot, Config $config, SessionInterface $session)
     {
         $serverMode = $config->serverMode;
         $this->templateManager = new TwigTpl(
@@ -76,7 +75,7 @@ class Controller
         $this->apiModule = new ApiModule($remoteStorage, $config->serverMode);
         $this->uiModule = new UiModule($remoteStorage, $this->templateManager, $tokenStorage);
         $this->webfingerModule = new WebfingerModule($config->serverMode);
-        $this->oauthModule = new OAuthModule($this->templateManager, $tokenStorage, $random, $dateTime);
+        $this->oauthModule = new OAuthModule($this->templateManager, $tokenStorage);
         $this->auth['form'] = new FormAuthentication($session, $this->templateManager, $config->Users->asArray());
         $this->auth['bearer'] = new BearerAuthentication($tokenStorage);
     }

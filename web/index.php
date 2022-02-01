@@ -18,26 +18,16 @@ use fkooman\RemoteStorage\Config;
 use fkooman\RemoteStorage\Controller;
 use fkooman\RemoteStorage\Http\Request;
 use fkooman\RemoteStorage\Http\SeSession;
-use fkooman\RemoteStorage\Random;
-use fkooman\SeCookie\CookieOptions;
 use fkooman\SeCookie\Session;
 
 try {
     $config = Config::fromFile(sprintf('%s/config/server.yaml', $baseDir));
-
-    $cookieOptions = CookieOptions::init();
-    if ('development' === $config->serverMode) {
-        $cookieOptions = $cookieOptions->withoutSecure();
-    }
-
     $request = new Request($_SERVER, $_GET, $_POST, file_get_contents('php://input'));
     $controller = new Controller(
         $baseDir,
         $request->getRoot(),
         $config,
-        new SeSession(new Session(null, $cookieOptions)),
-        new Random(),
-        new DateTime()
+        new SeSession(new Session())
     );
 
     $response = $controller->run($request);

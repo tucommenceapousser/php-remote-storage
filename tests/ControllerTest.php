@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace fkooman\RemoteStorage\Tests;
 
-use DateTime;
+use DateTimeImmutable;
 use fkooman\RemoteStorage\Config;
 use fkooman\RemoteStorage\Controller;
 use fkooman\RemoteStorage\DocumentStorage;
@@ -68,18 +68,14 @@ final class ControllerTest extends TestCase
         // add an access_token
         $tokenStorage = new TokenStorage($db);
         $tokenStorage->init();
-        $tokenStorage->store('foo', 'abcd', 'efgh', 'https://example.org/', 'bar:r', new DateTime('2016-01-01 01:00:00'));
-        $tokenStorage->store('foo', 'efgh', 'ihjk', 'https://example.org/', 'bar:rw', new DateTime('2016-01-01 01:00:00'));
+        $tokenStorage->store('foo', 'abcd', 'efgh', 'https://example.org/', 'bar:r', new DateTimeImmutable('2016-01-01 01:00:00'));
+        $tokenStorage->store('foo', 'efgh', 'ihjk', 'https://example.org/', 'bar:rw', new DateTimeImmutable('2016-01-01 01:00:00'));
 
         // add some files
         $remoteStorage->putDocument(new Path('/foo/public/hello.txt'), 'text/plain', 'Hello World!');
         $remoteStorage->putDocument(new Path('/foo/bar/hello.txt'), 'text/plain', 'Hello World!');
-
-        $random = $this->getMockBuilder('\fkooman\RemoteStorage\RandomInterface')->getMock();
-        $random->method('get')->will(static::onConsecutiveCalls('random_1', 'random_2'));
-
         $config = Config::fromFile(sprintf('%s/config/server.yaml', $tmpDir));
-        $this->controller = new Controller($tmpDir, '/', $config, new TestSession(), $random, new DateTime('2016-01-01'));
+        $this->controller = new Controller($tmpDir, '/', $config, new TestSession());
     }
 
     public function testGetPublicFile(): void

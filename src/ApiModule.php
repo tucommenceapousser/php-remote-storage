@@ -20,11 +20,8 @@ use fkooman\RemoteStorage\OAuth\TokenInfo;
 
 class ApiModule
 {
-    /** @var RemoteStorage */
-    private $remoteStorage;
-
-    /** @var string */
-    private $serverMode;
+    private RemoteStorage $remoteStorage;
+    private string $serverMode;
 
     public function __construct(RemoteStorage $remoteStorage, $serverMode)
     {
@@ -35,7 +32,7 @@ class ApiModule
     /**
      * @param false|\fkooman\RemoteStorage\OAuth\TokenInfo $tokenInfo
      */
-    public function get(Request $request, $tokenInfo)
+    public function get(Request $request, $tokenInfo): Response
     {
         $response = $this->getObject($request, $tokenInfo);
         $this->addNoCache($response);
@@ -44,7 +41,7 @@ class ApiModule
         return $response;
     }
 
-    public function head(Request $request, $tokenInfo)
+    public function head(Request $request, $tokenInfo): Response
     {
         // XXX return headers only?
         $response = $this->getObject($request, $tokenInfo);
@@ -54,7 +51,7 @@ class ApiModule
         return $response;
     }
 
-    public function put(Request $request, TokenInfo $tokenInfo)
+    public function put(Request $request, TokenInfo $tokenInfo): Response
     {
         $response = $this->putDocument($request, $tokenInfo);
         $this->addCors($response);
@@ -62,7 +59,7 @@ class ApiModule
         return $response;
     }
 
-    public function delete(Request $request, TokenInfo $tokenInfo)
+    public function delete(Request $request, TokenInfo $tokenInfo): Response
     {
         $response = $this->deleteDocument($request, $tokenInfo);
         $this->addCors($response);
@@ -70,7 +67,7 @@ class ApiModule
         return $response;
     }
 
-    public function options(Request $request)
+    public function options(Request $request): Response
     {
         $response = new Response();
         $response->addHeader(
@@ -89,7 +86,7 @@ class ApiModule
     /**
      * @param false|TokenInfo $tokenInfo
      */
-    public function getObject(Request $request, $tokenInfo)
+    public function getObject(Request $request, $tokenInfo): Response
     {
         $path = new Path($request->getPathInfo());
 
@@ -111,7 +108,7 @@ class ApiModule
         return $this->getDocument($path, $request, $tokenInfo);
     }
 
-    public function getFolder(Path $path, Request $request, TokenInfo $tokenInfo)
+    public function getFolder(Path $path, Request $request, TokenInfo $tokenInfo): Response
     {
         if ($path->getUserId() !== $tokenInfo->getUserId()) {
             throw new HttpException('path does not match authorized subject', 403);
@@ -158,7 +155,7 @@ class ApiModule
         return $rsr;
     }
 
-    public function getDocument(Path $path, Request $request, $tokenInfo)
+    public function getDocument(Path $path, Request $request, $tokenInfo): Response
     {
         if (false !== $tokenInfo) {
             if ($path->getUserId() !== $tokenInfo->getUserId()) {
@@ -220,7 +217,7 @@ class ApiModule
         return $rsr;
     }
 
-    public function putDocument(Request $request, TokenInfo $tokenInfo)
+    public function putDocument(Request $request, TokenInfo $tokenInfo): Response
     {
         $path = new Path($request->getPathInfo());
 
@@ -269,7 +266,7 @@ class ApiModule
         return $rsr;
     }
 
-    public function deleteDocument(Request $request, TokenInfo $tokenInfo)
+    public function deleteDocument(Request $request, TokenInfo $tokenInfo): Response
     {
         $path = new Path($request->getPathInfo());
 
@@ -319,12 +316,12 @@ class ApiModule
      * ETag/If-Match/If-None-Match are always quoted, this method removes
      * the quotes.
      *
-     * @param mixed $versionHeader
+     * @return ?array<string>
      */
-    public function stripQuotes($versionHeader)
+    public function stripQuotes(?string $versionHeader): ?array
     {
         if (null === $versionHeader) {
-            return;
+            return null;
         }
 
         $versions = [];
@@ -348,7 +345,7 @@ class ApiModule
         return $versions;
     }
 
-    private function hasReadScope($scope, $moduleName)
+    private function hasReadScope(string $scope, string $moduleName): bool
     {
         $obtainedScopes = explode(' ', $scope);
         $requiredScopes = [
@@ -367,7 +364,7 @@ class ApiModule
         return false;
     }
 
-    private function hasWriteScope($scope, $moduleName)
+    private function hasWriteScope(string $scope, string $moduleName): bool
     {
         $obtainedScopes = explode(' ', $scope);
         $requiredScopes = [
