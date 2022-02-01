@@ -25,21 +25,11 @@ use PDO;
 
 class Controller
 {
-    /** @var TwigTpl */
-    private $templateManager;
-
-    /** @var ApiModule */
-    private $apiModule;
-
-    /** @var UiModule */
-    private $uiModule;
-
-    /** @var WebfingerModule */
-    private $webfingerModule;
-
-    /** @var OAuthModule */
-    private $oauthModule;
-
+    private TwigTpl $templateManager;
+    private ApiModule $apiModule;
+    private UiModule $uiModule;
+    private WebfingerModule $webfingerModule;
+    private OAuthModule $oauthModule;
     private FormAuthentication $formAuth;
     private BearerAuthentication $bearerAuth;
 
