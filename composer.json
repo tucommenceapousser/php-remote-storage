@@ -24,12 +24,6 @@
     "description": "remoteStorage Server",
     "license": "AGPL-3.0-or-later",
     "name": "fkooman/remote-storage",
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://git.sr.ht/~fkooman/php-secookie"
-        }
-    ],
     "require": {
         "ext-date": "*",
         "ext-filter": "*",
@@ -40,7 +34,6 @@
         "ext-pdo": "*",
         "ext-sodium": "*",
         "ext-spl": "*",
-        "fkooman/secookie": "^6",
         "php": ">=7.4",
         "symfony/yaml": "^5",
         "twig/twig": "^3"

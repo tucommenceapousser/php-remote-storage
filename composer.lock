@@ -4,54 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b2fe65991361feb94c51fe08374e9c55",
+    "content-hash": "abc8c7656175f48b0f496f10ae2939a7",
     "packages": [
-        {
-            "name": "fkooman/secookie",
-            "version": "6.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://git.sr.ht/~fkooman/php-secookie",
-                "reference": "8b62776b337647021225c09710bd5333473128d8"
-            },
-            "require": {
-                "ext-date": "*",
-                "ext-intl": "*",
-                "ext-pcre": "*",
-                "ext-sodium": "*",
-                "php": ">=7.4"
-            },
-            "require-dev": {
-                "ext-pdo_sqlite": "*",
-                "phpunit/phpunit": "^9"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "fkooman\\SeCookie\\": "src/"
-                }
-            },
-            "autoload-dev": {
-                "psr-4": {
-                    "fkooman\\SeCookie\\Tests\\": "tests/"
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "email": "fkooman@tuxed.net",
-                    "name": "François Kooman"
-                }
-            ],
-            "description": "Modern HTTP cookie and session library",
-            "support": {
-                "email": "fkooman@tuxed.net",
-                "source": "https://git.sr.ht/~fkooman/php-secookie"
-            },
-            "time": "2021-12-21T16:38:08+00:00"
-        },
         {
             "name": "symfony/deprecation-contracts",
             "version": "v2.5.0",

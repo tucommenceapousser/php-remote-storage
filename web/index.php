@@ -16,9 +16,8 @@ $baseDir = dirname(__DIR__);
 
 use fkooman\RemoteStorage\Config;
 use fkooman\RemoteStorage\Controller;
+use fkooman\RemoteStorage\Http\PhpSession;
 use fkooman\RemoteStorage\Http\Request;
-use fkooman\RemoteStorage\Http\SeSession;
-use fkooman\SeCookie\Session;
 
 try {
     $config = Config::fromFile(sprintf('%s/config/server.yaml', $baseDir));
@@ -27,7 +26,7 @@ try {
         $baseDir,
         $request->getRoot(),
         $config,
-        new SeSession(new Session())
+        new PhpSession()
     );
 
     $response = $controller->run($request);
