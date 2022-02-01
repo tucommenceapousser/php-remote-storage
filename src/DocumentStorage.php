@@ -143,6 +143,13 @@ class DocumentStorage
 
     public function getFolder(Path $p): array
     {
+        /**
+         * XXX one cannot put "numeric" files as a key in an array as PHP will
+         * convert it to int, no matter what you do... true for folder and
+         * file names!
+         *
+         * @see https://lobste.rs/s/t8cdqz/php_frankenstein_arrays#c_lceuqy
+         */
         $folderPath = $this->baseDir.$p->getPath();
         $entries = glob($folderPath.'*', GLOB_ERR | GLOB_MARK);
         if (false === $entries) {
