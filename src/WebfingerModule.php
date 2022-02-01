@@ -19,18 +19,14 @@ use fkooman\RemoteStorage\Http\Response;
 
 class WebfingerModule
 {
-    /** @var string */
-    private $serverMode;
+    private bool $productionMode;
 
-    /**
-     * @param string $serverMode
-     */
-    public function __construct($serverMode)
+    public function __construct(bool $productionMode)
     {
-        $this->serverMode = $serverMode;
+        $this->productionMode = $productionMode;
     }
 
-    public function getWebfinger(Request $request)
+    public function getWebfinger(Request $request): Response
     {
         $resource = $request->getQueryParameter('resource');
         if (null === $resource) {
@@ -55,7 +51,7 @@ class WebfingerModule
                         'http://remotestorage.io/spec/web-authoring' => null,
                         'http://tools.ietf.org/html/rfc6749#section-4.2' => sprintf('%sauthorize?login_hint=%s', $request->getRootUri(), $user),
                         'http://tools.ietf.org/html/rfc6750#section-2.3' => 'true',
-                        'http://tools.ietf.org/html/rfc7233' => 'development' !== $this->serverMode ? 'GET' : null,
+                        'http://tools.ietf.org/html/rfc7233' => $this->productionMode ? 'GET' : null,
                     ],
                     'rel' => 'http://tools.ietf.org/id/draft-dejong-remotestorage',
                 ],
@@ -64,7 +60,7 @@ class WebfingerModule
                     'href' => sprintf('%s%s', $request->getRootUri(), $user),
                     'properties' => [
                         'http://remotestorage.io/spec/version' => 'draft-dejong-remotestorage-03',
-                        'http://tools.ietf.org/html/rfc2616#section-14.16' => 'development' !== $this->serverMode ? 'GET' : false,
+                        'http://tools.ietf.org/html/rfc2616#section-14.16' => $this->productionMode ? 'GET' : false,
                         'http://tools.ietf.org/html/rfc6749#section-4.2' => sprintf('%sauthorize?login_hint=%s', $request->getRootUri(), $user),
                         'http://tools.ietf.org/html/rfc6750#section-2.3' => true,
                     ],

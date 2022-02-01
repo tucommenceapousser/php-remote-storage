@@ -21,18 +21,15 @@ use fkooman\RemoteStorage\OAuth\TokenInfo;
 class ApiModule
 {
     private RemoteStorage $remoteStorage;
-    private string $serverMode;
+    private bool $productionMode;
 
-    public function __construct(RemoteStorage $remoteStorage, $serverMode)
+    public function __construct(RemoteStorage $remoteStorage, bool $productionMode)
     {
         $this->remoteStorage = $remoteStorage;
-        $this->serverMode = $serverMode;
+        $this->productionMode = $productionMode;
     }
 
-    /**
-     * @param false|\fkooman\RemoteStorage\OAuth\TokenInfo $tokenInfo
-     */
-    public function get(Request $request, $tokenInfo): Response
+    public function get(Request $request, ?TokenInfo $tokenInfo): Response
     {
         $response = $this->getObject($request, $tokenInfo);
         $this->addNoCache($response);
@@ -41,7 +38,7 @@ class ApiModule
         return $response;
     }
 
-    public function head(Request $request, $tokenInfo): Response
+    public function head(Request $request, ?TokenInfo $tokenInfo): Response
     {
         // XXX return headers only?
         $response = $this->getObject($request, $tokenInfo);
@@ -83,10 +80,7 @@ class ApiModule
         return $response;
     }
 
-    /**
-     * @param false|TokenInfo $tokenInfo
-     */
-    public function getObject(Request $request, $tokenInfo): Response
+    public function getObject(Request $request, ?TokenInfo $tokenInfo): Response
     {
         $path = new Path($request->getPathInfo());
 
@@ -97,7 +91,7 @@ class ApiModule
         }
 
         // past this point we MUST be authenticated
-        if (false === $tokenInfo) {
+        if (null === $tokenInfo) {
             throw new HttpException('no_token', 401, ['WWW-Authenticate' => 'Bearer realm="remoteStorage API"']);
         }
 
@@ -113,7 +107,10 @@ class ApiModule
         if ($path->getUserId() !== $tokenInfo->getUserId()) {
             throw new HttpException('path does not match authorized subject', 403);
         }
-        if (!$this->hasReadScope($tokenInfo->getScope(), $path->getModuleName())) {
+        if (null === $moduleName = $path->getModuleName()) {
+            throw new HttpException('path does not have module name', 403);
+        }
+        if (!$this->hasReadScope($tokenInfo->getScope(), $moduleName)) {
             throw new HttpException('path does not match authorized scope', 403);
         }
 
@@ -155,13 +152,16 @@ class ApiModule
         return $rsr;
     }
 
-    public function getDocument(Path $path, Request $request, $tokenInfo): Response
+    public function getDocument(Path $path, Request $request, ?TokenInfo $tokenInfo): Response
     {
-        if (false !== $tokenInfo) {
+        if (null !== $tokenInfo) {
             if ($path->getUserId() !== $tokenInfo->getUserId()) {
                 throw new HttpException('path does not match authorized subject', 403);
             }
-            if (!$this->hasReadScope($tokenInfo->getScope(), $path->getModuleName())) {
+            if (null === $moduleName = $path->getModuleName()) {
+                throw new HttpException('path does not have module name', 403);
+            }
+            if (!$this->hasReadScope($tokenInfo->getScope(), $moduleName)) {
                 throw new HttpException('path does not match authorized scope', 403);
             }
         }
@@ -187,12 +187,12 @@ class ApiModule
         $rsr = new Response(200, $documentContentType);
         $rsr->addHeader('ETag', '"'.$documentVersion.'"');
 
-        if ('development' !== $this->serverMode) {
+        if ($this->productionMode) {
             $rsr->addHeader('Accept-Ranges', 'bytes');
         }
 
         if ('GET' === $request->getRequestMethod()) {
-            if ('development' === $this->serverMode) {
+            if (!$this->productionMode) {
                 // use body
                 $rsr->setBody(
                     file_get_contents(
@@ -224,7 +224,10 @@ class ApiModule
         if ($path->getUserId() !== $tokenInfo->getUserId()) {
             throw new HttpException('path does not match authorized subject', 403);
         }
-        if (!$this->hasWriteScope($tokenInfo->getScope(), $path->getModuleName())) {
+        if (null === $moduleName = $path->getModuleName()) {
+            throw new HttpException('path does not have module name', 403);
+        }
+        if (!$this->hasWriteScope($tokenInfo->getScope(), $moduleName)) {
             throw new HttpException('path does not match authorized scope', 403);
         }
 
@@ -273,7 +276,10 @@ class ApiModule
         if ($path->getUserId() !== $tokenInfo->getUserId()) {
             throw new HttpException('path does not match authorized subject', 403);
         }
-        if (!$this->hasWriteScope($tokenInfo->getScope(), $path->getModuleName())) {
+        if (null === $moduleName = $path->getModuleName()) {
+            throw new HttpException('path does not have module name', 403);
+        }
+        if (!$this->hasWriteScope($tokenInfo->getScope(), $moduleName)) {
             throw new HttpException('path does not match authorized scope', 403);
         }
 

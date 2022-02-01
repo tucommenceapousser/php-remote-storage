@@ -17,18 +17,13 @@ use fkooman\RemoteStorage\Exception\PathException;
 
 class Path
 {
-    /** @var string */
-    private $p;
+    private string $p;
 
-    /** @var array */
-    private $pathParts;
+    /** @var array<string> */
+    private array $pathParts = [];
 
-    public function __construct($p)
+    public function __construct(string $p)
     {
-        if (!\is_string($p)) {
-            throw new PathException('invalid path: not a string');
-        }
-
         // MUST contain at least one slash and start with it
         if (0 !== strpos($p, '/')) {
             throw new PathException('invalid path: does not start with /');
@@ -71,42 +66,42 @@ class Path
         $this->p = implode('/', $this->pathParts);
     }
 
-    public function getPath()
+    public function getPath(): string
     {
         return $this->p;
     }
 
-    public function getIsPublic()
+    public function getIsPublic(): bool
     {
         return \count($this->pathParts) > 3 && 'public' === $this->pathParts[2];
     }
 
-    public function getUserId()
+    public function getUserId(): string
     {
         return $this->pathParts[1];
     }
 
-    public function getIsFolder()
+    public function getIsFolder(): bool
     {
         return empty($this->pathParts[\count($this->pathParts) - 1]);
     }
 
-    public function getIsDocument()
+    public function getIsDocument(): bool
     {
         return !$this->getIsFolder();
     }
 
-    public function getModuleName()
+    public function getModuleName(): ?string
     {
         $moduleNamePosition = $this->getIsPublic() ? 3 : 2;
         if (\count($this->pathParts) > $moduleNamePosition + 1) {
             return $this->pathParts[$moduleNamePosition];
         }
 
-        return false;
+        return null;
     }
 
-    public function getFolderPath()
+    public function getFolderPath(): string
     {
         if ($this->getIsFolder()) {
             return $this->p;
@@ -115,8 +110,12 @@ class Path
         return substr($this->p, 0, strrpos($this->p, '/') + 1);
     }
 
-    public function getFolderTreeToUserRoot()
+    /**
+     * @return array<string>
+     */
+    public function getFolderTreeToUserRoot(): array
     {
+        $folderTree = [];
         $p = $this->getFolderPath();
         do {
             $folderTree[] = $p;
@@ -133,7 +132,10 @@ class Path
         return $folderTree;
     }
 
-    public function getFolderTreeFromUserRoot()
+    /**
+     * @return array<string>
+     */
+    public function getFolderTreeFromUserRoot(): array
     {
         return array_reverse($this->getFolderTreeToUserRoot());
     }

@@ -18,31 +18,28 @@ use fkooman\RemoteStorage\Http\Request;
 
 class BearerAuthentication
 {
-    /** @var TokenStorage */
-    private $tokenStorage;
+    private TokenStorage $tokenStorage;
+    private string $realm;
 
-    /** @var string */
-    private $realm;
-
-    public function __construct(TokenStorage $tokenStorage, $realm = 'Protected Area')
+    public function __construct(TokenStorage $tokenStorage, string $realm = 'Protected Area')
     {
         $this->tokenStorage = $tokenStorage;
         $this->realm = $realm;
     }
 
-    public function optionalAuth(Request $request)
+    public function optionalAuth(Request $request): ?TokenInfo
     {
         $authorizationHeader = $request->getHeader('HTTP_AUTHORIZATION', false, null);
 
         // is authorization header there?
         if (null === $authorizationHeader || empty($authorizationHeader)) {
-            return false;
+            return null;
         }
 
         return $this->requireAuth($request);
     }
 
-    public function requireAuth(Request $request)
+    public function requireAuth(Request $request): TokenInfo
     {
         $authorizationHeader = $request->getHeader('HTTP_AUTHORIZATION');
 
@@ -67,7 +64,10 @@ class BearerAuthentication
         throw $this->invalidTokenException();
     }
 
-    private static function getBearerToken($authorizationHeader)
+    /**
+     * @return array<string>|false
+     */
+    private static function getBearerToken(string $authorizationHeader)
     {
         if (1 !== preg_match('|^Bearer ([a-zA-Z0-9-._~+/]+=*)$|', $authorizationHeader, $m)) {
             return false;
@@ -81,7 +81,7 @@ class BearerAuthentication
         return explode('.', $bearerToken);
     }
 
-    private function invalidTokenException()
+    private function invalidTokenException(): HttpException
     {
         return new HttpException(
             'invalid_token',

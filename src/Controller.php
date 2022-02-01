@@ -40,23 +40,21 @@ class Controller
     /** @var OAuthModule */
     private $oauthModule;
 
-    /** @var array */
-    private $auth = [];
+    private FormAuthentication $formAuth;
+    private BearerAuthentication $bearerAuth;
 
     public function __construct(string $appDir, string $requestRoot, Config $config, SessionInterface $session)
     {
-        $serverMode = $config->serverMode;
         $this->templateManager = new TwigTpl(
             [
                 sprintf('%s/views', $appDir),
                 sprintf('%s/config/views', $appDir),
             ],
-            'development' !== $serverMode ? sprintf('%s/data/tpl', $appDir) : null
+            $config->productionMode() ? sprintf('%s/data/tpl', $appDir) : null
         );
         $this->templateManager->setDefault(
             [
                 'requestRoot' => $requestRoot,
-                'serverMode' => $serverMode,
             ]
         );
 
@@ -72,12 +70,12 @@ class Controller
             new DocumentStorage(sprintf('%s/data/storage', $appDir))
         );
 
-        $this->apiModule = new ApiModule($remoteStorage, $config->serverMode);
+        $this->apiModule = new ApiModule($remoteStorage, $config->productionMode());
         $this->uiModule = new UiModule($remoteStorage, $this->templateManager, $tokenStorage);
-        $this->webfingerModule = new WebfingerModule($config->serverMode);
+        $this->webfingerModule = new WebfingerModule($config->productionMode());
         $this->oauthModule = new OAuthModule($this->templateManager, $tokenStorage);
-        $this->auth['form'] = new FormAuthentication($session, $this->templateManager, $config->Users->asArray());
-        $this->auth['bearer'] = new BearerAuthentication($tokenStorage);
+        $this->formAuth = new FormAuthentication($session, $this->templateManager, $config->userList());
+        $this->bearerAuth = new BearerAuthentication($tokenStorage);
     }
 
     public function run(Request $request): Response
@@ -91,12 +89,12 @@ class Controller
                     return $this->handlePost($request);
 
                 case 'PUT':
-                    $tokenInfo = $this->auth['bearer']->requireAuth($request);
+                    $tokenInfo = $this->bearerAuth->requireAuth($request);
 
                     return $this->apiModule->put($request, $tokenInfo);
 
                 case 'DELETE':
-                    $tokenInfo = $this->auth['bearer']->requireAuth($request);
+                    $tokenInfo = $this->bearerAuth->requireAuth($request);
 
                     return $this->apiModule->delete($request, $tokenInfo);
 
@@ -104,7 +102,7 @@ class Controller
                     return $this->apiModule->options($request);
 
                 case 'HEAD':
-                    $tokenInfo = $this->auth['bearer']->optionalAuth($request);
+                    $tokenInfo = $this->bearerAuth->optionalAuth($request);
 
                     return $this->apiModule->head($request, $tokenInfo);
 
@@ -145,26 +143,24 @@ class Controller
                 return $this->webfingerModule->getWebfinger($request);
 
             case '/authorize':
-                $userId = $this->auth['form']->requireAuth($request);
-                if ($userId instanceof Response) {
-                    return $userId;
+                if (null === $userId = $this->formAuth->userId()) {
+                    return $this->formAuth->requireAuth($request);
                 }
 
                 return $this->oauthModule->getAuthorize($request, $userId);
 
             case '/':
-                $userId = $this->auth['form']->requireAuth($request);
-                if ($userId instanceof Response) {
-                    return $userId;
+                if (null === $userId = $this->formAuth->userId()) {
+                    return $this->formAuth->requireAuth($request);
                 }
 
                 return $this->uiModule->getHome($request, $userId);
 
             case '/logout':
-                return $this->auth['form']->logout($request);
+                return $this->formAuth->logout($request);
 
             default:
-                $tokenInfo = $this->auth['bearer']->optionalAuth($request);
+                $tokenInfo = $this->bearerAuth->optionalAuth($request);
 
                 return $this->apiModule->get($request, $tokenInfo);
         }
@@ -174,20 +170,24 @@ class Controller
     {
         switch ($request->getPathInfo()) {
             case '/':
-                $userId = $this->auth['form']->requireAuth($request);
+                if (null === $userId = $this->formAuth->userId()) {
+                    return $this->formAuth->requireAuth($request);
+                }
 
                 return $this->uiModule->postHome($request, $userId);
 
             case '/authorize':
-                $userId = $this->auth['form']->requireAuth($request);
+                if (null === $userId = $this->formAuth->userId()) {
+                    return $this->formAuth->requireAuth($request);
+                }
 
                 return $this->oauthModule->postAuthorize($request, $userId);
 
             case '/authenticate':
-                return $this->auth['form']->verifyAuth($request);
+                return $this->formAuth->verifyAuth($request);
 
             case '/logout':
-                return $this->auth['form']->logout($request);
+                return $this->formAuth->logout($request);
 
             default:
                 throw new HttpException('not found', 404);

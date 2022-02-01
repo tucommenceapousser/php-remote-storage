@@ -18,11 +18,8 @@ use fkooman\RemoteStorage\Http\Exception\HttpException;
 
 class RemoteStorage
 {
-    /** @var MetadataStorage */
-    private $md;
-
-    /** @var DocumentStorage */
-    private $d;
+    private MetadataStorage $md;
+    private DocumentStorage $d;
 
     public function __construct(MetadataStorage $md, DocumentStorage $d)
     {
@@ -30,7 +27,7 @@ class RemoteStorage
         $this->d = $d;
     }
 
-    public function putDocument(Path $p, $contentType, $documentData, array $ifMatch = null, array $ifNoneMatch = null): void
+    public function putDocument(Path $p, string $contentType, string $documentData, ?array $ifMatch = null, ?array $ifNoneMatch = null): void
     {
         if (null !== $ifMatch && !\in_array($this->md->getVersion($p), $ifMatch, true)) {
             throw new HttpException('version mismatch', 412);
@@ -47,7 +44,7 @@ class RemoteStorage
         }
     }
 
-    public function deleteDocument(Path $p, array $ifMatch = null): void
+    public function deleteDocument(Path $p, ?array $ifMatch = null): void
     {
         if (null !== $ifMatch && !\in_array($this->md->getVersion($p), $ifMatch, true)) {
             throw new HttpException('version mismatch', 412);
@@ -67,17 +64,17 @@ class RemoteStorage
         }
     }
 
-    public function getVersion(Path $p)
+    public function getVersion(Path $p): ?string
     {
         return $this->md->getVersion($p);
     }
 
-    public function getContentType(Path $p)
+    public function getContentType(Path $p): ?string
     {
         return $this->md->getContentType($p);
     }
 
-    public function getDocument(Path $p, array $ifNoneMatch = null)
+    public function getDocument(Path $p, ?array $ifNoneMatch = null): string
     {
         if (null !== $ifNoneMatch && \in_array($this->md->getVersion($p), $ifNoneMatch, true)) {
             throw new RemoteStorageException('document not modified');
@@ -86,7 +83,7 @@ class RemoteStorage
         return $this->d->getDocumentPath($p);
     }
 
-    public function getFolder(Path $p, array $ifNoneMatch = null)
+    public function getFolder(Path $p, ?array $ifNoneMatch = null): string
     {
         if (null !== $ifNoneMatch && \in_array($this->md->getVersion($p), $ifNoneMatch, true)) {
             throw new RemoteStorageException('folder not modified');
@@ -108,12 +105,12 @@ class RemoteStorage
         return json_encode($f, JSON_FORCE_OBJECT);
     }
 
-    public function getFolderSize(Path $p)
+    public function getFolderSize(Path $p): string
     {
         return self::sizeToHuman($this->d->getFolderSize($p));
     }
 
-    public static function sizeToHuman($byteSize)
+    public static function sizeToHuman(int $byteSize): string
     {
         $kB = 1024;
         $MB = $kB * 1024;

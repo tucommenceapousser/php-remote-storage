@@ -18,70 +18,56 @@ use Symfony\Component\Yaml\Yaml;
 
 class Config
 {
-    /** @var array */
-    private $data;
+    private array $data;
 
     public function __construct(array $data)
     {
         $this->data = $data;
     }
 
-    /**
-     * @param string $key
-     */
-    public function __isset($key)
+    public function productionMode(): bool
     {
-        return \array_key_exists($key, $this->data);
+        if (!\array_key_exists('serverMode', $this->data)) {
+            return false;
+        }
+
+        return 'production' === $this->data['serverMode'];
     }
 
     /**
-     * @param string $key
-     *
-     * @return array|object|string
+     * @return array<string,string>
      */
-    public function __get($key)
+    public function userList(): array
     {
-        if (!\array_key_exists($key, $this->data)) {
-            // consumers MUST check first if a field is available before
-            // requesting it
-            throw new ConfigException(sprintf('missing field "%s" in configuration', $key));
+        if (!\array_key_exists('Users', $this->data)) {
+            return [];
         }
 
-        if (\is_array($this->data[$key])) {
-            // if all we get is a "flat" array with sequential numeric keys
-            // return the array instead of an object
-            $k = array_keys($this->data[$key]);
-            if ($k === range(0, \count($k) - 1)) {
-                return $this->data[$key];
-            }
-
-            return new self($this->data[$key]);
+        if (!\is_array($this->data['Users'])) {
+            return [];
         }
 
-        return $this->data[$key];
+        return $this->data['Users'];
     }
 
-    /**
-     * @return array
-     */
-    public function asArray()
+    public function asArray(): array
     {
         return $this->data;
     }
 
-    public static function fromFile($configFile)
+    public static function fromFile(string $configFile): self
     {
-        if (false === $fileContent = @file_get_contents($configFile)) {
+        if (false === $fileContent = file_get_contents($configFile)) {
             throw new ConfigException(sprintf('unable to read "%s"', $configFile));
         }
 
         return new self(Yaml::parse($fileContent));
     }
 
-    public static function toFile($configFile, array $configData): void
+    public static function toFile(string $configFile, array $configData): void
     {
         $fileData = Yaml::dump($configData, 3);
-        if (false === @file_put_contents($configFile, $fileData)) {
+        if (false === file_put_contents($configFile, $fileData)) {
             throw new ConfigException(sprintf('unable to write "%s"', $configFile));
         }
     }

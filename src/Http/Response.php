@@ -21,11 +21,11 @@ class Response
     private array $headers;
     private string $body;
 
-    public function __construct(int $statusCode = 200, string $contentType = 'text/plain')
+    public function __construct(int $statusCode = 200, ?string $contentType = null)
     {
         $this->statusCode = $statusCode;
         $this->headers = [
-            'Content-Type' => $contentType,
+            'Content-Type' => $contentType ?? 'text/plain',
         ];
         $this->body = '';
     }
@@ -52,7 +52,7 @@ class Response
         $this->headers[$key] = $value;
     }
 
-    public function getHeader($key): ?string
+    public function getHeader(string $key): ?string
     {
         if (\array_key_exists($key, $this->headers)) {
             return $this->headers[$key];

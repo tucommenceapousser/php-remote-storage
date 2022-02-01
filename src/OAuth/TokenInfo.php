@@ -15,20 +15,25 @@ namespace fkooman\RemoteStorage\OAuth;
 
 class TokenInfo
 {
-    /** @var array */
-    private $tokenInfo;
+    /** @var array{user_id:string,scope:string} */
+    private array $tokenInfo;
 
+    /**
+     * XXX we MUST be sure this is actually true in caller...
+     *
+     * @param array{user_id:string,scope:string} $tokenInfo
+     */
     public function __construct(array $tokenInfo)
     {
         $this->tokenInfo = $tokenInfo;
     }
 
-    public function getUserId()
+    public function getUserId(): string
     {
         return $this->tokenInfo['user_id'];
     }
 
-    public function getScope()
+    public function getScope(): string
     {
         return $this->tokenInfo['scope'];
     }

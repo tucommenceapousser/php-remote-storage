@@ -17,7 +17,12 @@ use fkooman\RemoteStorage\Http\Exception\HttpException;
 
 class Utils
 {
-    public static function getValueFromArray(array $sourceData, $key, $isRequired, $defaultValue)
+    /**
+     * @param mixed $defaultValue
+     *
+     * @return mixed
+     */
+    public static function getValueFromArray(array $sourceData, string $key, bool $isRequired, $defaultValue)
     {
         if (\array_key_exists($key, $sourceData)) {
             return $sourceData[$key];

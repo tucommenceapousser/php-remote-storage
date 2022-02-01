@@ -21,9 +21,9 @@ use RuntimeException;
 
 class DocumentStorage
 {
-    private $baseDir;
+    private string $baseDir;
 
-    public function __construct($baseDir)
+    public function __construct(string $baseDir)
     {
         // check if baseDir exists, if not, try to create it
         if (!is_dir($baseDir)) {
@@ -34,7 +34,7 @@ class DocumentStorage
         $this->baseDir = $baseDir;
     }
 
-    public function isDocument(Path $p)
+    public function isDocument(Path $p): bool
     {
         $documentPath = $this->baseDir.$p->getPath();
         if (false === file_exists($documentPath) || !is_file($documentPath)) {
@@ -47,7 +47,7 @@ class DocumentStorage
     /**
      * Get the full absolute location of the document on the filesystem.
      */
-    public function getDocumentPath(Path $p)
+    public function getDocumentPath(Path $p): string
     {
         $documentPath = $this->baseDir.$p->getPath();
         if (!is_readable($documentPath)) {
@@ -57,15 +57,11 @@ class DocumentStorage
         return $documentPath;
     }
 
-    public function getDocument(Path $p)
+    public function getDocument(Path $p): string
     {
         $documentPath = $this->baseDir.$p->getPath();
-        if (!is_readable($documentPath)) {
+        if (false === $documentContent = file_get_contents($documentPath)) {
             throw new DocumentStorageException('unable to read document');
-        }
-        $documentContent = @file_get_contents($documentPath);
-        if (false === $documentContent) {
-            throw new DocumentStorageException('error reading document');
         }
 
         return $documentContent;
@@ -73,12 +69,8 @@ class DocumentStorage
 
     /**
      * Store a new document.
-     *
-     * @returns an array of all created objects
-     *
-     * @param mixed $documentContent
      */
-    public function putDocument(Path $p, $documentContent)
+    public function putDocument(Path $p, string $documentContent): array
     {
         $folderTree = $p->getFolderTreeFromUserRoot();
         foreach ($folderTree as $pathItem) {
@@ -114,6 +106,8 @@ class DocumentStorage
 
     /**
      * Delete a document and all empty parent directories if there are any.
+     *
+     * @return array<string>
      */
     public function deleteDocument(Path $p): array
     {
@@ -137,7 +131,7 @@ class DocumentStorage
         return $deletedObjects;
     }
 
-    public function isFolder(Path $p)
+    public function isFolder(Path $p): bool
     {
         $folderPath = $this->baseDir.$p->getPath();
         if (false === file_exists($folderPath) || !is_dir($folderPath)) {
@@ -147,7 +141,7 @@ class DocumentStorage
         return true;
     }
 
-    public function getFolder(Path $p)
+    public function getFolder(Path $p): array
     {
         $folderPath = $this->baseDir.$p->getPath();
         $entries = glob($folderPath.'*', GLOB_ERR | GLOB_MARK);
@@ -169,7 +163,7 @@ class DocumentStorage
         return $folderEntries;
     }
 
-    public function getFolderSize(Path $p)
+    public function getFolderSize(Path $p): int
     {
         if (!$this->isFolder($p)) {
             return 0;
@@ -183,7 +177,7 @@ class DocumentStorage
         return $size;
     }
 
-    private function isEmptyFolder(Path $p)
+    private function isEmptyFolder(Path $p): bool
     {
         $folderPath = $this->baseDir.$p->getPath();
 

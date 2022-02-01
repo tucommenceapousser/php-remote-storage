@@ -18,15 +18,15 @@ use fkooman\RemoteStorage\TplInterface;
 
 class FormAuthentication
 {
-    /** @var SessionInterface */
-    private $session;
+    private SessionInterface $session;
+    private TplInterface $tpl;
 
-    /** @var \fkooman\RemoteStorage\TplInterface */
-    private $tpl;
+    /** @var array<string,string> */
+    private array $userPass;
 
-    /** @var array */
-    private $userPass;
-
+    /**
+     * @param array<string,string> $userPass
+     */
     public function __construct(SessionInterface $session, TplInterface $tpl, array $userPass)
     {
         $this->session = $session;
@@ -34,22 +34,22 @@ class FormAuthentication
         $this->userPass = $userPass;
     }
 
-    public function optionalAuth(Request $request)
+    public function optionalAuth(Request $request): ?string
     {
         if ($this->session->has('_form_auth_user')) {
             return $this->session->get('_form_auth_user');
         }
 
-        return false;
+        return null;
     }
 
-    public function requireAuth(Request $request)
+    public function userId(): ?string
     {
-        if ($this->session->has('_form_auth_user')) {
-            return $this->session->get('_form_auth_user');
-        }
+        return $this->session->get('_form_auth_user');
+    }
 
-        // any other URL, enforce authentication
+    public function requireAuth(Request $request): Response
+    {
         $response = new Response(200, 'text/html');
         $response->setBody(
             $this->tpl->render(
@@ -65,7 +65,7 @@ class FormAuthentication
         return $response;
     }
 
-    public function verifyAuth(Request $request)
+    public function verifyAuth(Request $request): Response
     {
         $this->session->delete('_form_auth_user');
 
@@ -110,7 +110,7 @@ class FormAuthentication
         return $response;
     }
 
-    public function logout(Request $request)
+    public function logout(Request $request): Response
     {
         $this->session->delete('_form_auth_user');
 

@@ -98,7 +98,10 @@ class MetadataStorage
         }
     }
 
-    public static function createTableQueries()
+    /**
+     * @return array<string>
+     */
+    public static function createTableQueries(): array
     {
         return [
             'CREATE TABLE IF NOT EXISTS md (

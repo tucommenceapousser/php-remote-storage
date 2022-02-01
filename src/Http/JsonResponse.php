@@ -15,7 +15,7 @@ namespace fkooman\RemoteStorage\Http;
 
 class JsonResponse extends Response
 {
-    public function __construct(array $responseData, $responseCode = 200)
+    public function __construct(array $responseData, int $responseCode = 200)
     {
         parent::__construct($responseCode, 'application/json');
         $this->setBody(json_encode($responseData));
